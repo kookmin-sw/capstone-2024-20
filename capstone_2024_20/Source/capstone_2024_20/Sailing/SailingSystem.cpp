@@ -2,9 +2,10 @@
 #include "../EnemyShip/EnemyShip.h"
 #include "../MyShip.h"
 #include "../Event/Event.h"
+#include "../Trigger/Trigger.h"
 #include "Kismet/GameplayStatics.h"
 
-ASailingSystem::ASailingSystem(): MyShip(nullptr)
+ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -12,7 +13,13 @@ ASailingSystem::ASailingSystem(): MyShip(nullptr)
 void ASailingSystem::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	ClearTrigger = NewObject<UTrigger>();
+	ClearTrigger->Initialize("T_0001", this);
+	
+	GameOverTrigger = NewObject<UTrigger>();
+	GameOverTrigger->Initialize("T_0002", this);
+	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 }
@@ -21,10 +28,19 @@ void ASailingSystem::BeginPlay()
 void ASailingSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (ClearTrigger->IsTriggered())
+	{
+		// Todo@autumn do something
+	}
+
+	if (GameOverTrigger->IsTriggered())
+	{
+		// Todo@autumn do something
+	}
 
 	SpawnEnemyShipTimer += DeltaTime;
 
-	// Run SpawnEnemyShip every 5 seconds
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	if (SpawnEnemyShipTimer >= 5.0f)
 	{
@@ -39,7 +55,6 @@ void ASailingSystem::Tick(float DeltaTime)
 	}
 
 	SpawnEventTimer += DeltaTime;
-	// Run SpawnEvent every 10 seconds
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	if (SpawnEventTimer >= 10.0f)
 	{
@@ -50,7 +65,6 @@ void ASailingSystem::Tick(float DeltaTime)
 
 void ASailingSystem::SpawnEnemyShip()
 {
-	// Spawn an enemy ship at a random location which is away between -20000 and 20000 units from the player, not in -10000 to 10000 units.
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	auto RandomX = FMath::RandRange(-20000.0f, 20000.0f);
 	auto RandomY = FMath::RandRange(-20000.0f, 20000.0f);
@@ -70,7 +84,6 @@ void ASailingSystem::SpawnEvent()
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomLocation = FVector(RandomX, RandomY, 880.0f);
 
-	// Spawn Event by relative location to the ship
 	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(MyShip->GetActorLocation() + RandomLocation));
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
 	Events.Add(SpawnedEvent);

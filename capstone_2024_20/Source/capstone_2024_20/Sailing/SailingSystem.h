@@ -7,6 +7,7 @@
 class AMyShip;
 class AEnemyShip;
 class AEvent;
+class UTrigger;
 
 UCLASS()
 class CAPSTONE_2024_20_API ASailingSystem : public AActor
@@ -29,6 +30,12 @@ private:
 
 	inline static float SpawnEventTimer = 0.0f;
 	TArray<AEvent*> Events;
+
+	UPROPERTY()
+	UTrigger* ClearTrigger;
+
+	UPROPERTY()
+	UTrigger* GameOverTrigger;
 
 	UPROPERTY()
 	AMyShip* MyShip;
