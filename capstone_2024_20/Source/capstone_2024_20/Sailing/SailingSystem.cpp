@@ -28,6 +28,11 @@ void ASailingSystem::BeginPlay()
 void ASailingSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (MyShip == nullptr)
+	{
+		return;
+	}
 	
 	if (ClearTrigger->IsTriggered())
 	{
