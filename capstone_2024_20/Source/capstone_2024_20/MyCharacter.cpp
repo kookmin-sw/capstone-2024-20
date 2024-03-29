@@ -97,9 +97,7 @@ void AMyCharacter::Tick(float DeltaTime)
 //충돌 처리
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 플레이어 hp 감소 테스트
-	DecreaseHP(3);
-	
+
 	if(CurrentPlayerState != PlayerState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
