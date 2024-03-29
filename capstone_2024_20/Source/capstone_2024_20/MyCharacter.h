@@ -57,6 +57,9 @@ public:
 	TSubclassOf<AActor> BP_CannonBallClass;
 	
 protected:
+
+	unsigned int PlayerMaxHP = 10;
+	unsigned int PlayerHP = PlayerMaxHP;
 	
 	bool bIsChanging=false;
 	float TargetArmLength;
@@ -130,5 +133,32 @@ public:
 
 	UFUNCTION()
 	void DropObject(AActor* ship);
+
+	UFUNCTION()
+	unsigned int GetPlayerHP();
+
+	UFUNCTION()
+	void SetPlayerHP(unsigned int hp);
+	
+	UFUNCTION()
+	void IncreaseHP(int plusHP);
+
+	UFUNCTION()
+	void DecreaseHP(unsigned int minusHP);
+
+	UFUNCTION()
+	unsigned int GetPlayerMaxHP();
+
+	UFUNCTION()
+	void SetPlayerMaxHP(unsigned int hp);
+	
+	UFUNCTION()
+	void IncreaseMaxHP(int plusHP);
+
+	UFUNCTION()
+	void DecreaseMaxHP(int minusHP);
+
+	UFUNCTION()
+	void PlayerDead();
 
 };

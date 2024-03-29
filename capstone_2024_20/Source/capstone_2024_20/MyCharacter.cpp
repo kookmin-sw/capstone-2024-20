@@ -97,6 +97,9 @@ void AMyCharacter::Tick(float DeltaTime)
 //충돌 처리
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// 플레이어 hp 감소 테스트
+	DecreaseHP(3);
+	
 	if(CurrentPlayerState != PlayerState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
@@ -235,6 +238,69 @@ void AMyCharacter::DropObject(AActor* ship)
 		}
 	}
 }
+
+unsigned int AMyCharacter::GetPlayerHP()
+{
+	return PlayerHP;
+}
+
+void AMyCharacter::SetPlayerHP(unsigned int hp)
+{
+	PlayerHP = hp;
+}
+
+
+void AMyCharacter::IncreaseHP(int plusHP)
+{
+	if(PlayerHP + plusHP > PlayerMaxHP)
+		PlayerHP = PlayerMaxHP;
+	else
+		PlayerHP += plusHP;
+}
+
+void AMyCharacter::DecreaseHP(unsigned int minusHP)
+{
+	if(PlayerHP <= minusHP)
+	{
+		PlayerHP = 0;
+		PlayerDead();
+	}
+	else
+	{
+		PlayerHP -= minusHP;
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Player HP: %u"), PlayerHP));
+	
+}
+
+unsigned int AMyCharacter::GetPlayerMaxHP()
+{
+	return PlayerMaxHP;
+}
+
+void AMyCharacter::SetPlayerMaxHP(unsigned int hp)
+{
+	PlayerMaxHP = hp;
+}
+
+
+void AMyCharacter::IncreaseMaxHP(int plusHP)
+{
+	PlayerMaxHP += plusHP;
+}
+
+void AMyCharacter::DecreaseMaxHP(int minusHP)
+{
+	PlayerMaxHP -= minusHP;
+	if(PlayerHP > PlayerMaxHP)
+		PlayerHP = PlayerMaxHP;
+}
+
+void AMyCharacter::PlayerDead()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Dead"));
+}
+
 
 
 
