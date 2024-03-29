@@ -10,6 +10,7 @@
 #include "MyCannon.h"
 #include "CannonBall.h"
 #include "MyCharacter.h"
+#include "MyShip.h"
 #include "MyPlayerController.generated.h"
 
 /**
@@ -31,7 +32,7 @@ protected:
 	
 public:	
 	// Called to bind functionality to input
-	virtual void SetupInputComponent(class UInputComponent* PlayerInputComponent);
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
 private:
 	UPROPERTY(Category=Input, VisibleAnywhere)
@@ -48,6 +49,10 @@ private:
 	
 	UPROPERTY(Category=Input, VisibleAnywhere)
 	UInputAction* ShootAction;
+
+	UPROPERTY(Category=Input, VisibleAnywhere)
+	UInputAction* DraggingRotateAction;
+	
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	class UWidgetComponent* TextWidget;
@@ -55,12 +60,26 @@ public:
 private:
 	AActor* ControlledActor;
 	IControlStrategy* CurrentStrategy;
-	APawn* Ship;
+	AMyShip* Ship;
 	AMyCharacter* Player;
 	AMyCannon* Cannon;
+	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
 
+	
+	// 키를 누르고 있는지의 상태를 추적하는 변수
+	bool bIsPressingKey = false;
+
+	// 키를 누른 시점부터의 시간을 측정하기 위한 변수
+	float PressDuration = 0.0f;
+
+	void Interaction_Pressed();
+	void Interaction_Trigger();
+	void Interaction_Released();
+	void DraggingRotate(const FInputActionInstance& Instance);
+
+	
 public:
 	void Move(const FInputActionInstance& Instance);
     void Interaction(const FInputActionInstance& Instance);
@@ -70,8 +89,15 @@ public:
 	void ServerRPC_Shoot(AMyCannon* CannonActor);
 
 	UFUNCTION(Server, Reliable)
-	void ServerRPC_MoveCannon(AMyCannon* CannonActor, FRotator newRot);
-	
+	void ServerRPC_RotateCannon(AMyCannon* CannonActor, FRotator newRot);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_MoveShip_Loc(FVector newLoc);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_MoveShip_Rot(float newYaw, float speed);
+
+
 protected:
 	
 	enum class ControlMode
