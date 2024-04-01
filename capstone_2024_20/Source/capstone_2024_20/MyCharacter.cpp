@@ -101,7 +101,8 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if(CurrentPlayerState != PlayerState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
-		TextWidget->SetVisibility(true);
+		if(IsLocallyControlled())
+			TextWidget->SetVisibility(true);
 		bIsOverlap = true;
 	
 		for (const FString& Tag : ObjectList)

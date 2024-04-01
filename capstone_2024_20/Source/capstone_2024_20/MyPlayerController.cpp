@@ -149,6 +149,7 @@ void AMyPlayerController::Interaction(const FInputActionInstance& Instance)
 	{
 		UE_LOG(LogTemp, Log, TEXT("interaction"));
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
+		
 		Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 		ViewChange();
 	}
@@ -285,6 +286,7 @@ void AMyPlayerController::ViewChange()
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
 				Cannon->SetIsLoad(true);
 				Player->SetPlayerState(AMyCharacter::PlayerState::NONE);
+				Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 				Player->DestroyCannonBall();
 			}
 
