@@ -11,10 +11,10 @@ class UPlayerListWidget;
 class CAPSTONE_2024_20_API PlayerListWidgetCreate :public IPlayerList
 {
 public:
-	PlayerListWidgetCreate(UWorld* World, FString& WidgetName, UPlayerListWidget** PlayerListWidget, IPlayerList ** PlayerList);
+	PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlayerListWidget> NewPlayerListWidgetClass, UPlayerListWidget** PlayerListWidget, IPlayerList ** PlayerList);
 
 	UWorld* CurrentWorld;
-	FString PlayerListWidgetClass;
+	TSubclassOf<UPlayerListWidget> PlayerListWidgetClass;
 	UPlayerListWidget** ControllerPlayerListWidget;
 	IPlayerList** ControllerPlayerList;
 	

@@ -7,12 +7,11 @@
 #include "InGameRoomInfoWidget.h"
 #include "PlayerListWidget.h"
 #include "PlayerListWidgetModifier.h"
-#include "Kismet/GameplayStatics.h"
 
-PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, FString& WidgetName, UPlayerListWidget** PlayerListWidget, IPlayerList** PlayerList)
+PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlayerListWidget> NewPlayerListWidgetClass, UPlayerListWidget** PlayerListWidget, IPlayerList** PlayerList)
 {
 	CurrentWorld = World;
-	PlayerListWidgetClass = WidgetName;
+	PlayerListWidgetClass = NewPlayerListWidgetClass;
 	ControllerPlayerListWidget = PlayerListWidget;
 	ControllerPlayerList = PlayerList;
 }
@@ -29,23 +28,10 @@ void PlayerListWidgetCreate::PostLogin(APlayerController* NewPlayer)
 
 UPlayerListWidget* PlayerListWidgetCreate::CreatePlayerListWidget()
 {
-	FString Path = FString("/Game/WidgetBlueprints/" + PlayerListWidgetClass);
-
-	UBlueprint* BlueprintObject = LoadObject<UBlueprint>(nullptr, *Path);
-
+	
 	UPlayerListWidget* WidgetInstance = nullptr;
-	if (BlueprintObject)
-	{
-		UClass* GeneratedClass = BlueprintObject->GeneratedClass;
-		if (GeneratedClass)
-		{
-			WidgetInstance = CreateWidget<UPlayerListWidget>(CurrentWorld, GeneratedClass);
-			WidgetInstance->AddToViewport(100);
-			
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-											 TEXT("Create !!Success"));
-		}
-		return WidgetInstance;
-	}
+	WidgetInstance = CreateWidget<UPlayerListWidget>(CurrentWorld, PlayerListWidgetClass);
+	WidgetInstance->AddToViewport(100);
+	
 	return WidgetInstance;
 }
