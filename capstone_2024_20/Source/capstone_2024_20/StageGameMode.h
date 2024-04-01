@@ -19,7 +19,7 @@ class CAPSTONE_2024_20_API AStageGameMode : public AGameModeBase
 	AStageGameMode();
 	
 	virtual void BeginPlay() override;
-
+	void InitRoomInfo();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPlayerListController* PlayerListController;
@@ -30,4 +30,13 @@ public:
 	virtual void Logout(AController* Exiting) override;
 
 	void PostLoginTimer(APlayerController* NewPlayer);
+
+public:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	class UInGameRoomInfoWidget* RoomInfoWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInGameRoomInfoWidget> RoomInfoWidgetFactory;
+
+	void PrintRoomCode();
 };
