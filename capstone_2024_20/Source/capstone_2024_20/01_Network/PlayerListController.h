@@ -4,15 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "IPlayerList.h"
+#include "PlayerListController.generated.h"
 
 class UPlayerListWidget;
 
-class CAPSTONE_2024_20_API FPlayerListController : public IPlayerList
+UCLASS()
+class CAPSTONE_2024_20_API UPlayerListController :public UActorComponent, public IPlayerList
 {
+	GENERATED_BODY()
 public:
-	FPlayerListController(UWorld* World);
-
+	virtual void BeginPlay() override;
 private:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UPlayerListWidget> PlayerListWigetClass;
+	
 	UPlayerListWidget* PlayerListWidget;
 	IPlayerList* PlayerListUpdate;
 

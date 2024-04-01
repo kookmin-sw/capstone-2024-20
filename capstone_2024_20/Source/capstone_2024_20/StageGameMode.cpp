@@ -7,12 +7,17 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
+AStageGameMode::AStageGameMode()
+{
+	
+}
+
 void AStageGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
 	                                 FString(TEXT("Init진출")));
-
+	
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStageSelectController::StaticClass(), FoundActors);
 	if (FoundActors.Num() > 0)
@@ -30,12 +35,11 @@ void AStageGameMode::Logout(AController* Exiting)
 	PlayerListController->Logout(Exiting);
 }
 
-void AStageGameMode::PostLogin(APlayerController* NewPlayer)
+void AStageGameMode::PostLoginTimer(APlayerController* NewPlayer)
 {
-	Super::PostLogin(NewPlayer);
 	PlayerListController->PostLogin(NewPlayer);
 	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-	                                 TEXT("POST LOGIN"));
+									 TEXT("POST LOGIN"));
 
 
 	FString Name = NewPlayer->PlayerState->GetPlayerName();
@@ -43,4 +47,18 @@ void AStageGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
 									 FString::Printf(TEXT("name: %s, id: %d"), *Name, Id));
+}
+
+void AStageGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+	FTimerHandle TimerHandle;
+	FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda([NewPlayer, this]() {
+		PostLoginTimer(NewPlayer);
+	});
+	GetWorldTimerManager().SetTimer(
+		TimerHandle,
+		MyTimerDelegate,
+		2.0f,
+		false);
 }
