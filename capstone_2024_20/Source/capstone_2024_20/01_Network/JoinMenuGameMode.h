@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
-#include "LobbyGameMode.generated.h"
+#include "JoinMenuGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CAPSTONE_2024_20_API ALobbyGameMode : public AGameModeBase
+class CAPSTONE_2024_20_API AJoinMenuGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
@@ -18,10 +18,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	class ULobbyWidget* MainUI;
+	class UJoinMenuWidget* MainUI;
 	
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ULobbyWidget> MainWidget;
+	TSubclassOf<class UJoinMenuWidget> MainWidget;
 private:
 	UFUNCTION()
 	void OnClickRefreshButton();

@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LobbyGameState.h"
+#include "JoinMenuGameState.h"
 
 #include "NetworkService.h"
 #include "Kismet/GameplayStatics.h"
 
-void ALobbyGameState::BeginPlay()
+void AJoinMenuGameState::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -20,22 +20,22 @@ void ALobbyGameState::BeginPlay()
 	}
 }
 
-void ALobbyGameState::Init(ANetworkService* NewNetworkService)
+void AJoinMenuGameState::Init(ANetworkService* NewNetworkService)
 {
 	NetworkService = NewNetworkService;
 }
 
-void ALobbyGameState::SetRoomData(const FRoomData& NewRoomData)
+void AJoinMenuGameState::SetRoomData(const FRoomData& NewRoomData)
 {
 	RoomData = NewRoomData;
 }
 
-void ALobbyGameState::SetRoomName(const FText& RoomName)
+void AJoinMenuGameState::SetRoomName(const FText& RoomName)
 {
 	RoomData.Name = RoomName.ToString();
 }
 
-void ALobbyGameState::SetRoomCode(const FText& RoomCode)
+void AJoinMenuGameState::SetRoomCode(const FText& RoomCode)
 {
 	RoomData.Code = RoomCode.ToString();
 }

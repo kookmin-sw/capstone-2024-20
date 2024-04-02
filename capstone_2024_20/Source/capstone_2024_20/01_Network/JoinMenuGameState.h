@@ -6,10 +6,10 @@
 #include "NetworkService.h"
 #include "RoomData.h"
 #include "GameFramework/GameStateBase.h"
-#include "LobbyGameState.generated.h"
+#include "JoinMenuGameState.generated.h"
 
 UCLASS()
-class CAPSTONE_2024_20_API ALobbyGameState : public AGameStateBase
+class CAPSTONE_2024_20_API AJoinMenuGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	
