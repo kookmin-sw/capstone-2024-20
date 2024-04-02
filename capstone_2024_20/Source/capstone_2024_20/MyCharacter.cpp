@@ -114,7 +114,7 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			}
 		}
 
-		CurrentHitObject = OtherActor;
+		CurrentHitObject = Cast<AMyObject>(OtherActor);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, CurrentHitObject->GetName());
 	}
 		
@@ -155,7 +155,7 @@ void AMyCharacter::SetIsChanging(float length, FRotator rot, bool b)
 	bIsChanging = b;
 }
 
-AActor* AMyCharacter::GetCurrentHitObject()
+AMyObject* AMyCharacter::GetCurrentHitObject()
 {
 	return CurrentHitObject;
 }
@@ -216,6 +216,10 @@ void AMyCharacter::DragObject()
 				Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			}
 		}
+
+		CurrentHitObject->SetIsDragging(true);
+		
+		
 	}
                     
 
@@ -235,6 +239,7 @@ void AMyCharacter::DropObject(AActor* ship)
 		{
 			Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		}
+		CurrentHitObject->SetIsDragging(false);
 	}
 }
 

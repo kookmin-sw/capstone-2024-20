@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyObject.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "MyCannon.generated.h"
 
 UCLASS()
-class CAPSTONE_2024_20_API AMyCannon : public AActor
+class CAPSTONE_2024_20_API AMyCannon : public AMyObject
 {
 	GENERATED_BODY()
 	

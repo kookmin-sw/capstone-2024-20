@@ -142,18 +142,7 @@ void AMyPlayerController::Move(const FInputActionInstance& Instance)
 }
 
 
-//상호 작용 & (스테이지 클리어)
-void AMyPlayerController::Interaction(const FInputActionInstance& Instance)
-{
-	if (Player->GetIsOverLap())
-	{
-		UE_LOG(LogTemp, Log, TEXT("interaction"));
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
-		
-		Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
-		ViewChange();
-	}
-}
+
 
 void AMyPlayerController::Interaction_Pressed()
 {
@@ -166,18 +155,21 @@ void AMyPlayerController::Interaction_Trigger()
 {
 	if (Player->GetIsOverLap())
 	{
-		// 여기서 PressDuration을 사용하여 길게 누르고 있는지 판단하고, 원하는 로직 실행
 		if (PressDuration >= 3.0f) // 3초 넘게 누르면 DRAGGING 상태로 전환
 		{
 			//무언가를 끌고 있지 않을때만 끌기가 가능하게
-			if(Player->CurrentPlayerState == AMyCharacter::PlayerState::NONE)
-				Player->DragObject();
-
-			Player->SetPlayerState(AMyCharacter::PlayerState::DRAGGING);
-			
+			if(Player->CurrentPlayerState == AMyCharacter::PlayerState::NONE && !Player->GetCurrentHitObject()->GetIsDragging())
+			{
+				Player->DragObject(); // 여기서 오브젝트의 IsDragging이 true가 됨.
+				Player->SetPlayerState(AMyCharacter::PlayerState::DRAGGING);
+			}
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("ing"));
 		}
 	}
+
+	if(!Player->GetCurrentHitObject()->GetIsDragging())
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("object carrying"));
+		
 }
 
 
@@ -186,7 +178,7 @@ void AMyPlayerController::Interaction_Released()
 	bIsPressingKey = false;
 	if (Player->GetIsOverLap())
 	{
-		if (PressDuration < 3.0f) // 3초 안됐으면 그냥 상호작용
+		if (PressDuration < 3.0f && !Player->GetCurrentHitObject()->GetIsDragging()) // 3초 안됐으면 그냥 상호작용
 		{
 			UE_LOG(LogTemp, Log, TEXT("interaction"));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
@@ -194,7 +186,7 @@ void AMyPlayerController::Interaction_Released()
 			ViewChange();
 		}
 	
-		else
+		else if(PressDuration >= 3.0f)
 		{
 			Player->SetPlayerState(AMyCharacter::PlayerState::NONE);
 			//이동하는 오브젝트 놔주는 함수
