@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "CoreMinimal.h"
+#include "MyObject.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "UObject/ObjectRename.h"
@@ -67,7 +68,7 @@ protected:
 	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
 
-	AActor* CurrentHitObject;
+	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
 	AActor* SpawnedCannonBall;
 	
@@ -117,7 +118,7 @@ public:
 	void SetIsChanging(float length, FRotator rot, bool b);
 
 	UFUNCTION()
-	AActor* GetCurrentHitObject();
+	AMyObject* GetCurrentHitObject();
 
 	UFUNCTION()
 	FString GetCurrentHitObjectName();
