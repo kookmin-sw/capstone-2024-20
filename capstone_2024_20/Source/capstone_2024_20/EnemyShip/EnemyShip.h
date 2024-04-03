@@ -1,13 +1,14 @@
 ﻿#pragma once
-#include "capstone_2024_20/MyShip.h"
 
+#include "capstone_2024_20/MyShip.h"
+#include "../Common/HP.h"
 #include "EnemyShip.generated.h"
 
 class AMyShip;
 class AEnemy;
 
 UCLASS()
-class AEnemyShip : public AActor
+class AEnemyShip : public AActor, public IHP
 {
 	GENERATED_BODY()
 	
