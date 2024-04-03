@@ -31,6 +31,14 @@ void AMyCannon::Tick(float DeltaTime)
 
 }
 
+void AMyCannon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMyCannon, IsLoad);
+}
+
+
 FVector AMyCannon::GetCannonSpawnLocation()
 {
 	return ProjectileSpawnPoint->GetComponentLocation();
@@ -83,4 +91,7 @@ void AMyCannon::SetIsLoad(bool b)
 {
 	IsLoad = b;
 }
+
+
+
 

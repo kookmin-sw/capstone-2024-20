@@ -97,6 +97,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_MoveShip_Rot(float newYaw, float speed);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_LoadCannonBall(AMyCannon* CannonActor);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UseCannonBall(AMyCannon* CannonActor);
 
 protected:
 	

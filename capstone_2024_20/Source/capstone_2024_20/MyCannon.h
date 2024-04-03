@@ -21,6 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(Replicated)
 	bool IsLoad = false;
 	
 public:	
@@ -57,8 +58,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_RotateCannon(FRotator newRot);
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 	bool GetIsLoad();
 	void SetIsLoad(bool b);
+	
 	
 };
