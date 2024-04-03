@@ -4,10 +4,11 @@
 #include "LobbyGameMode.h"
 
 #include "GameMapsSettings.h"
+#include "LobbyCharacter.h"
 #include "LobbyPlayerState.h"
 
 ALobbyGameMode::ALobbyGameMode()
-{
+{	
 }
 
 void ALobbyGameMode::BeginPlay()
@@ -17,13 +18,25 @@ void ALobbyGameMode::BeginPlay()
 	if (PlayerController)
 	{
 		PlayerController->InputComponent->BindKey(EKeys::T, IE_Pressed,
-												  this, &ThisClass::GameStart);
+		                                          this, &ThisClass::GameStart);
 	}
+}
+
+void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
+	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
+
+	FIsReadyChanged IsReadyChanged;
+	IsReadyChanged.BindDynamic(LobbyCharacter, &ALobbyCharacter::ALobbyCharacter::SetReady);
+	LobbyPlayerState->SetIsReadyChanged(IsReadyChanged);
 }
 
 void ALobbyGameMode::GameStart()
 {
-	if(IsReadyAllPlayer() == true)
+	if (IsReadyAllPlayer() == true)
 	{
 		GetWorld()->ServerTravel(FString("/Game/Level/level_StageSelect"));
 	}

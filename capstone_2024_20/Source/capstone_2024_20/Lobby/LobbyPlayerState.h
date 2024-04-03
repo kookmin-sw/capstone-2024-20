@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_DELEGATE(FIsReadyChanged);
+
 UCLASS()
 class CAPSTONE_2024_20_API ALobbyPlayerState : public APlayerState
 {
@@ -19,8 +22,8 @@ private:
 
 	UPROPERTY(ReplicatedUsing=OnRep_IsReady)
 	bool bIsReady = false;
-
 	bool bIsCanReady = true;
+	FIsReadyChanged OnIsReadyChanged;
 
 	virtual void BeginPlay() override;
 
@@ -35,4 +38,6 @@ public:
 	void TestReady();
 
 	bool IsReady() const;
+
+	void SetIsReadyChanged(FIsReadyChanged& NewIsReadyChanged);
 };

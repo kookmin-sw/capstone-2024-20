@@ -35,6 +35,7 @@ void ALobbyPlayerState::BeginPlay()
 void ALobbyPlayerState::OnRep_IsReady()
 {
 	bIsCanReady = true;
+	OnIsReadyChanged.Execute();
 	GEngine->AddOnScreenDebugMessage(-1, 60.0f,
 	                                 FColor::Yellow,
 	                                 FString::Printf(TEXT("IsReady?: %s"),
@@ -66,4 +67,9 @@ void ALobbyPlayerState::TestReady()
 bool ALobbyPlayerState::IsReady() const
 {
 	return bIsReady;
+}
+
+void ALobbyPlayerState::SetIsReadyChanged(FIsReadyChanged& NewIsReadyChanged)
+{
+	OnIsReadyChanged = NewIsReadyChanged;
 }
