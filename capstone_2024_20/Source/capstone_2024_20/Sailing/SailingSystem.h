@@ -25,6 +25,9 @@ public:
 	
 	void SetMyShip();
 
+	void EarnCurrency(int32 Amount);
+	void UseCurrency(int32 Amount);
+
 private:
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
@@ -42,4 +45,6 @@ private:
 
 	UPROPERTY()
 	AMyShip* MyShip;
+
+	int32 Currency = 1000;
 };
