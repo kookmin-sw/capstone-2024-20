@@ -2,6 +2,8 @@
 
 
 #include "LobbyCharacter.h"
+
+#include "LobbyPlayerLinearColorFactory.h"
 #include "Components/WidgetComponent.h"
 
 ALobbyCharacter::ALobbyCharacter()
@@ -17,6 +19,9 @@ void ALobbyCharacter::Init()
 	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
 	LobbyPlayerState->OnIsReadyChanged.BindDynamic(this, &ALobbyCharacter::SetReady);
 
+	const int PlayerNumber = LobbyPlayerState->PlayerNumber;
+	const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
+	ReadyCharacterWidget->ChnageColor(PlayerColor);
 	
 	if(IsLocallyControlled())
 	{
@@ -39,9 +44,7 @@ void ALobbyCharacter::BeginPlay()
 	ReadyCharacterWidget = Cast<UReadyCharacterWidget>(
 		WidgetComponent->GetWidget());
 
-	ReadyCharacterWidget->ChnageColor(FLinearColor::Red);
 	ReadyCharacterWidget->SetVisibilityFromBool(false);
-
 }
 
 void ALobbyCharacter::Tick(float DeltaTime)

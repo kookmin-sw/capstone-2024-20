@@ -22,6 +22,20 @@ void ALobbyGameMode::BeginPlay()
 	}
 }
 
+void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
+	if(LobbyCharacter == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
+			TEXT("nullptr"));
+	}
+
+	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
+	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
+}
+
 void ALobbyGameMode::GameStart()
 {
 	if (IsReadyAllPlayer() == true)
