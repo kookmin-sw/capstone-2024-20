@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Common/HP.h"
 #include "Enemy.generated.h"
 
 UCLASS()
-class CAPSTONE_2024_20_API AEnemy : public AActor
+class CAPSTONE_2024_20_API AEnemy : public AActor, public IHP
 {
 	GENERATED_BODY()
 
