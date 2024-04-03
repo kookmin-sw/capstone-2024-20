@@ -1,5 +1,6 @@
 ﻿#include "SailingSystem.h"
 #include "../EnemyShip/EnemyShip.h"
+#include "../Enemy/Enemy.h"
 #include "../MyShip.h"
 #include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
@@ -57,6 +58,11 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		EnemyShip->LookAtMyShip(MyShip);
 		EnemyShip->MoveToMyShip(MyShip);
+
+		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
+		{
+			Enemies.Add(SpawnedEnemy);
+		}
 	}
 
 	SpawnEventTimer += DeltaTime;

@@ -6,6 +6,7 @@
 
 class AMyShip;
 class AEnemyShip;
+class AEnemy;
 class AEvent;
 class UTrigger;
 
@@ -27,6 +28,8 @@ public:
 private:
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
+
+	TArray<AEnemy*> Enemies;
 
 	inline static float SpawnEventTimer = 0.0f;
 	TArray<AEvent*> Events;
