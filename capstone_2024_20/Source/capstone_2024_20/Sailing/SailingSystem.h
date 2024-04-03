@@ -46,5 +46,5 @@ private:
 	UPROPERTY()
 	AMyShip* MyShip;
 
-	int32 Currency = 1000;
+	int32 Currency = 0;
 };
