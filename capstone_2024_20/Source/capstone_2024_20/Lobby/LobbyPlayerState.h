@@ -27,11 +27,17 @@ private:
 	virtual void BeginPlay() override;
 
 public:
+	UPROPERTY(Replicated)
+	int PlayerNumber;
+	
 	UFUNCTION()
 	void SetReady();
 	
 	UFUNCTION()
 	void OnRep_IsReady();
+
+	UFUNCTION()
+	void SetInitPlayerNumber(int Number);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetReady(bool IsReady);

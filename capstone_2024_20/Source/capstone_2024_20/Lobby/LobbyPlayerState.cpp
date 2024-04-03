@@ -9,6 +9,7 @@ void ALobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALobbyPlayerState, bIsReady);
+	DOREPLIFETIME_CONDITION(ALobbyPlayerState, PlayerNumber, COND_InitialOnly);
 }
 
 void ALobbyPlayerState::BeginPlay()
@@ -37,6 +38,12 @@ void ALobbyPlayerState::OnRep_IsReady()
 	bIsCanReady = true;
 	OnIsReadyChanged.Execute();
 }
+
+void ALobbyPlayerState::SetInitPlayerNumber(int Number)
+{
+	PlayerNumber = Number;
+}
+
 
 void ALobbyPlayerState::Server_SetReady_Implementation(bool IsReady)
 {
