@@ -276,10 +276,12 @@ void AMyPlayerController::ViewChange()
 
 				//대포 장전
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
-				Cannon->SetIsLoad(true);
+
+				ServerRPC_LoadCannonBall(Cannon);
+				//Cannon->SetIsLoad(true);
 				Player->SetPlayerState(AMyCharacter::PlayerState::NONE);
 				Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
-				Player->DestroyCannonBall();
+				Player->DestroyCannonBall();        
 			}
 
 			
@@ -317,7 +319,8 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 	if (IsLocalController() && Cannon->GetIsLoad())
 	{
 		ServerRPC_Shoot(Cannon);
-		Cannon->SetIsLoad(false);
+		ServerRPC_UseCannonBall(Cannon);
+		//Cannon->SetIsLoad(false);
 	}
 }
 
@@ -355,5 +358,23 @@ void AMyPlayerController::ServerRPC_MoveShip_Rot_Implementation(float newYaw, fl
 		//Ship->MulticastRPC_SetShipRotation(newYaw, speed);
 	}
 }
+
+void AMyPlayerController::ServerRPC_LoadCannonBall_Implementation(AMyCannon* CannonActor)
+{
+	if(HasAuthority())
+	{
+		CannonActor->SetIsLoad(true);
+	}
+}
+
+void AMyPlayerController::ServerRPC_UseCannonBall_Implementation(AMyCannon* CannonActor)
+{
+	if(HasAuthority())
+	{
+		CannonActor->SetIsLoad(false);
+	}
+}
+
+
 
 
