@@ -94,6 +94,22 @@ void ASailingSystem::SpawnEvent()
 	Events.Add(SpawnedEvent);
 }
 
+void ASailingSystem::EarnCurrency(const int32 Amount)
+{
+	// Todo@autumn Need to think maximum currency
+	Currency += Amount;
+}
+
+void ASailingSystem::UseCurrency(const int32 Amount)
+{
+	if (Currency < Amount)
+	{
+		return;
+	}
+	
+	Currency -= Amount;
+}
+
 void ASailingSystem::SetMyShip()
 {
 	// Todo@autumn - This is a temporary solution, replace it.
