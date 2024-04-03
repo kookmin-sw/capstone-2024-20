@@ -20,6 +20,8 @@ public:
 private:
 	ALobbyPlayerState* LobbyPlayerState;
 
+	void Init();
+
 protected:
 	virtual void BeginPlay() override;
 

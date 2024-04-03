@@ -8,7 +8,7 @@
 #include "LobbyPlayerState.h"
 
 ALobbyGameMode::ALobbyGameMode()
-{	
+{
 }
 
 void ALobbyGameMode::BeginPlay()
@@ -25,13 +25,6 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-
-	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
-	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
-
-	FIsReadyChanged IsReadyChanged;
-	IsReadyChanged.BindDynamic(LobbyCharacter, &ALobbyCharacter::ALobbyCharacter::SetReady);
-	LobbyPlayerState->SetIsReadyChanged(IsReadyChanged);
 }
 
 void ALobbyGameMode::GameStart()

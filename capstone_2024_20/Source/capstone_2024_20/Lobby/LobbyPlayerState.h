@@ -23,21 +23,20 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_IsReady)
 	bool bIsReady = false;
 	bool bIsCanReady = true;
-	FIsReadyChanged OnIsReadyChanged;
 
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION()
+	void SetReady();
+	
 	UFUNCTION()
 	void OnRep_IsReady();
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetReady(bool IsReady);
 
-	UFUNCTION()
-	void TestReady();
-
 	bool IsReady() const;
-
-	void SetIsReadyChanged(FIsReadyChanged& NewIsReadyChanged);
+	
+	FIsReadyChanged OnIsReadyChanged;
 };

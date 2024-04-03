@@ -17,17 +17,39 @@ ALobbyCharacter::ALobbyCharacter()
 	WidgetComponent->SetupAttachment(GetRootComponent());
 }
 
+void ALobbyCharacter::Init()
+{
+	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f,
+	                                 FColor::Orange, TEXT("Init Character"));
+	LobbyPlayerState->OnIsReadyChanged.BindDynamic(this, &ALobbyCharacter::SetReady);
+
+	
+	if(IsLocallyControlled())
+	{
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
+													  LobbyPlayerState, &ALobbyPlayerState::SetReady);
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void ALobbyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
-	
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 2.0f, false);
+
 	ReadyCharacterWidget = Cast<UReadyCharacterWidget>(
 		WidgetComponent->GetWidget());
 
 	ReadyCharacterWidget->ChnageColor(FLinearColor::Red);
 	ReadyCharacterWidget->SetVisibilityFromBool(false);
+
 }
 
 // Called every frame
@@ -44,6 +66,7 @@ void ALobbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void ALobbyCharacter::SetReady()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Silver,
+		TEXT("Set Ready"));
 	ReadyCharacterWidget->SetVisibilityFromBool(LobbyPlayerState->IsReady());
 }
-

@@ -17,18 +17,26 @@ void ALobbyPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(HasAuthority())
+	if (HasAuthority())
 	{
 		GEngine->AddOnScreenDebugMessage(-1,
-			60.0f, FColor::Emerald,
-			TEXT("Has AUtority"));
+		                                 60.0f, FColor::Emerald,
+		                                 TEXT("Has AUtority"));
 	}
+}
 
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
+void ALobbyPlayerState::SetReady()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f,
+									 FColor::Emerald, TEXT("Test 준비 Click"));
+
+	if (bIsCanReady == true)
 	{
-		PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
-		                                          this, &ThisClass::TestReady);
+		bIsCanReady = false;
+		Server_SetReady(!bIsReady);
+
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f,
+										 FColor::Emerald, TEXT("TestREady Click"));
 	}
 }
 
@@ -46,30 +54,13 @@ void ALobbyPlayerState::Server_SetReady_Implementation(bool IsReady)
 {
 	bIsReady = IsReady;
 
-	if(HasAuthority())
+	if (HasAuthority())
 	{
 		OnRep_IsReady();
-	}
-}
-
-void ALobbyPlayerState::TestReady()
-{
-	if (bIsCanReady == true)
-	{
-		Server_SetReady(!bIsReady);
-		bIsCanReady = false;
-
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f,
-		                                 FColor::Emerald, TEXT("TestREady Click"));
 	}
 }
 
 bool ALobbyPlayerState::IsReady() const
 {
 	return bIsReady;
-}
-
-void ALobbyPlayerState::SetIsReadyChanged(FIsReadyChanged& NewIsReadyChanged)
-{
-	OnIsReadyChanged = NewIsReadyChanged;
 }
