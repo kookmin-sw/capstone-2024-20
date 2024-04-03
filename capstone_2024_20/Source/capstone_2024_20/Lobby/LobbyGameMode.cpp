@@ -22,11 +22,6 @@ void ALobbyGameMode::BeginPlay()
 	}
 }
 
-void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-}
-
 void ALobbyGameMode::GameStart()
 {
 	if (IsReadyAllPlayer() == true)

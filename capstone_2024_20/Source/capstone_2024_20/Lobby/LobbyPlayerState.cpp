@@ -2,8 +2,6 @@
 
 
 #include "LobbyPlayerState.h"
-
-#include "Interfaces/ITargetPlatform.h"
 #include "Net/UnrealNetwork.h"
 
 void ALobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,16 +25,10 @@ void ALobbyPlayerState::BeginPlay()
 
 void ALobbyPlayerState::SetReady()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f,
-									 FColor::Emerald, TEXT("Test 준비 Click"));
-
 	if (bIsCanReady == true)
 	{
 		bIsCanReady = false;
 		Server_SetReady(!bIsReady);
-
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f,
-										 FColor::Emerald, TEXT("TestREady Click"));
 	}
 }
 
@@ -44,10 +36,6 @@ void ALobbyPlayerState::OnRep_IsReady()
 {
 	bIsCanReady = true;
 	OnIsReadyChanged.Execute();
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f,
-	                                 FColor::Yellow,
-	                                 FString::Printf(TEXT("IsReady?: %s"),
-	                                                 bIsReady == true ? TEXT("true") : TEXT("false")));
 }
 
 void ALobbyPlayerState::Server_SetReady_Implementation(bool IsReady)

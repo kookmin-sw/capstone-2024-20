@@ -5,9 +5,6 @@
 
 void UReadyCharacterWidget::ChnageColor(FLinearColor color)
 {
-	GEngine->AddOnScreenDebugMessage(-1,
-		60.0f, FColor::Red,
-		TEXT("red change color"));
 	ReadyImage->SetColorAndOpacity(color);
 }
 

@@ -2,15 +2,10 @@
 
 
 #include "LobbyCharacter.h"
-
-#include "UnrealWidgetFwd.h"
 #include "Components/WidgetComponent.h"
 
-
-// Sets default values
 ALobbyCharacter::ALobbyCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
@@ -20,8 +15,6 @@ ALobbyCharacter::ALobbyCharacter()
 void ALobbyCharacter::Init()
 {
 	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f,
-	                                 FColor::Orange, TEXT("Init Character"));
 	LobbyPlayerState->OnIsReadyChanged.BindDynamic(this, &ALobbyCharacter::SetReady);
 
 	
@@ -36,7 +29,6 @@ void ALobbyCharacter::Init()
 	}
 }
 
-// Called when the game starts or when spawned
 void ALobbyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,13 +44,11 @@ void ALobbyCharacter::BeginPlay()
 
 }
 
-// Called every frame
 void ALobbyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
 void ALobbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -66,7 +56,5 @@ void ALobbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void ALobbyCharacter::SetReady()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Silver,
-		TEXT("Set Ready"));
 	ReadyCharacterWidget->SetVisibilityFromBool(LobbyPlayerState->IsReady());
 }
