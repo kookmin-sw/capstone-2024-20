@@ -18,6 +18,7 @@ void ALobbyPlayerState::BeginPlay()
 
 	if (HasAuthority())
 	{
+		bIsReady = true;
 		GEngine->AddOnScreenDebugMessage(-1,
 		                                 60.0f, FColor::Emerald,
 		                                 TEXT("Has AUtority"));
@@ -26,6 +27,11 @@ void ALobbyPlayerState::BeginPlay()
 
 void ALobbyPlayerState::SetReady()
 {
+	if(HasAuthority())
+	{
+		return;
+	}
+	
 	if (bIsCanReady == true)
 	{
 		bIsCanReady = false;
