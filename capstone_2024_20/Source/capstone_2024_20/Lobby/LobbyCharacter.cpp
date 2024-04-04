@@ -3,6 +3,7 @@
 
 #include "LobbyCharacter.h"
 
+#include "LobbyGameMode.h"
 #include "LobbyPlayerLinearColorFactory.h"
 #include "Components/WidgetComponent.h"
 
@@ -19,20 +20,47 @@ void ALobbyCharacter::Init()
 	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
 	LobbyPlayerState->OnIsReadyChanged.BindDynamic(this, &ALobbyCharacter::SetReady);
 
-	const int PlayerNumber = LobbyPlayerState->PlayerNumber;
-	const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
-	const FString PlayerName = LobbyPlayerState->GetPlayerName();
+	ReadyCharacterWidget = Cast<UReadyCharacterWidget>(
+		WidgetComponent->GetWidget());
 
-	ReadyCharacterWidget->ChangeColor(PlayerColor);
+	const int PlayerNumber = LobbyPlayerState->PlayerNumber;
+	if (PlayerNumber != 1)
+	{
+		const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
+
+		ReadyCharacterWidget->ChangeColor(PlayerColor);
+		ReadyCharacterWidget->SetVisibilityFromBool(false);
+	}
+	else
+	{
+		UClass* BlueprintClass = LoadClass<UReadyCharacterWidget>(nullptr,
+		TEXT("/Game/WidgetBlueprints/Lobby/BP_RoomManagerWidget.BP_RoomManagerWidget_C"));
+
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow,
+			TEXT("Server"));
+		if (BlueprintClass)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow,
+			TEXT("not null"));
+			UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetWorld(),
+			                                                   BlueprintClass);
+			SetWidget(NewWidget);
+		}
+
+		ReadyCharacterWidget = Cast<UReadyCharacterWidget>(
+			WidgetComponent->GetWidget());
+	}
+
+	const FString PlayerName = LobbyPlayerState->GetPlayerName();
 	ReadyCharacterWidget->SetName(PlayerName);
-	
-	if(IsLocallyControlled())
+
+	if (IsLocallyControlled())
 	{
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
 			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
-													  LobbyPlayerState, &ALobbyPlayerState::SetReady);
+			                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
 		}
 	}
 }
@@ -43,11 +71,6 @@ void ALobbyCharacter::BeginPlay()
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 2.0f, false);
-
-	ReadyCharacterWidget = Cast<UReadyCharacterWidget>(
-		WidgetComponent->GetWidget());
-
-	ReadyCharacterWidget->SetVisibilityFromBool(false);
 }
 
 void ALobbyCharacter::Tick(float DeltaTime)
@@ -63,4 +86,11 @@ void ALobbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void ALobbyCharacter::SetReady()
 {
 	ReadyCharacterWidget->SetVisibilityFromBool(LobbyPlayerState->IsReady());
+}
+
+void ALobbyCharacter::SetWidget(UUserWidget* Widget)
+{
+	WidgetComponent->SetWidget(Widget);
+	ReadyCharacterWidget = Cast<UReadyCharacterWidget>(
+		WidgetComponent->GetWidget());
 }

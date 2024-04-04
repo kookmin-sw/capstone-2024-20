@@ -37,4 +37,7 @@ public:
 
 	UFUNCTION()
 	void SetReady();
+
+	UFUNCTION()
+	void SetWidget(UUserWidget* Widget);
 };

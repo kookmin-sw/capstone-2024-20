@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "ILobbyCharacterWidget.h"
-#include "LobbyCharacterWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "ReadyCharacterWidget.generated.h"
@@ -19,8 +18,12 @@ class CAPSTONE_2024_20_API UReadyCharacterWidget : public UUserWidget, public IL
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(meta = (BindWidget))
-	ULobbyCharacterWidget* LobbyCharacterWidget;
+	UPROPERTY(meta=(BindWidget))
+	UImage* ReadyImage;
+	
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* NameText;
+	
 public:
 	void ChangeColor(FLinearColor color);
 

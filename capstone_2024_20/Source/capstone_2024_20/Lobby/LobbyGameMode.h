@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "ReadyCharacterWidget.h"
 #include "LobbyGameMode.generated.h"
 
 /**
