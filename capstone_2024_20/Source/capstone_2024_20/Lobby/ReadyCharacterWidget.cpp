@@ -5,24 +5,17 @@
 
 #include "Components/TextBlock.h"
 
-void UReadyCharacterWidget::ChnageColor(FLinearColor color)
+void UReadyCharacterWidget::ChangeColor(FLinearColor color)
 {
-	ReadyImage->SetColorAndOpacity(color);
+	LobbyCharacterWidget->ChangeColor(color);
 }
 
 void UReadyCharacterWidget::SetName(FString Name)
 {
-	NameText->SetText(FText::FromString(Name));
+	LobbyCharacterWidget->SetName(Name);
 }
 
 void UReadyCharacterWidget::SetVisibilityFromBool(bool IsVisible)
 {
-	if(IsVisible == true)
-	{
-		ReadyImage->SetVisibility(ESlateVisibility::Visible);
-	}
-	else
-	{
-		ReadyImage->SetVisibility(ESlateVisibility::Hidden);
-	}
+	LobbyCharacterWidget->SetVisibilityFromBool(IsVisible);
 }

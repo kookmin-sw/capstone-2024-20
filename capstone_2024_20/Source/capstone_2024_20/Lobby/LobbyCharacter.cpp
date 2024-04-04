@@ -23,7 +23,7 @@ void ALobbyCharacter::Init()
 	const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
 	const FString PlayerName = LobbyPlayerState->GetPlayerName();
 
-	ReadyCharacterWidget->ChnageColor(PlayerColor);
+	ReadyCharacterWidget->ChangeColor(PlayerColor);
 	ReadyCharacterWidget->SetName(PlayerName);
 	
 	if(IsLocallyControlled())

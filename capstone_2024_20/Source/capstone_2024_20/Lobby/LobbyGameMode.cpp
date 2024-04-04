@@ -31,7 +31,6 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ALobbyGameMode::GameStart()
 {
-	HasAuthority()
 	if (IsReadyAllPlayer() == true)
 	{
 		GetWorld()->ServerTravel(FString("/Game/Level/level_StageSelect"));
