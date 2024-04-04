@@ -28,10 +28,6 @@ private:
 	bool IsDragging;
 
 
-
-
-	
-
 public:
 	bool GetIsDragging();
 	void SetIsDragging(bool b);
@@ -41,5 +37,10 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_TurnOffCollision();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_TurnOnCollision();
 	
 };

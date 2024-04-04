@@ -3,9 +3,7 @@
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Engine/StaticMeshActor.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 
 class AStaticMeshActor;
@@ -98,7 +96,7 @@ void AMyCharacter::Tick(float DeltaTime)
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	if(CurrentPlayerState != PlayerState::DRAGGING)
+	if(CurrentPlayerState != UserState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
 		if(IsLocallyControlled())
@@ -122,7 +120,7 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(CurrentPlayerState != PlayerState::DRAGGING)
+	if(CurrentPlayerState != UserState::DRAGGING)
 	{
 		if(OtherComp->ComponentTags.Contains(TEXT("Object")))
 		{
@@ -130,6 +128,7 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 			TextWidget->SetVisibility(false);
 			bIsOverlap = false;
 		}
+		CurrentHitObject = Cast<AMyObject>(this);
 	}
 }
 
@@ -186,9 +185,24 @@ void AMyCharacter::SpawnCannonBall()
 
 }
 
-void AMyCharacter::SetPlayerState(PlayerState NewPlayerState)
+void AMyCharacter::SetPlayerState(UserState NewPlayerState)
 {
 	CurrentPlayerState = NewPlayerState;
+}
+
+UserState AMyCharacter::GetUserStateNone()
+{
+	return UserState::NONE;
+}
+
+UserState AMyCharacter::GetUserStateCarrying()
+{
+	return UserState::CARRYING;
+}
+
+UserState AMyCharacter::GetUserStateDragging()
+{
+	return UserState::DRAGGING;
 }
 
 void AMyCharacter::DestroyCannonBall()

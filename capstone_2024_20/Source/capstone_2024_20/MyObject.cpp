@@ -51,6 +51,30 @@ void AMyObject::SetIsDragging(bool b)
 	IsDragging = b;
 }
 
+void AMyObject::MulticastRPC_TurnOffCollision_Implementation()
+{
+	TArray<UPrimitiveComponent*> Components;
+    GetComponents<UPrimitiveComponent>(Components);
 
+    for (UPrimitiveComponent* Component : Components)
+    {
+    	if (!Component->GetName().Equals(TEXT("Box")))
+    	{
+    		Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    	}
+    }
+}
+
+
+void AMyObject::MulticastRPC_TurnOnCollision_Implementation()
+{
+	TArray<UPrimitiveComponent*> Components;
+    GetComponents<UPrimitiveComponent>(Components);
+
+    for (UPrimitiveComponent* Component : Components)
+    {
+    	Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    }
+}
 
 
