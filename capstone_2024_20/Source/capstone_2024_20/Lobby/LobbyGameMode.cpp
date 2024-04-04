@@ -31,9 +31,15 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ALobbyGameMode::GameStart()
 {
+	HasAuthority()
 	if (IsReadyAllPlayer() == true)
 	{
 		GetWorld()->ServerTravel(FString("/Game/Level/level_StageSelect"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
+			TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
 	}
 }
 
