@@ -18,7 +18,6 @@ void ALobbyPlayerState::BeginPlay()
 
 	if (HasAuthority())
 	{
-		bIsReady = true;
 		GEngine->AddOnScreenDebugMessage(-1,
 		                                 60.0f, FColor::Emerald,
 		                                 TEXT("Has AUtority"));
@@ -63,5 +62,10 @@ void ALobbyPlayerState::Server_SetReady_Implementation(bool IsReady)
 
 bool ALobbyPlayerState::IsReady() const
 {
+	if(PlayerNumber == 1)
+	{
+		return true;
+	}
+	
 	return bIsReady;
 }
