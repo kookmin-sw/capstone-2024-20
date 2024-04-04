@@ -77,6 +77,8 @@ private:
 	void Interaction_Pressed();
 	void Interaction_Trigger();
 	void Interaction_Released();
+
+	
 	void DraggingRotate(const FInputActionInstance& Instance);
 
 	
@@ -102,6 +104,22 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_UseCannonBall(AMyCannon* CannonActor);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_DragObject(AMyCharacter* user);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_DropObject(AMyCharacter* user, AActor* ship);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RotateDraggingObject(AMyCharacter* user, FRotator newRotation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_DraggingObjectTurnOffCollision(AMyCharacter* user);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_DraggingObjectTurnOnCollision(AMyCharacter* user);
+	
 
 protected:
 	

@@ -160,15 +160,16 @@ void AMyPlayerController::Interaction_Trigger()
 			//무언가를 끌고 있지 않을때만 끌기가 가능하게
 			if(Player->CurrentPlayerState == AMyCharacter::PlayerState::NONE && !Player->GetCurrentHitObject()->GetIsDragging())
 			{
-				Player->DragObject(); // 여기서 오브젝트의 IsDragging이 true가 됨.
+				ServerRPC_DragObject(Player);
+				//Player->DragObject(); // 여기서 오브젝트의 IsDragging이 true가 됨.
 				Player->SetPlayerState(AMyCharacter::PlayerState::DRAGGING);
 			}
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("ing"));
 		}
 	}
 
-	if(!Player->GetCurrentHitObject()->GetIsDragging())
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("object carrying"));
+	// if(!Player->GetCurrentHitObject()->GetIsDragging())
+	// 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("object carrying"));
 		
 }
 
@@ -191,7 +192,8 @@ void AMyPlayerController::Interaction_Released()
 			Player->SetPlayerState(AMyCharacter::PlayerState::NONE);
 			//이동하는 오브젝트 놔주는 함수
 			//다시 Ship의 자식으로
-			Player->DropObject(Ship);
+			//Player->DropObject(Ship);
+			ServerRPC_DropObject(Player, Ship);
 			
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction end"));
@@ -202,8 +204,10 @@ void AMyPlayerController::DraggingRotate(const FInputActionInstance& Instance)
 {
 	if(Player->CurrentPlayerState==AMyCharacter::PlayerState::DRAGGING)
 	{
-		FRotator NewRotation = FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
-		Player->GetCurrentHitObject()->AddActorLocalRotation(NewRotation);
+		FRotator NewRotation = Player->GetCurrentHitObject()->TargetRotation + FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
+		ServerRPC_RotateDraggingObject(Player, NewRotation);
+		
+		//Player->GetCurrentHitObject()->AddActorLocalRotation(NewRotation);
 	}
 }
 
@@ -374,6 +378,83 @@ void AMyPlayerController::ServerRPC_UseCannonBall_Implementation(AMyCannon* Cann
 		CannonActor->SetIsLoad(false);
 	}
 }
+FString RoleToString(ENetRole Role)
+{
+	switch(Role)
+	{
+	case ROLE_None: return TEXT("None");
+	case ROLE_SimulatedProxy: return TEXT("SimulatedProxy");
+	case ROLE_AutonomousProxy: return TEXT("AutonomousProxy");
+	case ROLE_Authority: return TEXT("Authority");
+	default: return TEXT("Unknown");
+	}
+}
+void AMyPlayerController::ServerRPC_DragObject_Implementation(AMyCharacter* user)
+{
+	if(HasAuthority())
+	{
+		user->GetCurrentHitObject()->SetIsDragging(true);
+		user->GetCurrentHitObject()->AttachToActor(user, FAttachmentTransformRules::KeepWorldTransform);
+		ENetRole LocalRole = user->GetLocalRole();
+		FString RoleStr = RoleToString(LocalRole);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Emerald, FString::Printf(TEXT("User Role: %s"), *RoleStr));
+		MulticastRPC_DraggingObjectTurnOffCollision(user);
+	}
+}
+
+void AMyPlayerController::ServerRPC_DropObject_Implementation(AMyCharacter* user, AActor* ship)
+{
+	if(HasAuthority())
+	{
+		user->GetCurrentHitObject()->SetIsDragging(false);
+		user->GetCurrentHitObject()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		user->GetCurrentHitObject()->AttachToActor(ship, FAttachmentTransformRules::KeepWorldTransform);
+
+		MulticastRPC_DraggingObjectTurnOnCollision(user);
+
+	}
+}
+
+void AMyPlayerController::ServerRPC_RotateDraggingObject_Implementation(AMyCharacter* user, FRotator newRotation)
+{
+	if(HasAuthority())
+	{
+		user->GetCurrentHitObject()->TargetRotation = newRotation;
+
+		
+	}
+}
+
+void AMyPlayerController::MulticastRPC_DraggingObjectTurnOffCollision_Implementation(AMyCharacter* user)
+{
+	TArray<UPrimitiveComponent*> Components;
+	user->GetCurrentHitObject()->GetComponents<UPrimitiveComponent>(Components);
+
+	for (UPrimitiveComponent* Component : Components)
+	{
+		if (!Component->GetName().Equals(TEXT("Box")))
+		{
+			Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+
+	if(!HasAuthority())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, TEXT("콜리전 잘 꺼짐"));
+	}
+}
+
+void AMyPlayerController::MulticastRPC_DraggingObjectTurnOnCollision_Implementation(AMyCharacter* user)
+{
+	TArray<UPrimitiveComponent*> Components;
+	user->GetCurrentHitObject()->GetComponents<UPrimitiveComponent>(Components);
+
+	for (UPrimitiveComponent* Component : Components)
+	{
+		Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+}
+
 
 
 
