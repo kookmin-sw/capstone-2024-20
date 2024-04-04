@@ -130,7 +130,7 @@ void ANetworkService::OnCreateSessionComplete(FName SessionName, bool bWasSucces
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		World->ServerTravel(FString("/Game/Level/level_StageSelect?listen"));
+		World->ServerTravel(FString("/Game/Level/level_Lobby?listen"));
 	}
 }
 
