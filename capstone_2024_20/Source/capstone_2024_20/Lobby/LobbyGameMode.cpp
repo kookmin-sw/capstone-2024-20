@@ -2,6 +2,8 @@
 
 
 #include "LobbyGameMode.h"
+
+#include "EngineUtils.h"
 #include "LobbyCharacter.h"
 #include "LobbyPlayerState.h"
 
@@ -24,9 +26,11 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
-	
+
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
+
+	SpawnPlayer(NewPlayer);
 }
 
 void ALobbyGameMode::GameStart()
@@ -38,7 +42,7 @@ void ALobbyGameMode::GameStart()
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
-			TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
+		                                 TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
 	}
 }
 
@@ -66,4 +70,13 @@ bool ALobbyGameMode::IsReadyAllPlayer() const
 	}
 
 	return true;
+}
+
+void ALobbyGameMode::SpawnPlayer(AController* NewPlayer)
+{
+	AActor* PlayerStart = FindPlayerStart(NewPlayer, FString::FromInt(GetNumPlayers()));
+
+	NewPlayer->StartSpot = PlayerStart;
+	NewPlayer->GetCharacter()->SetActorLocation(PlayerStart->GetActorLocation());
+	NewPlayer->GetCharacter()->SetActorRotation(PlayerStart->GetActorRotation());
 }

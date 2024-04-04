@@ -19,7 +19,10 @@ class CAPSTONE_2024_20_API ALobbyGameMode : public AGameModeBase
 
 	virtual void BeginPlay() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 public:
 	void GameStart();
 	bool IsReadyAllPlayer() const;
+
+	void SpawnPlayer(AController* NewPlayer);
 };
