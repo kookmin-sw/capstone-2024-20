@@ -7,6 +7,7 @@
 #include "Components/Image.h"
 #include "ReadyCharacterWidget.generated.h"
 
+class UTextBlock;
 /**
  * 
  */
@@ -18,8 +19,13 @@ class CAPSTONE_2024_20_API UReadyCharacterWidget : public UUserWidget
 private:
 	UPROPERTY(meta=(BindWidget))
 	UImage* ReadyImage;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* NameText;
 public:
 	void ChnageColor(FLinearColor color);
+
+	void SetName(FString Name);
 
 	void SetVisibilityFromBool(bool IsVisible);
 };

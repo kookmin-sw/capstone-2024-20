@@ -3,9 +3,16 @@
 
 #include "ReadyCharacterWidget.h"
 
+#include "Components/TextBlock.h"
+
 void UReadyCharacterWidget::ChnageColor(FLinearColor color)
 {
 	ReadyImage->SetColorAndOpacity(color);
+}
+
+void UReadyCharacterWidget::SetName(FString Name)
+{
+	NameText->SetText(FText::FromString(Name));
 }
 
 void UReadyCharacterWidget::SetVisibilityFromBool(bool IsVisible)
