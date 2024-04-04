@@ -110,7 +110,16 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 	// 키를 누르고 있으면 시간을 측정
 	if (bIsPressingKey)
 	{
-		PressDuration += GetWorld()->DeltaTimeSeconds;
+		if(CurrentHitObject == Player->GetCurrentHitObject()) // 상호작용 시작 시 오브젝트와 일치하면 시간 증가
+		{
+			PressDuration += GetWorld()->DeltaTimeSeconds;
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Interaction - PressDuration: %f"), PressDuration));
+		}
+		else // 상호작용 시작 시 오브젝트와 일치하지 않으면 (이동했으면) 초기화 
+		{
+			PressDuration = 0.0f;
+		}
+		
 	}
 	
 }
@@ -146,9 +155,13 @@ void AMyPlayerController::Move(const FInputActionInstance& Instance)
 
 void AMyPlayerController::Interaction_Pressed()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction start"));
-	bIsPressingKey = true;
-	PressDuration = 0.0f; // 타이머 리셋
+	if(Player->GetIsOverLap())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction start"));
+		bIsPressingKey = true;
+		PressDuration = 0.0f; // 타이머 리셋
+		CurrentHitObject = Player->GetCurrentHitObject(); // 맨 처음 상호작용 시도한 오브젝트 기록
+	}
 }
 
 void AMyPlayerController::Interaction_Trigger()
@@ -158,17 +171,18 @@ void AMyPlayerController::Interaction_Trigger()
 		if (PressDuration >= 3.0f) // 3초 넘게 누르면 DRAGGING 상태로 전환
 		{
 			//무언가를 끌고 있지 않을때만 끌기가 가능하게
-			if(Player->CurrentPlayerState == AMyCharacter::PlayerState::NONE && !Player->GetCurrentHitObject()->GetIsDragging())
+			if(Player->CurrentPlayerState == Player->GetUserStateNone())// && !Player->GetCurrentHitObject()->GetIsDragging())
 			{
-				Player->DragObject(); // 여기서 오브젝트의 IsDragging이 true가 됨.
-				Player->SetPlayerState(AMyCharacter::PlayerState::DRAGGING);
+				ServerRPC_DragObject(Player);
+				//Player->DragObject(); // 여기서 오브젝트의 IsDragging이 true가 됨.
+				Player->SetPlayerState(Player->GetUserStateDragging());
+				GEngine->AddOnScreenDebugMessage(-1, 6.0f, FColor::Red, TEXT("Dragging 상태로 변경!"));
 			}
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("ing"));
 		}
 	}
 
-	if(!Player->GetCurrentHitObject()->GetIsDragging())
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("object carrying"));
+	// if(!Player->GetCurrentHitObject()->GetIsDragging())
+	// 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("object carrying"));
 		
 }
 
@@ -176,7 +190,7 @@ void AMyPlayerController::Interaction_Trigger()
 void AMyPlayerController::Interaction_Released()
 {
 	bIsPressingKey = false;
-	if (Player->GetIsOverLap())
+	if (Player->GetIsOverLap() && CurrentHitObject)
 	{
 		if (PressDuration < 3.0f && !Player->GetCurrentHitObject()->GetIsDragging()) // 3초 안됐으면 그냥 상호작용
 		{
@@ -188,22 +202,27 @@ void AMyPlayerController::Interaction_Released()
 	
 		else if(PressDuration >= 3.0f)
 		{
-			Player->SetPlayerState(AMyCharacter::PlayerState::NONE);
+			Player->SetPlayerState(Player->GetUserStateNone());
+			
 			//이동하는 오브젝트 놔주는 함수
 			//다시 Ship의 자식으로
-			Player->DropObject(Ship);
+			//Player->DropObject(Ship);
+			ServerRPC_DropObject(CurrentHitObject, Ship);
 			
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction end"));
+		CurrentHitObject = nullptr;
 	}
 }
 
 void AMyPlayerController::DraggingRotate(const FInputActionInstance& Instance)
 {
-	if(Player->CurrentPlayerState==AMyCharacter::PlayerState::DRAGGING)
+	if(Player->CurrentPlayerState==Player->GetUserStateDragging())
 	{
-		FRotator NewRotation = FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
-		Player->GetCurrentHitObject()->AddActorLocalRotation(NewRotation);
+		FRotator NewRotation = CurrentHitObject->TargetRotation + FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
+		ServerRPC_RotateDraggingObject(CurrentHitObject, NewRotation);
+		
+		//Player->GetCurrentHitObject()->AddActorLocalRotation(NewRotation);
 	}
 }
 
@@ -256,7 +275,7 @@ void AMyPlayerController::ViewChange()
 		{
 
 			// if 캐릭터 스테이트가 carrying이라면
-			if(Player->CurrentPlayerState == AMyCharacter::PlayerState::NONE)
+			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				// else None 이라면 아니면 (아무것도 들고 있지 않은 상태면 Cannon 조작으로
 				// 현재 접근한 오브젝트가 "Cannon"이면, 컨트롤 모드를 CANNON으로 변경
@@ -269,7 +288,7 @@ void AMyPlayerController::ViewChange()
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
 				SetControlMode(ControlMode::CANNON);
 			}
-			else if(Player->CurrentPlayerState == AMyCharacter::PlayerState::CARRYING)
+			else if(Player->CurrentPlayerState == Player->GetUserStateCarrying())
 			{
 				//나중에 옮기는 오브젝트가 뭔지도 검사
 				//지금은 무조건 대포알로 간주
@@ -279,7 +298,7 @@ void AMyPlayerController::ViewChange()
 
 				ServerRPC_LoadCannonBall(Cannon);
 				//Cannon->SetIsLoad(true);
-				Player->SetPlayerState(AMyCharacter::PlayerState::NONE);
+				Player->SetPlayerState(Player->GetUserStateNone());
 				Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 				Player->DestroyCannonBall();        
 			}
@@ -288,11 +307,11 @@ void AMyPlayerController::ViewChange()
 		}
 		else if (Player->GetCurrentHitObjectName().Equals(TEXT("CannonBallBox")))
 		{
-			if(Player->CurrentPlayerState == AMyCharacter::PlayerState::NONE)
+			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				// 현재 접근한 오브젝트가 "CannonBallBox"면 캐논볼 생성
 				Player->SpawnCannonBall();
-				Player->SetPlayerState(AMyCharacter::PlayerState::CARRYING);
+				Player->SetPlayerState(Player->GetUserStateCarrying());
 			}
 		}
 		break;
@@ -374,6 +393,44 @@ void AMyPlayerController::ServerRPC_UseCannonBall_Implementation(AMyCannon* Cann
 		CannonActor->SetIsLoad(false);
 	}
 }
+
+void AMyPlayerController::ServerRPC_DragObject_Implementation(AMyCharacter* user)
+{
+	if(HasAuthority())
+	{
+		user->GetCurrentHitObject()->SetIsDragging(true);
+		user->GetCurrentHitObject()->AttachToActor(user, FAttachmentTransformRules::KeepWorldTransform);
+
+		user->GetCurrentHitObject()->MulticastRPC_TurnOffCollision();
+	}
+}
+
+void AMyPlayerController::ServerRPC_DropObject_Implementation(AMyObject* obj, AActor* ship)
+{
+	if(HasAuthority())
+	{
+		
+		obj->SetIsDragging(false);
+		obj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		obj->AttachToActor(ship, FAttachmentTransformRules::KeepWorldTransform);
+
+		obj->MulticastRPC_TurnOnCollision();
+
+	}
+}
+
+void AMyPlayerController::ServerRPC_RotateDraggingObject_Implementation(AMyObject* obj, FRotator newRotation)
+{
+	if(HasAuthority())
+	{
+		//user->GetCurrentHitObject()->TargetRotation = newRotation;
+		obj->TargetRotation = newRotation;
+		
+	}
+}
+
+
+
 
 
 

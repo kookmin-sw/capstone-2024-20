@@ -24,10 +24,23 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	UPROPERTY(Replicated)
 	bool IsDragging;
+
 
 public:
 	bool GetIsDragging();
 	void SetIsDragging(bool b);
+	
+	UPROPERTY(Replicated)
+	FRotator TargetRotation;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_TurnOffCollision();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_TurnOnCollision();
+	
 };

@@ -63,10 +63,11 @@ private:
 	AMyShip* Ship;
 	AMyCharacter* Player;
 	AMyCannon* Cannon;
+	AMyObject* CurrentHitObject;
 	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
-
+	
 	
 	// 키를 누르고 있는지의 상태를 추적하는 변수
 	bool bIsPressingKey = false;
@@ -77,6 +78,8 @@ private:
 	void Interaction_Pressed();
 	void Interaction_Trigger();
 	void Interaction_Released();
+
+	
 	void DraggingRotate(const FInputActionInstance& Instance);
 
 	
@@ -102,6 +105,18 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_UseCannonBall(AMyCannon* CannonActor);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_DragObject(AMyCharacter* user);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_DropObject(AMyObject* user, AActor* ship);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RotateDraggingObject(AMyObject* obj, FRotator newRotation);
+
+
+	
 
 protected:
 	

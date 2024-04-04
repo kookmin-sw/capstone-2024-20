@@ -14,6 +14,14 @@
 
 class USpringArmComponent;
 
+UENUM()
+enum class UserState : uint8
+{
+	NONE,
+	CARRYING,
+	DRAGGING
+};
+
 UCLASS()
 class CAPSTONE_2024_20_API AMyCharacter : public ACharacter
 {
@@ -95,15 +103,15 @@ public:
 		TEXT("CannonBallBox"), 
 		TEXT("Telescope")
 	};
-
-	enum class PlayerState
-	{
-		NONE,
-		CARRYING,
-		DRAGGING
-	};
-	PlayerState CurrentPlayerState = PlayerState::NONE;
-	void SetPlayerState(PlayerState NewPlayerState);
+	
+	
+	UserState CurrentPlayerState = UserState::NONE;
+	
+	void SetPlayerState(UserState NewPlayerState);
+	
+	UserState GetUserStateNone();
+	UserState GetUserStateCarrying();
+	UserState GetUserStateDragging();
 	
 	UFUNCTION()
 	bool GetIsOverLap();
