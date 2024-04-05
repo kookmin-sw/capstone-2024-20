@@ -28,7 +28,7 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip)
 	const auto Direction = MyShipLocation - GetActorLocation();
 
 	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (Direction.Size() < 4000.0f)
+	if (Direction.Size() < 11000.0f)
 	{
 		return;
 	}
