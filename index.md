@@ -1,30 +1,32 @@
-
-
 ![header](https://capsule-render.vercel.app/api?type=rounded&height=300&color=gradient&text=SAILS%20TOGEHTER&fontSize=50&fontAlignY=50)
 
 <br> 
 
 # 2024 캡스톤 20조
 
-**_Unreal Engine 5를 이용하여 멀티 플레이 게임을 만들고자 했습니다. **
+**Unreal Engine 5를 활용한 멀티플레이 게임 제작**
 
 <br>
 
 # 프로젝트 소개
 
-**Unreal Engine 5를 활용한 멀티플레이 게임 "SAILS TOGEHTER"**
-SAILS TOGETHER는 3D 협동 게임으로 여러명이서 배 하나를 움직여 서로 역할을 분담하여 적을 물리치고 모험을 떠나는 게임 입니다.
+**SAILS TOGEHTER**
 
-관찰, 조종, 수리, 대포, 음식 조리 등 여러 역할을 서로 분담하고 정신없는 상황속에서 **결국 같은 한 배를 움직인다는 협동의 재미를 주고 싶습니다.**<br>
+SAILS TOGETHER는 3D 협동 게임으로 여러 사용자가 하나의 배를 움직여 역할을 분담하며 적을 물리치고 모험을 떠나는 게임 입니다.
 
-# Abstract
+정신없는 상황속에서 관찰, 조종, 수리, 대포, 음식 조리 등 여러 역할을 서로 분담하고
 
-** Multi-play game "SAILS TOGEHER" developed with Unreal Engine 5 **
-SAILS TOGETHER is a 3D cooperative game in which several people move one ship to share roles with each other to defeat the enemy and go on an adventure.
-
-They share various roles such as observation, control, repair, cannons, and food cooking, and in a hectic situation **We want to give the fun of cooperation by moving the same boat.**
+**같은 한 배를 움직인다는 협동의 재미를 주고 싶습니다.**
 
 <br>
+
+# Abstract
+
+SAILS TOGETHER is a 3D cooperative game in which several people move one ship to share roles with each other to defeat the enemy and go on an adventure.
+
+They share various roles such as observation, control, repair, cannons, and food cooking, and in a hectic situation.
+
+ **We want to give the fun of cooperation by moving the same boat.**
 
 <br>
 
@@ -40,21 +42,21 @@ They share various roles such as observation, control, repair, cannons, and food
 
 ~~~
 Student ID : ****1546
-E-mail: hansx2079@kookmin.ac.kr
+E-mail: hansx2079@kookmin.ac.kr
 ~~~
 
 #### 나민형
 
 ~~~
 Student ID : ****1583
-E-mail: autumn.na.dev@gmail.com
+E-mail: minhyoung0724@kookmin.ac.kr
 ~~~
 
 #### 신무현
 
 ~~~
 Student ID : ****1613
-E-mail: alsk1976@kookmin.ac.kr
+E-mail: alsk1976@kookmin.ac.kr
 ~~~
 
 #### 최태호
@@ -70,22 +72,24 @@ E-mail: sotetero11@gmail.com
 
 ###  Unreal Engine 5
 ![Unreal Engine](https://img.shields.io/badge/unrealengine-%23313131.svg?style=for-the-badge&logo=unrealengine&logoColor=white)
+
 <br>
 
-# 중간 보고서 및 팀 관리 페이지
-[별첨 중간보고서](https://drive.google.com/file/d/1zfASZNG8n7h_XWEoO57KzcTC41XICkVe/view?usp=sharing)
+# 중간발표 관련 자료 다운로드
 
-[중간 발표 ppt](https://drive.google.com/file/d/1e_3hu5goN5XIxOw2ZKw2Q_bnr2bv6gvb/view?usp=sharing)
+[중간발표 프레젠테이션](https://drive.google.com/file/d/1e_3hu5goN5XIxOw2ZKw2Q_bnr2bv6gvb/view?usp=sharing)
 
-[중간 발표 영상 ](https://youtu.be/nFXJS2uptlU)
+[(별첨) 중간보고서](https://drive.google.com/file/d/1zfASZNG8n7h_XWEoO57KzcTC41XICkVe/view?usp=sharing)
 
-<br/>
+[(별첨) 시연 동영상](https://youtu.be/nFXJS2uptlU)
+
+<br>
 
 # 🎮 사용법
 
 ## 릴리즈 다운로드 (권장)
 
-최신 릴리즈 버전 : 0.0.1
+최신 릴리즈 버전 : 0.0.2
 
 1. [Google Drive(링크)](https://drive.google.com/drive/folders/1x4PCA_ipOcgtplP-wAv5WBOhIzESkYWc?usp=sharing) 에서 원하는 버전의 릴리즈를 다운로드 합니다.
 
