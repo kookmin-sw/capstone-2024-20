@@ -1,23 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LobbyWidget.h"
+#include "JoinMenuWidget.h"
 
-#include "LobbyGameMode.h"
-#include "LobbyGameState.h"
+#include "JoinMenuGameMode.h"
+#include "JoinMenuGameState.h"
 #include "OnlineSessionSettings.h"
 #include "RoomListElementData.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ListView.h"
 
-void ULobbyWidget::NativeConstruct()
+void UJoinMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
 	RoomCodeTextBox->OnTextChanged.AddDynamic(this, &ThisClass::ChangeRoomCodeTextBoxUpper);
 }
 
-void ULobbyWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults) const
+void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults) const
 {
 	if (GEngine)
 	{
@@ -43,7 +43,7 @@ void ULobbyWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResul
 
 		URoomListElementData* RoomListData = NewObject<URoomListElementData>();
 		RoomListData->Result = Room;
-		if (const ALobbyGameState* LobbyGameState = GetWorld()->GetGameState<ALobbyGameState>())
+		if (const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>())
 		{
 			RoomListData->NetworkService = LobbyGameState->NetworkService;
 		}
@@ -52,7 +52,7 @@ void ULobbyWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResul
 	}
 }
 
-void ULobbyWidget::ChangeRoomCodeTextBoxUpper(const FText& InText)
+void UJoinMenuWidget::ChangeRoomCodeTextBoxUpper(const FText& InText)
 {
 	RoomCodeTextBox->SetText(InText.ToUpper());
 }

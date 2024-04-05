@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Interfaces/OnlineSessionDelegates.h"
-#include "LobbyWidget.generated.h"
+#include "JoinMenuWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CAPSTONE_2024_20_API ULobbyWidget : public UUserWidget
+class CAPSTONE_2024_20_API UJoinMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameMode.h"
+#include "GameFramework/GameModeBase.h"
+#include "ReadyCharacterWidget.h"
 #include "LobbyGameMode.generated.h"
 
 /**
@@ -14,17 +15,14 @@ class CAPSTONE_2024_20_API ALobbyGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-protected:
+	ALobbyGameMode();
+
 	virtual void BeginPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 public:
-	class ULobbyWidget* MainUI;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ULobbyWidget> MainWidget;
-private:
-	UFUNCTION()
-	void OnClickRefreshButton();
-	
-	void RefreshRoomListUI(bool bWasSuccessful) const;
+	void GameStart();
+	bool IsReadyAllPlayer() const;
+
+	void SpawnPlayer(AController* NewPlayer);
 };

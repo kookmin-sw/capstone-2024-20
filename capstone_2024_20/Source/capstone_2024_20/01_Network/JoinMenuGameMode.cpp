@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LobbyGameMode.h"
+#include "JoinMenuGameMode.h"
 
-#include "LobbyGameState.h"
-#include "LobbyWidget.h"
+#include "JoinMenuGameState.h"
+#include "JoinMenuWidget.h"
 #include "NetworkService.h"
 #include "OnlineSessionSettings.h"
 #include "Components/Button.h"
@@ -12,7 +12,7 @@
 #include "Components/ListView.h"
 #include "Kismet/GameplayStatics.h"
 
-void ALobbyGameMode::BeginPlay()
+void AJoinMenuGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -26,37 +26,37 @@ void ALobbyGameMode::BeginPlay()
 		NetworkService = Cast<ANetworkService>(FoundActors[0]);
 	}
 	
-	const ALobbyGameState *LobbyGameState = GetGameState<ALobbyGameState>();
+	const AJoinMenuGameState *LobbyGameState = GetGameState<AJoinMenuGameState>();
 	
 	if(MainWidget != nullptr)
 	{
-		MainUI = CreateWidget<ULobbyWidget>(World, MainWidget);
+		MainUI = CreateWidget<UJoinMenuWidget>(World, MainWidget);
 		if(MainUI != nullptr)
 		{
 			MainUI->AddToViewport();
 		}
 	}
 
-	MainUI->RoomNameTextBox->OnTextChanged.AddDynamic(LobbyGameState, &ALobbyGameState::SetRoomName);
-	MainUI->RoomCodeTextBox->OnTextChanged.AddDynamic(LobbyGameState, &ALobbyGameState::SetRoomCode);
+	MainUI->RoomNameTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomName);
+	MainUI->RoomCodeTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomCode);
 	MainUI->CreateButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::CreateGameSession);
 	MainUI->JoinRoomCodeButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::JoinGameSession);
 	MainUI->RefreshButton->OnClicked.AddDynamic(this, &ThisClass::OnClickRefreshButton);
 	//OnClickRefreshButton();
 }
 
-void ALobbyGameMode::OnClickRefreshButton()
+void AJoinMenuGameMode::OnClickRefreshButton()
 {
-	ANetworkService* NetworkService = GetGameState<ALobbyGameState>()->NetworkService;
+	ANetworkService* NetworkService = GetGameState<AJoinMenuGameState>()->NetworkService;
 	NetworkService->AddFindSessionsCompleteDelegate(
 		FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::RefreshRoomListUI));
 
 	NetworkService->FindGameSession();
 }
 
-void ALobbyGameMode::RefreshRoomListUI(bool bWasSuccessful) const
+void AJoinMenuGameMode::RefreshRoomListUI(bool bWasSuccessful) const
 {
-	ANetworkService* NetworkService = GetGameState<ALobbyGameState>()->NetworkService;
+	ANetworkService* NetworkService = GetGameState<AJoinMenuGameState>()->NetworkService;
 	
 	if (bWasSuccessful == false)
 	{
