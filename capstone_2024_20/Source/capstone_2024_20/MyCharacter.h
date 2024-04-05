@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "CoreMinimal.h"
+#include "MyObject.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "UObject/ObjectRename.h"
@@ -12,6 +13,14 @@
 
 
 class USpringArmComponent;
+
+UENUM()
+enum class UserState : uint8
+{
+	NONE,
+	CARRYING,
+	DRAGGING
+};
 
 UCLASS()
 class CAPSTONE_2024_20_API AMyCharacter : public ACharacter
@@ -57,6 +66,9 @@ public:
 	TSubclassOf<AActor> BP_CannonBallClass;
 	
 protected:
+
+	unsigned int PlayerMaxHP = 10;
+	unsigned int PlayerHP = PlayerMaxHP;
 	
 	bool bIsChanging=false;
 	float TargetArmLength;
@@ -64,7 +76,7 @@ protected:
 	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
 
-	AActor* CurrentHitObject;
+	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
 	AActor* SpawnedCannonBall;
 	
@@ -91,15 +103,15 @@ public:
 		TEXT("CannonBallBox"), 
 		TEXT("Telescope")
 	};
-
-	enum class PlayerState
-	{
-		NONE,
-		CARRYING,
-		DRAGGING
-	};
-	PlayerState CurrentPlayerState = PlayerState::NONE;
-	void SetPlayerState(PlayerState NewPlayerState);
+	
+	
+	UserState CurrentPlayerState = UserState::NONE;
+	
+	void SetPlayerState(UserState NewPlayerState);
+	
+	UserState GetUserStateNone();
+	UserState GetUserStateCarrying();
+	UserState GetUserStateDragging();
 	
 	UFUNCTION()
 	bool GetIsOverLap();
@@ -114,7 +126,7 @@ public:
 	void SetIsChanging(float length, FRotator rot, bool b);
 
 	UFUNCTION()
-	AActor* GetCurrentHitObject();
+	AMyObject* GetCurrentHitObject();
 
 	UFUNCTION()
 	FString GetCurrentHitObjectName();
@@ -130,5 +142,32 @@ public:
 
 	UFUNCTION()
 	void DropObject(AActor* ship);
+
+	UFUNCTION()
+	unsigned int GetPlayerHP();
+
+	UFUNCTION()
+	void SetPlayerHP(unsigned int hp);
+	
+	UFUNCTION()
+	void IncreaseHP(int plusHP);
+
+	UFUNCTION()
+	void DecreaseHP(unsigned int minusHP);
+
+	UFUNCTION()
+	unsigned int GetPlayerMaxHP();
+
+	UFUNCTION()
+	void SetPlayerMaxHP(unsigned int hp);
+	
+	UFUNCTION()
+	void IncreaseMaxHP(int plusHP);
+
+	UFUNCTION()
+	void DecreaseMaxHP(int minusHP);
+
+	UFUNCTION()
+	void PlayerDead();
 
 };

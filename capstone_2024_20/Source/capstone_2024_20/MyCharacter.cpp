@@ -3,9 +3,7 @@
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Engine/StaticMeshActor.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 
 class AStaticMeshActor;
@@ -97,10 +95,12 @@ void AMyCharacter::Tick(float DeltaTime)
 //충돌 처리
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(CurrentPlayerState != PlayerState::DRAGGING)
+
+	if(CurrentPlayerState != UserState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
-		TextWidget->SetVisibility(true);
+		if(IsLocallyControlled())
+			TextWidget->SetVisibility(true);
 		bIsOverlap = true;
 	
 		for (const FString& Tag : ObjectList)
@@ -112,7 +112,7 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			}
 		}
 
-		CurrentHitObject = OtherActor;
+		CurrentHitObject = Cast<AMyObject>(OtherActor);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, CurrentHitObject->GetName());
 	}
 		
@@ -120,7 +120,7 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(CurrentPlayerState != PlayerState::DRAGGING)
+	if(CurrentPlayerState != UserState::DRAGGING)
 	{
 		if(OtherComp->ComponentTags.Contains(TEXT("Object")))
 		{
@@ -128,6 +128,7 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 			TextWidget->SetVisibility(false);
 			bIsOverlap = false;
 		}
+		CurrentHitObject = Cast<AMyObject>(this);
 	}
 }
 
@@ -153,7 +154,7 @@ void AMyCharacter::SetIsChanging(float length, FRotator rot, bool b)
 	bIsChanging = b;
 }
 
-AActor* AMyCharacter::GetCurrentHitObject()
+AMyObject* AMyCharacter::GetCurrentHitObject()
 {
 	return CurrentHitObject;
 }
@@ -184,9 +185,24 @@ void AMyCharacter::SpawnCannonBall()
 
 }
 
-void AMyCharacter::SetPlayerState(PlayerState NewPlayerState)
+void AMyCharacter::SetPlayerState(UserState NewPlayerState)
 {
 	CurrentPlayerState = NewPlayerState;
+}
+
+UserState AMyCharacter::GetUserStateNone()
+{
+	return UserState::NONE;
+}
+
+UserState AMyCharacter::GetUserStateCarrying()
+{
+	return UserState::CARRYING;
+}
+
+UserState AMyCharacter::GetUserStateDragging()
+{
+	return UserState::DRAGGING;
 }
 
 void AMyCharacter::DestroyCannonBall()
@@ -214,6 +230,10 @@ void AMyCharacter::DragObject()
 				Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			}
 		}
+
+		CurrentHitObject->SetIsDragging(true);
+		
+		
 	}
                     
 
@@ -233,8 +253,72 @@ void AMyCharacter::DropObject(AActor* ship)
 		{
 			Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		}
+		CurrentHitObject->SetIsDragging(false);
 	}
 }
+
+unsigned int AMyCharacter::GetPlayerHP()
+{
+	return PlayerHP;
+}
+
+void AMyCharacter::SetPlayerHP(unsigned int hp)
+{
+	PlayerHP = hp;
+}
+
+
+void AMyCharacter::IncreaseHP(int plusHP)
+{
+	if(PlayerHP + plusHP > PlayerMaxHP)
+		PlayerHP = PlayerMaxHP;
+	else
+		PlayerHP += plusHP;
+}
+
+void AMyCharacter::DecreaseHP(unsigned int minusHP)
+{
+	if(PlayerHP <= minusHP)
+	{
+		PlayerHP = 0;
+		PlayerDead();
+	}
+	else
+	{
+		PlayerHP -= minusHP;
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Player HP: %u"), PlayerHP));
+	
+}
+
+unsigned int AMyCharacter::GetPlayerMaxHP()
+{
+	return PlayerMaxHP;
+}
+
+void AMyCharacter::SetPlayerMaxHP(unsigned int hp)
+{
+	PlayerMaxHP = hp;
+}
+
+
+void AMyCharacter::IncreaseMaxHP(int plusHP)
+{
+	PlayerMaxHP += plusHP;
+}
+
+void AMyCharacter::DecreaseMaxHP(int minusHP)
+{
+	PlayerMaxHP -= minusHP;
+	if(PlayerHP > PlayerMaxHP)
+		PlayerHP = PlayerMaxHP;
+}
+
+void AMyCharacter::PlayerDead()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Dead"));
+}
+
 
 
 

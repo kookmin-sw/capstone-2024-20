@@ -6,6 +6,7 @@
 
 class AMyShip;
 class AEnemyShip;
+class AEnemy;
 class AEvent;
 class UTrigger;
 
@@ -24,9 +25,14 @@ public:
 	
 	void SetMyShip();
 
+	void EarnCurrency(int32 Amount);
+	void UseCurrency(int32 Amount);
+
 private:
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
+
+	TArray<AEnemy*> Enemies;
 
 	inline static float SpawnEventTimer = 0.0f;
 	TArray<AEvent*> Events;
@@ -39,4 +45,6 @@ private:
 
 	UPROPERTY()
 	AMyShip* MyShip;
+
+	int32 Currency = 0;
 };

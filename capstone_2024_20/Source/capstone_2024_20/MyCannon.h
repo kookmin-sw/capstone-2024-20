@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyObject.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "MyCannon.generated.h"
 
 UCLASS()
-class CAPSTONE_2024_20_API AMyCannon : public AActor
+class CAPSTONE_2024_20_API AMyCannon : public AMyObject
 {
 	GENERATED_BODY()
 	
@@ -20,6 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(Replicated)
 	bool IsLoad = false;
 	
 public:	
@@ -56,8 +58,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_RotateCannon(FRotator newRot);
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 	bool GetIsLoad();
 	void SetIsLoad(bool b);
+	
 	
 };

@@ -6,28 +6,35 @@
 #include "PlayerListWidgetCreate.h"
 #include "PlayerListWidgetModifier.h"
 
-FPlayerListController::FPlayerListController(UWorld* World)
+
+void UPlayerListController::BeginPlay()
 {
-	FString WidgetName = "BP_PlayerListWidget";
-	PlayerListWidgetCreate* PlayerListWigetCreate = new PlayerListWidgetCreate(World, WidgetName,
-		&PlayerListWidget, &PlayerListUpdate);
+	Super::BeginPlay();
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Purple,
+		TEXT("Begin PPPPP"));
+	PlayerListWidgetCreate* PlayerListWigetCreate = new PlayerListWidgetCreate(GetWorld(), PlayerListWigetClass,
+	&PlayerListWidget, &PlayerListUpdate);
 	PlayerListUpdate = PlayerListWigetCreate;
 }
 
-void FPlayerListController::PostLogin(APlayerController* NewPlayer)
+void UPlayerListController::PostLogin(APlayerController* NewPlayer)
 {
 	if(PlayerListUpdate)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
+			TEXT("NOT NOT"));
 		PlayerListUpdate->PostLogin(NewPlayer);
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-			TEXT("nullptr"));
+		TEXT("nullptr"));
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
+			TEXT("nullptr2"));
 	}
 }
 
-void FPlayerListController::Logout(AController* Exiting)
+void UPlayerListController::Logout(AController* Exiting)
 {
 	IPlayerList::Logout(Exiting);
 	PlayerListUpdate->Logout(Exiting);
