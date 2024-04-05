@@ -3,7 +3,7 @@
 
 #include "NetworkService.h"
 
-#include "LobbyGameState.h"
+#include "JoinMenuGameState.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 
@@ -130,7 +130,7 @@ void ANetworkService::OnCreateSessionComplete(FName SessionName, bool bWasSucces
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		World->ServerTravel(FString("/Game/Level/level_StageSelect?listen"));
+		World->ServerTravel(FString("/Game/Level/level_Lobby?listen"));
 	}
 }
 
@@ -144,7 +144,7 @@ void ANetworkService::OnFindSessionComplete(bool bWasSuccessful) const
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
 	                                 FString::Printf(TEXT("검색 준비")));
 
-	const ALobbyGameState* LobbyGameState = GetWorld()->GetGameState<ALobbyGameState>();
+	const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>();
 	for (auto Result : SessionSearch->SearchResults)
 	{
 		FString MatchType;
@@ -219,7 +219,7 @@ TSharedPtr<FOnlineSessionSettings> ANetworkService::GetSessionSettings()
 	SessionSettings->Set(FName("MatchType"), FString("FreeForAll"),
 	                     EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
-	if (const ALobbyGameState* LobbyGameState = GetWorld()->GetGameState<ALobbyGameState>())
+	if (const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>())
 	{
 		FRoomData RoomData = LobbyGameState->RoomData;
 		SessionSettings->Set(FName("RoomName"), RoomData.Name, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
