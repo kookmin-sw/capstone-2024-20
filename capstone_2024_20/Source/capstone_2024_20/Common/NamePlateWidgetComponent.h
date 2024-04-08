@@ -20,4 +20,12 @@ public:
 	
 	UUserWidget* ChangeWidget(FString& Path);
 	UUserWidget* ChangeWidget(UUserWidget* Widget);
+	
+	void SetName(const FString& Name);
+
+private:
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetName(const FString& Name);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_SetName(const FString& Name);
 };

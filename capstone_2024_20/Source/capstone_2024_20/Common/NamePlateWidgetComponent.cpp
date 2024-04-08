@@ -49,3 +49,32 @@ UUserWidget* UNamePlateWidgetComponent::ChangeWidget(UUserWidget* NewWidget)
 
 	return NewWidget;
 }
+
+void UNamePlateWidgetComponent::SetName(const FString& Name)
+{
+	if (GetOwner()->HasAuthority())
+	{
+		MultiRPC_SetName(Name);
+	}
+	else
+	{
+		ServerRPC_SetName(Name);
+		if (GetOwnerRole() == ROLE_SimulatedProxy)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
+			                                 TEXT("Actor NamePlate SetName 조작 불가 권한 확인 바람"));
+			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
+			                                 TEXT("Actor NamePlate SetName 조작 불가 권한 확인 바람"));
+		}
+	}
+}
+
+void UNamePlateWidgetComponent::MultiRPC_SetName_Implementation(const FString& Name)
+{
+	Cast<UNamePlateWidget>(GetWidget())->SetName(Name);
+}
+
+void UNamePlateWidgetComponent::ServerRPC_SetName_Implementation(const FString& Name)
+{
+	MultiRPC_SetName(Name);
+}
