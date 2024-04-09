@@ -9,6 +9,8 @@
 #include "EnhancedInputComponent.h"
 #include "MyCannon.h"
 #include "CannonBall.h"
+#include "MyCannonBallBox.h"
+#include "MyCarryCannonBall.h"
 #include "MyCharacter.h"
 #include "MyShip.h"
 #include "MyPlayerController.generated.h"
@@ -64,6 +66,7 @@ private:
 	AMyCharacter* Player;
 	AMyCannon* Cannon;
 	AMyObject* CurrentHitObject;
+	AMyCannonBallBox* CannonBallBox;
 	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
@@ -115,8 +118,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_RotateDraggingObject(AMyObject* obj, FRotator newRotation);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SpawnCarryCannonBall(AMyCharacter* user, AMyCannonBallBox* box);
 
-	
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_DestroyCarryCannonBall(AMyCharacter* user);
 
 protected:
 	

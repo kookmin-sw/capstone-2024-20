@@ -165,24 +165,9 @@ FString AMyCharacter::GetCurrentHitObjectName()
 	return CurrentHitObjectName;
 }
 
-void AMyCharacter::SpawnCannonBall()
+void AMyCharacter::SetCurrentCarryObject(AActor* obj)
 {
-	if (!BP_CannonBallClass) return;
-
-	// 캐릭터 앞 방향에 캐논볼을 소환할 위치 및 회전 계산
-	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.0f;
-	FRotator SpawnRotation = GetActorRotation();
-
-	
-	// 캐논볼 소환
-	SpawnedCannonBall = GetWorld()->SpawnActor<AActor>(BP_CannonBallClass, SpawnLocation, SpawnRotation);
-
-	if (SpawnedCannonBall != nullptr)
-	{
-		// 캐논볼을 캐릭터의 RootComponent에 붙입니다.
-		SpawnedCannonBall->AttachToComponent(GetRootComponent(),FAttachmentTransformRules::KeepWorldTransform);
-	}
-
+	CurrentCarryObject = obj;
 }
 
 void AMyCharacter::SetPlayerState(UserState NewPlayerState)
@@ -207,10 +192,10 @@ UserState AMyCharacter::GetUserStateDragging()
 
 void AMyCharacter::DestroyCannonBall()
 {
-	if(SpawnedCannonBall)
+	if(CurrentCarryObject)
 	{
-		SpawnedCannonBall->Destroy();
-		SpawnedCannonBall = nullptr;
+		CurrentCarryObject->Destroy();
+		CurrentCarryObject = nullptr;
 	}	
 }
 

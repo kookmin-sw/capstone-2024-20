@@ -297,10 +297,9 @@ void AMyPlayerController::ViewChange()
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
 
 				ServerRPC_LoadCannonBall(Cannon);
-				//Cannon->SetIsLoad(true);
 				Player->SetPlayerState(Player->GetUserStateNone());
 				Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
-				Player->DestroyCannonBall();        
+				ServerRPC_DestroyCarryCannonBall(Player);      
 			}
 
 			
@@ -309,8 +308,10 @@ void AMyPlayerController::ViewChange()
 		{
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
+				CannonBallBox = Cast<AMyCannonBallBox>(Player->GetCurrentHitObject());
 				// 현재 접근한 오브젝트가 "CannonBallBox"면 캐논볼 생성
-				Player->SpawnCannonBall();
+				ServerRPC_SpawnCarryCannonBall(Player, CannonBallBox);
+				//Player->SpawnCannonBall();
 				Player->SetPlayerState(Player->GetUserStateCarrying());
 			}
 		}
@@ -428,6 +429,23 @@ void AMyPlayerController::ServerRPC_RotateDraggingObject_Implementation(AMyObjec
 		
 	}
 }
+
+void AMyPlayerController::ServerRPC_SpawnCarryCannonBall_Implementation(AMyCharacter* user, AMyCannonBallBox* box)
+{
+	if(HasAuthority())
+	{
+		box->SpawnCarryCannonBall(user);
+	}
+}
+
+void AMyPlayerController::ServerRPC_DestroyCarryCannonBall_Implementation(AMyCharacter* user)
+{
+	if(HasAuthority())
+	{
+		user->DestroyCannonBall();
+	}
+}
+
 
 
 

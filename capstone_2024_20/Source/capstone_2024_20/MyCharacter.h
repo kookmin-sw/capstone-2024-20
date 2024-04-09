@@ -79,6 +79,7 @@ protected:
 	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
 	AActor* SpawnedCannonBall;
+	AActor* CurrentCarryObject;
 	
 	UFUNCTION()
 	virtual void BeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -132,7 +133,7 @@ public:
 	FString GetCurrentHitObjectName();
 
 	UFUNCTION()
-	void SpawnCannonBall();	
+	void SetCurrentCarryObject(AActor* obj);
 
 	UFUNCTION()
 	void DestroyCannonBall();
