@@ -3,6 +3,7 @@
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -17,6 +18,12 @@ AMyCharacter::AMyCharacter()
 	TextWidget->SetupAttachment(GetMesh());
 	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
 	TextWidget->SetWidgetSpace(EWidgetSpace::Screen);
+
+	NamePlateWidget = CreateDefaultSubobject<UNamePlateWidgetComponent>(TEXT("NICKNAMEWIDGET"));
+	NamePlateWidget->SetupAttachment(RootComponent);
+	
+	
+	
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
 	if(UI_HUD.Succeeded())
 	{
@@ -67,8 +74,12 @@ void AMyCharacter::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
-	
+
+	FTimerHandle timer;
+	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 2.0f, false);
 }
+
+
 
 
 
@@ -147,6 +158,11 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void AMyCharacter::ServerRPC_MeshRotation_Implementation(FRotator NewRotation)
 {
 	MeshRotation = NewRotation;
+}
+
+void AMyCharacter::SetNamePlate()
+{
+	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
 }
 
 

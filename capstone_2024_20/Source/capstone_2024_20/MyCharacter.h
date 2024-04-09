@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "MyObject.h"
 #include "Camera/CameraComponent.h"
+#include "Common/NamePlateWidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "UObject/ObjectRename.h"
 #include "MyCharacter.generated.h"
@@ -40,6 +41,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 private:
 
 	UPROPERTY(Category=Character, VisibleAnywhere)
@@ -55,6 +57,9 @@ private:
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	class UWidgetComponent* TextWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UNamePlateWidgetComponent* NamePlateWidget;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> ClearPopUpWidgetClass;
@@ -119,6 +124,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_MeshRotation(FRotator NewRotation);
+
+	UFUNCTION()
+	void SetNamePlate();
 	
 	UFUNCTION()
 	bool GetIsOverLap();
