@@ -8,7 +8,7 @@ void AMyCannonBallBox::SpawnCarryCannonBall(AMyCharacter* user)
 	if(user)
 	{
 		// 캐릭터 앞 방향에 캐논볼을 소환할 위치 및 회전 계산
-		FVector SpawnLocation = user->GetActorLocation() + user->GetActorForwardVector() * 100.0f;
+		FVector SpawnLocation = user->GetActorLocation() + user->GetMesh()->GetRightVector() * 100.0f + user->GetMesh()->GetUpVector() * 50.0f;
 		FRotator SpawnRotation = user->GetActorRotation();
 
 	
@@ -20,9 +20,16 @@ void AMyCannonBallBox::SpawnCarryCannonBall(AMyCharacter* user)
 			if (SpawnedCannonBall != nullptr)
 			{
 				// 캐논볼을 캐릭터의 RootComponent에 붙입니다.
-				SpawnedCannonBall->AttachToComponent(user->GetRootComponent(),FAttachmentTransformRules::KeepWorldTransform);
+				SpawnedCannonBall->AttachToComponent(user->GetMesh(),FAttachmentTransformRules::KeepWorldTransform);
 			}
 			user->SetCurrentCarryObject(SpawnedCannonBall);
 		}
+		
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("제대로 생성됨"));
+	}
+	else
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("없어용"));
 	}
 }

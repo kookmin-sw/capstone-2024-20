@@ -94,6 +94,9 @@ protected:
 
 
 	
+private:
+	UPROPERTY(Replicated)
+	FRotator MeshRotation;
 
 	
 public:
@@ -113,6 +116,9 @@ public:
 	UserState GetUserStateNone();
 	UserState GetUserStateCarrying();
 	UserState GetUserStateDragging();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_MeshRotation(FRotator NewRotation);
 	
 	UFUNCTION()
 	bool GetIsOverLap();

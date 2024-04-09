@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 class AStaticMeshActor;
@@ -11,7 +12,7 @@ class AStaticMeshActor;
 AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
 	TextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 	TextWidget->SetupAttachment(GetMesh());
 	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
@@ -88,8 +89,10 @@ void AMyCharacter::Tick(float DeltaTime)
 		if(FMath::IsNearlyEqual(M_SpringArmComponent->TargetArmLength, TargetArmLength, 0.01f)
 			&& M_SpringArmComponent->GetComponentRotation().Equals(TargetRotation, 0.01f))
 			bIsChanging = false;
-		
 	}
+
+	GetMesh()->SetWorldRotation(MeshRotation);
+	
 }
 
 //충돌 처리
@@ -131,6 +134,21 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		CurrentHitObject = Cast<AMyObject>(this);
 	}
 }
+
+
+void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMyCharacter, MeshRotation);
+}
+
+
+void AMyCharacter::ServerRPC_MeshRotation_Implementation(FRotator NewRotation)
+{
+	MeshRotation = NewRotation;
+}
+
 
 bool AMyCharacter::GetIsOverLap()
 {
