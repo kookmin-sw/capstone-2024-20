@@ -36,6 +36,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
+	virtual void OnPossess(APawn* InPawn) override;
+	
 private:
 	UPROPERTY(Category=Input, VisibleAnywhere)
 	UInputMappingContext* DefaultMappingContext;

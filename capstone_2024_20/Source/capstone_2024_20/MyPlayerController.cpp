@@ -7,6 +7,7 @@
 #include "CharacterControlStrategy.h"
 #include "MyShip.h"
 #include "ShipControlStrategy.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 class AStaticMeshActor;
@@ -84,6 +85,9 @@ void AMyPlayerController::BeginPlay()
 	
 }
 
+
+
+
 void AMyPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -93,7 +97,7 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 		{
 			Player = Cast<AMyCharacter>(GetPawn());
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
-
+	
 			if (Player)
 			{
 				ControlledActor = Player;
@@ -140,6 +144,16 @@ void AMyPlayerController::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		Input->BindAction(DraggingRotateAction, ETriggerEvent::Triggered, this, &AMyPlayerController::DraggingRotate);
 		Input->BindAction(ShootAction, ETriggerEvent::Started, this, &AMyPlayerController::Shoot);
 	}
+}
+
+void AMyPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	Player = Cast<AMyCharacter>(InPawn);
+
+	//Player->NamePlateWidget->SetName(Player->GetPlayerState()->GetPlayerName());
+	
 }
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
