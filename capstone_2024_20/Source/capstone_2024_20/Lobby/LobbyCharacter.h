@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "LobbyPlayerState.h"
-#include "ReadyCharacterWidget.h"
 #include "capstone_2024_20/MyCharacter.h"
 #include "LobbyCharacter.generated.h"
 
@@ -25,19 +24,14 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
-	UWidgetComponent* WidgetComponent;
 public:
+	UPROPERTY(EditAnywhere)
+	class ULobbyPlateWidgetComponent* WidgetComponent;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	UPROPERTY(EditAnywhere)
-	UReadyCharacterWidget* ReadyCharacterWidget;
 
 	UFUNCTION()
 	void SetReady();
-
-	UFUNCTION()
-	void SetWidget(UUserWidget* Widget);
 };
