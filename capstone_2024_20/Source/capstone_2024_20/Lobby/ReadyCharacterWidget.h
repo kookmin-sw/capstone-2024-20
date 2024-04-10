@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ILobbyCharacterWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "capstone_2024_20/Common/NamePlateWidget.h"
 #include "Components/Image.h"
 #include "ReadyCharacterWidget.generated.h"
 
@@ -13,7 +14,7 @@ class UTextBlock;
  * 
  */
 UCLASS()
-class CAPSTONE_2024_20_API UReadyCharacterWidget : public UUserWidget, public ILobbyCharacterWidget
+class CAPSTONE_2024_20_API UReadyCharacterWidget : public UNamePlateWidget
 {
 	GENERATED_BODY()
 
@@ -21,13 +22,8 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UImage* ReadyImage;
 	
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* NameText;
-	
 public:
 	void ChangeColor(FLinearColor color);
-
-	void SetName(FString Name);
 
 	void SetVisibilityFromBool(bool IsVisible);
 };
