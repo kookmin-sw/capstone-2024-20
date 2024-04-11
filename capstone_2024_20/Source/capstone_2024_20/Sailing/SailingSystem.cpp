@@ -116,6 +116,16 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 	Currency -= Amount;
 }
 
+void ASailingSystem::UpgradeMyShip() const
+{
+	if (MyShip == nullptr)
+	{
+		return;
+	}
+
+	MyShip->Upgrade();
+}
+
 void ASailingSystem::SetMyShip()
 {
 	// Todo@autumn - This is a temporary solution, replace it.
