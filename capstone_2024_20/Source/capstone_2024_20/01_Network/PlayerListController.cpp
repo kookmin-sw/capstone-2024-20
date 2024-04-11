@@ -5,6 +5,7 @@
 
 #include "PlayerListWidgetCreate.h"
 #include "PlayerListWidgetModifier.h"
+#include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -15,7 +16,7 @@ APlayerListController::APlayerListController()
 	SetRootComponent(RootComponent);
 
 	static ConstructorHelpers::FClassFinder<UPlayerListWidget>
-	BP_PlayerListWidget(TEXT("/Game/WidgetBlueprints/BP_PlayerListWidget.BP_PlayerListWidget_C"));
+		BP_PlayerListWidget(TEXT("/Game/WidgetBlueprints/BP_PlayerListWidget.BP_PlayerListWidget_C"));
 	PlayerListWigetClass = BP_PlayerListWidget.Class;
 	bReplicates = true;
 }
@@ -23,18 +24,10 @@ APlayerListController::APlayerListController()
 void APlayerListController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	PlayerListWidgetCreate* PlayerListWigetCreate = new PlayerListWidgetCreate(GetWorld(), PlayerListWigetClass,
 	                                                                           &PlayerListWidget, &PlayerListUpdate);
 	PlayerListUpdate = PlayerListWigetCreate;
-}
-
-void APlayerListController::PostLogin_Implementation(APlayerState* NewPlayer)
-{
-	if (PlayerListUpdate)
-	{
-		PlayerListUpdate->PostLogin(NewPlayer);
-	}
 }
 
 void APlayerListController::Logout_Implementation(APlayerState* Exiting)
@@ -42,6 +35,18 @@ void APlayerListController::Logout_Implementation(APlayerState* Exiting)
 	PlayerListUpdate->Logout(Exiting);
 }
 
+void APlayerListController::MutliRPC_PostLogin_Implementation()
+{
+	if (PlayerListUpdate)
+	{
+		PlayerListUpdate->PostLogin(GetWorld()->GetGameState()->PlayerArray);
+	}
+}
+
+void APlayerListController::PostLogin()
+{
+	MutliRPC_PostLogin();
+}
 
 APlayerListController* APlayerListController::Find(UWorld* World)
 {
@@ -56,7 +61,7 @@ APlayerListController* APlayerListController::Find(UWorld* World)
 }
 
 void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController** PlayerListController,
-	APlayerState* PlayerState)
+                                           APlayerState* PlayerState)
 {
 	FTimerHandle TimerHandle;
 	const FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda(
@@ -69,7 +74,7 @@ void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController*
 }
 
 void APlayerListController::PostLoginTimerCallback(APlayerListController** PlayerListController,
-	APlayerState* PlayerState)
+                                                   APlayerState* PlayerState)
 {
-	(*PlayerListController)->PostLogin(PlayerState);
+	(*PlayerListController)->PostLogin();
 }

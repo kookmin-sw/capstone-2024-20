@@ -70,11 +70,6 @@ void AStageGameMode::Logout(AController* Exiting)
 	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
 }
 
-void AStageGameMode::PostLoginTimer(APlayerController* NewPlayer)
-{
-	PlayerListController->PostLogin(NewPlayer->GetPlayerState<APlayerState>());
-}
-
 void AStageGameMode::PrintRoomCode()
 {
 	const FName RoomCode = GetGameState<AInGameStateTest>()->GetRoomCode();

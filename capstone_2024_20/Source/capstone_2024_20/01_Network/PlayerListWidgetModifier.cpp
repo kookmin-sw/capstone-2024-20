@@ -10,18 +10,21 @@ UPlayerListWidgetModifier::UPlayerListWidgetModifier(UPlayerListWidget* NewPlaye
 	PlayerListWidget = NewPlayerListWidget;
 }
 
-void UPlayerListWidgetModifier::PostLogin(APlayerState* NewPlayer)
+void UPlayerListWidgetModifier::Refresh(TArray<APlayerState*> PlayerStates)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Purple,
-		TEXT("Modifier"));
-	if (NewPlayer)
+	PlayerListWidget->Clear();
+	for(int i=0;i<PlayerStates.Num();i++)
 	{
-		int32 Id = NewPlayer->GetPlayerId();
-		FString PlayerName = NewPlayer->GetPlayerName();
-		
-		IdIndexMap.Add(Id, PlayerListWidget->GetLength());
+		FString PlayerName = PlayerStates[i]->GetPlayerName();
 		PlayerListWidget->Add(PlayerName);
 	}
+}
+
+void UPlayerListWidgetModifier::PostLogin(TArray<APlayerState*> PlayerStates)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Purple,
+	                                 TEXT("Modifier"));
+	Refresh(PlayerStates);
 }
 
 void UPlayerListWidgetModifier::Logout(APlayerState* Exiting)

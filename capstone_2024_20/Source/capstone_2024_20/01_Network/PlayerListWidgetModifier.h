@@ -18,7 +18,9 @@ private:
 	UPlayerListWidget* PlayerListWidget;
 
 	TMap<int32, int32> IdIndexMap;
+
+	void Refresh(TArray<APlayerState*> PlayerStates);
 public:
-	virtual void PostLogin(APlayerState* NewPlayer) override;
+	virtual void PostLogin(TArray<APlayerState*> PlayerStates) override;
 	virtual void Logout(APlayerState* Exiting) override;
 };

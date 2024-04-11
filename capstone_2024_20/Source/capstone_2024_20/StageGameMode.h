@@ -29,8 +29,6 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 
-	void PostLoginTimer(APlayerController* NewPlayer);
-
 public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
 	class UInGameRoomInfoWidget* RoomInfoWidget;

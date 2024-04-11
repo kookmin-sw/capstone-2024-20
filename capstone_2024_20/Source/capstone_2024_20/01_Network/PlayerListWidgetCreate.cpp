@@ -17,13 +17,13 @@ PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlaye
 	ControllerPlayerList = PlayerList;
 }
 
-void PlayerListWidgetCreate::PostLogin(APlayerState* NewPlayer)
+void PlayerListWidgetCreate::PostLogin(TArray<APlayerState*> PlayerStates)
 {
 	UPlayerListWidget* PlayerListWidget = CreatePlayerListWidget();
 	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
 	                                 TEXT("Create PostLogin"));
 	*ControllerPlayerList = new UPlayerListWidgetModifier(PlayerListWidget);
-	(**ControllerPlayerList).PostLogin(NewPlayer);
+	(**ControllerPlayerList).PostLogin(PlayerStates);
 	*ControllerPlayerListWidget = PlayerListWidget;
 }
 
