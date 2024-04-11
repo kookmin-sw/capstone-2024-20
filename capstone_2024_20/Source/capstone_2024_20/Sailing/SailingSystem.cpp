@@ -4,6 +4,7 @@
 #include "../MyShip.h"
 #include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
+#include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
@@ -23,6 +24,7 @@ void ASailingSystem::BeginPlay()
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -134,5 +136,15 @@ void ASailingSystem::SetMyShip()
 	if (FoundActors.Num() > 0)
 	{
 		MyShip = Cast<AMyShip>(FoundActors[0]);
+	}
+}
+
+void ASailingSystem::SetMyCharacters()
+{
+	TArray<AActor*> FoundMyCharacters;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCharacter::StaticClass(), FoundMyCharacters);
+	for (const auto FoundMyCharacter : FoundMyCharacters)
+	{
+		MyCharacters.Add(Cast<AMyCharacter>(FoundMyCharacter));
 	}
 }
