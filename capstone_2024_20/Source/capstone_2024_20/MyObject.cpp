@@ -27,7 +27,7 @@ void AMyObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	SetActorRotation(TargetRotation);
+	SetActorRelativeRotation(TargetRotation);
 
 }
 
