@@ -20,7 +20,10 @@ ALobbyCharacter::ALobbyCharacter()
 void ALobbyCharacter::Init()
 {
 	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
-	LobbyPlayerState->OnIsReadyChanged.BindDynamic(this, &ALobbyCharacter::SetReady);
+	LobbyPlayerState->OnIsReadyChanged.AddLambda([this]
+	{
+		this->SetReady();
+	});
 
 	const int PlayerNumber = LobbyPlayerState->PlayerNumber;
 	if (PlayerNumber != 1)

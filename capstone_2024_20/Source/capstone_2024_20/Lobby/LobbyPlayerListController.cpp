@@ -30,9 +30,6 @@ void ALobbyPlayerListController::Init()
 
 void ALobbyPlayerListController::Refresh2()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Cyan,
-	                                 TEXT("Refresh44"));
-
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(
 			TimerHandle,
@@ -63,22 +60,20 @@ void ALobbyPlayerListController::RegisterReadyEventCallback(APlayerListControlle
 {
 	if (PlayerState == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Cyan,
-		                                 TEXT("Refresh11"));
+		
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Cyan,
-		                                 TEXT("Refresh22"));
 		ALobbyPlayerListController* PlayerListController = Cast<ALobbyPlayerListController>(*LobbyPlayerListController);
-		PlayerState->OnIsReadyChanged.BindDynamic(PlayerListController, &ALobbyPlayerListController::Refresh2);
+		PlayerState->OnIsReadyChanged.AddLambda([PlayerListController]()
+		{
+			PlayerListController->Refresh2();
+		});
 	}
 }
 
 void ALobbyPlayerListController::Refresh_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Cyan,
-	                                 TEXT("Refresh"));
 	TArray<TObjectPtr<APlayerState>> PlayerStates = GetWorld()->GetGameState()->PlayerArray;
 
 	if (LobbyPlayerListWidgetModifier == nullptr)
