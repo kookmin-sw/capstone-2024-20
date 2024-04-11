@@ -30,6 +30,8 @@ public:
 
 	void UpgradeMyShip() const;
 
+	float GetElapsedTime() const;
+
 private:
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
@@ -49,4 +51,7 @@ private:
 	AMyShip* MyShip;
 
 	int32 Currency = 0;
+
+	bool bIsClear = false;
+	float ElapsedTime = 0;
 };

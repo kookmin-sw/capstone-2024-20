@@ -1,5 +1,7 @@
 ﻿#include "Trigger.h"
 
+#include "capstone_2024_20/Sailing/SailingSystem.h"
+
 UTrigger::UTrigger(): IsTriggered([]() { return false; }), SailingSystem(nullptr)
 {
 	// do nothing
@@ -24,7 +26,10 @@ void UTrigger::Initialize(const FString& Id, ASailingSystem* InSailingSystem)
 	if (Id == "T_0001")
 	{
 		// Todo@autumn - This is a temporary solution, replace it with data.
-		IsTriggered = [](){return true;};
+		IsTriggered = [this]()
+		{
+			return SailingSystem->GetElapsedTime() >= 60.0f * 10.0f;
+		};
 	}
 	else if (Id == "T_0002")
 	{

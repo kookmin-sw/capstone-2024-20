@@ -4,6 +4,7 @@
 #include "../MyShip.h"
 #include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 
 ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
@@ -34,10 +35,26 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		return;
 	}
-	
-	if (ClearTrigger->IsTriggered())
+
+	if (bIsClear)
 	{
-		// Todo@autumn do something
+		return;
+	}
+
+	ElapsedTime += DeltaTime;
+	
+	if (ClearTrigger->IsTriggered() && !bIsClear)
+	{
+		const auto ClearWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageClearPopUpWidget.StageClearPopUpWidget_C'");
+		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,ClearWidgetRef); StagePopUpWidgetClass != nullptr)
+		{
+			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
+			{
+				PopUpWidget->AddToViewport();
+			}
+		}
+		
+		bIsClear = true;
 	}
 
 	if (GameOverTrigger->IsTriggered())
@@ -135,4 +152,9 @@ void ASailingSystem::SetMyShip()
 	{
 		MyShip = Cast<AMyShip>(FoundActors[0]);
 	}
+}
+
+float ASailingSystem::GetElapsedTime() const
+{
+	return ElapsedTime;
 }
