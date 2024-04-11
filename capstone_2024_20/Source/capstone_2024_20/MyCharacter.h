@@ -185,4 +185,6 @@ public:
 	UFUNCTION()
 	void PlayerDead();
 
+	UFUNCTION()
+	FRotator GetMeshRotation();
 };

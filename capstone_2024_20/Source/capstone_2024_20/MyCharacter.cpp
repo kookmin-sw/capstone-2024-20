@@ -338,6 +338,11 @@ void AMyCharacter::PlayerDead()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Dead"));
 }
 
+FRotator AMyCharacter::GetMeshRotation()
+{
+	return MeshRotation;
+}
+
 
 
 
