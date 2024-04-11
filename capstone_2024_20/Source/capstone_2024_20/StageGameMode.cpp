@@ -87,14 +87,5 @@ void AStageGameMode::PrintRoomCode()
 void AStageGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	FTimerHandle TimerHandle;
-	FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda([NewPlayer, this]()
-	{
-		PostLoginTimer(NewPlayer);
-	});
-	GetWorldTimerManager().SetTimer(
-		TimerHandle,
-		MyTimerDelegate,
-		5.0f,
-		false);
+	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController, NewPlayer->GetPlayerState<APlayerState>());
 }
