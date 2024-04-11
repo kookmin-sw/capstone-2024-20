@@ -8,7 +8,8 @@
 #include "PlayerListWidget.h"
 #include "PlayerListWidgetModifier.h"
 
-PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlayerListWidget> NewPlayerListWidgetClass, UPlayerListWidget** PlayerListWidget, IPlayerList** PlayerList)
+PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlayerListWidget> NewPlayerListWidgetClass,
+                                               UPlayerListWidget** PlayerListWidget, IPlayerList** PlayerList)
 {
 	CurrentWorld = World;
 	PlayerListWidgetClass = NewPlayerListWidgetClass;
@@ -16,22 +17,21 @@ PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlaye
 	ControllerPlayerList = PlayerList;
 }
 
-void PlayerListWidgetCreate::PostLogin(APlayerController* NewPlayer)
+void PlayerListWidgetCreate::PostLogin(APlayerState* NewPlayer)
 {
-	// UPlayerListWidget* PlayerListWidget = CreatePlayerListWidget();
-	 GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
+	UPlayerListWidget* PlayerListWidget = CreatePlayerListWidget();
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
 	                                 TEXT("Create PostLogin"));
-	// *ControllerPlayerList = new UPlayerListWidgetModifier(PlayerListWidget);
-	// (**ControllerPlayerList).PostLogin(NewPlayer);
-	// *ControllerPlayerListWidget = PlayerListWidget;
+	*ControllerPlayerList = new UPlayerListWidgetModifier(PlayerListWidget);
+	(**ControllerPlayerList).PostLogin(NewPlayer);
+	*ControllerPlayerListWidget = PlayerListWidget;
 }
 
 UPlayerListWidget* PlayerListWidgetCreate::CreatePlayerListWidget()
 {
-	
 	UPlayerListWidget* WidgetInstance = nullptr;
 	WidgetInstance = CreateWidget<UPlayerListWidget>(CurrentWorld, PlayerListWidgetClass);
 	WidgetInstance->AddToViewport(100);
-	
+
 	return WidgetInstance;
 }

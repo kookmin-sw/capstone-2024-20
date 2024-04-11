@@ -10,23 +10,23 @@ UPlayerListWidgetModifier::UPlayerListWidgetModifier(UPlayerListWidget* NewPlaye
 	PlayerListWidget = NewPlayerListWidget;
 }
 
-void UPlayerListWidgetModifier::PostLogin(APlayerController* NewPlayer)
+void UPlayerListWidgetModifier::PostLogin(APlayerState* NewPlayer)
 {
-	APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>();
-	if (PlayerState)
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Purple,
+		TEXT("Modifier"));
+	if (NewPlayer)
 	{
-		int32 Id = PlayerState->GetPlayerId();
-		FString PlayerName = PlayerState->GetPlayerName();
-
+		int32 Id = NewPlayer->GetPlayerId();
+		FString PlayerName = NewPlayer->GetPlayerName();
+		
 		IdIndexMap.Add(Id, PlayerListWidget->GetLength());
 		PlayerListWidget->Add(PlayerName);
 	}
 }
 
-void UPlayerListWidgetModifier::Logout(AController* Exiting)
+void UPlayerListWidgetModifier::Logout(APlayerState* Exiting)
 {
-	APlayerState* PlayerState = Exiting->GetPlayerState<APlayerState>();
-	int32 Id = PlayerState->GetPlayerId();
+	int32 Id = Exiting->GetPlayerId();
 	int32* Index = IdIndexMap.Find(Id);
 
 	PlayerListWidget->Remove(*Index);

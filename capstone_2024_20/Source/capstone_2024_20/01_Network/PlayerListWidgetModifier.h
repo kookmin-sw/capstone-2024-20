@@ -19,6 +19,6 @@ private:
 
 	TMap<int32, int32> IdIndexMap;
 public:
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-	virtual void Logout(AController* Exiting) override;
+	virtual void PostLogin(APlayerState* NewPlayer) override;
+	virtual void Logout(APlayerState* Exiting) override;
 };

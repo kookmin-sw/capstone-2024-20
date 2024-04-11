@@ -9,6 +9,6 @@ class CAPSTONE_2024_20_API IPlayerList
 public:
 	virtual ~IPlayerList() = default;
 	
-	virtual void PostLogin(APlayerController* NewPlayer) = 0;
-	virtual void Logout(AController* Exiting){}
+	virtual void PostLogin(APlayerState* NewPlayer) = 0;
+	virtual void Logout(APlayerState* Exiting){}
 };

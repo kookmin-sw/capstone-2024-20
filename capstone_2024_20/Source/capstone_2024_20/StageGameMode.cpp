@@ -23,8 +23,7 @@ void AStageGameMode::BeginPlay()
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
 	                                 FString(TEXT("Init진출")));
 
-	PlayerListController = APlayerListController::Create(GetWorld());
-	PlayerListController->TTEE();
+	PlayerListController = APlayerListController::Find(GetWorld());
 	
 	InitRoomInfo();
 	TArray<AActor*> FoundActors;
@@ -67,25 +66,13 @@ void AStageGameMode::InitRoomInfo()
 void AStageGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
-	                                 TEXT("LOGOUT"));
 
-	PlayerListController->Logout(Exiting);
+	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
 }
 
 void AStageGameMode::PostLoginTimer(APlayerController* NewPlayer)
 {
-	PlayerListController->TTEE();
-	PlayerListController->PostLogin(NewPlayer);
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-	                                 TEXT("POST LOGIN"));
-
-
-	FString Name = NewPlayer->PlayerState->GetPlayerName();
-	int32 Id = NewPlayer->PlayerState->GetPlayerId();
-
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-	                                 FString::Printf(TEXT("name: %s, id: %d"), *Name, Id));
+	PlayerListController->PostLogin(NewPlayer->GetPlayerState<APlayerState>());
 }
 
 void AStageGameMode::PrintRoomCode()
