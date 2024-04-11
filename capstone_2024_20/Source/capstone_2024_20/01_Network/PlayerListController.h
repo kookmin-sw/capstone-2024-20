@@ -34,6 +34,6 @@ public:
 	virtual void Logout(APlayerState* Exiting);
 
 	static APlayerListController* Find(UWorld* World);
-	static void PostLoginTimer(UWorld* World, APlayerListController** PlayerListController, APlayerState* PlayerState);
-	static void PostLoginTimerCallback(APlayerListController** PlayerListController, APlayerState* PlayerState);
+	static void PostLoginTimer(UWorld* World, APlayerListController** PlayerListController);
+	static void PostLoginTimerCallback(APlayerListController** PlayerListController);
 };

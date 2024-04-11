@@ -27,7 +27,7 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController, NewPlayer->GetPlayerState<APlayerState>());
+	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 
 	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
 

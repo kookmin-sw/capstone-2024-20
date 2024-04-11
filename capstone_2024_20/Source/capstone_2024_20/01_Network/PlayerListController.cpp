@@ -60,12 +60,13 @@ APlayerListController* APlayerListController::Find(UWorld* World)
 	return PlayerListController;
 }
 
-void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController** PlayerListController,
-                                           APlayerState* PlayerState)
+void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController** PlayerListController)
 {
 	FTimerHandle TimerHandle;
+
 	const FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda(
-		&APlayerListController::PostLoginTimerCallback, PlayerListController, PlayerState);
+		&APlayerListController::PostLoginTimerCallback, PlayerListController);
+
 	World->GetTimerManager().SetTimer(
 		TimerHandle,
 		MyTimerDelegate,
@@ -73,8 +74,7 @@ void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController*
 		false);
 }
 
-void APlayerListController::PostLoginTimerCallback(APlayerListController** PlayerListController,
-                                                   APlayerState* PlayerState)
+void APlayerListController::PostLoginTimerCallback(APlayerListController** PlayerListController)
 {
 	(*PlayerListController)->PostLogin();
 }

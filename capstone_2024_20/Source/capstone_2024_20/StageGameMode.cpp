@@ -82,5 +82,5 @@ void AStageGameMode::PrintRoomCode()
 void AStageGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController, NewPlayer->GetPlayerState<APlayerState>());
+	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 }
