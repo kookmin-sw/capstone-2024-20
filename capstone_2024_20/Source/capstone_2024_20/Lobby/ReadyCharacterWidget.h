@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ILobbyCharacterWidget.h"
+#include "ILobbyReadyWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "capstone_2024_20/Common/NamePlateWidget.h"
 #include "Components/Image.h"

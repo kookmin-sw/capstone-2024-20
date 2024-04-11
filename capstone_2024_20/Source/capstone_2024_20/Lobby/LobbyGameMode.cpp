@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "LobbyCharacter.h"
+#include "LobbyPlayerListController.h"
 #include "LobbyPlayerState.h"
 
 ALobbyGameMode::ALobbyGameMode()
@@ -34,6 +35,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
 
+	ALobbyPlayerListController::RegisterReadyEventTimer(GetWorld(),
+		&PlayerListController, LobbyPlayerState);
 	SpawnPlayer(NewPlayer);
 }
 
