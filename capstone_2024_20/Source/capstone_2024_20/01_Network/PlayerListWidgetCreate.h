@@ -18,8 +18,8 @@ public:
 	UPlayerListWidget** ControllerPlayerListWidget;
 	IPlayerList** ControllerPlayerList;
 	
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void PostLogin(TArray<APlayerState*> PlayerStates) override;
 
-private:
+protected:
 	UPlayerListWidget* CreatePlayerListWidget();
 };

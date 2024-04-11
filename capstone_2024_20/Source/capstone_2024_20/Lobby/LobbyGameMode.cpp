@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "LobbyCharacter.h"
+#include "LobbyPlayerListController.h"
 #include "LobbyPlayerState.h"
 
 ALobbyGameMode::ALobbyGameMode()
@@ -14,6 +15,8 @@ ALobbyGameMode::ALobbyGameMode()
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerListController = APlayerListController::Find(GetWorld());
+	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
@@ -25,12 +28,22 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
+
 	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
 
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
 
+	ALobbyPlayerListController::RegisterReadyEventTimer(GetWorld(),
+		&PlayerListController, LobbyPlayerState);
 	SpawnPlayer(NewPlayer);
+}
+
+void ALobbyGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
 }
 
 void ALobbyGameMode::GameStart()

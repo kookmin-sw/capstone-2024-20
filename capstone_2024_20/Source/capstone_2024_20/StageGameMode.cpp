@@ -22,6 +22,9 @@ void AStageGameMode::BeginPlay()
 	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
 	                                 FString(TEXT("Init진출")));
+
+	PlayerListController = APlayerListController::Find(GetWorld());
+	
 	InitRoomInfo();
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStageSelectController::StaticClass(), FoundActors);
@@ -29,6 +32,8 @@ void AStageGameMode::BeginPlay()
 	{
 		StageSelectController = Cast<AStageSelectController>(FoundActors[0]);
 	}
+
+
 }
 
 void AStageGameMode::InitRoomInfo()
@@ -61,24 +66,8 @@ void AStageGameMode::InitRoomInfo()
 void AStageGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
-	                                 TEXT("LOGOUT"));
 
-	PlayerListController->Logout(Exiting);
-}
-
-void AStageGameMode::PostLoginTimer(APlayerController* NewPlayer)
-{
-	PlayerListController->PostLogin(NewPlayer);
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-	                                 TEXT("POST LOGIN"));
-
-
-	FString Name = NewPlayer->PlayerState->GetPlayerName();
-	int32 Id = NewPlayer->PlayerState->GetPlayerId();
-
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-	                                 FString::Printf(TEXT("name: %s, id: %d"), *Name, Id));
+	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
 }
 
 void AStageGameMode::PrintRoomCode()
@@ -93,14 +82,5 @@ void AStageGameMode::PrintRoomCode()
 void AStageGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	FTimerHandle TimerHandle;
-	FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda([NewPlayer, this]()
-	{
-		PostLoginTimer(NewPlayer);
-	});
-	GetWorldTimerManager().SetTimer(
-		TimerHandle,
-		MyTimerDelegate,
-		2.0f,
-		false);
+	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 }

@@ -24,6 +24,15 @@ void UPlayerListWidget::Remove(int32 Index)
 	length -= 1;
 }
 
+void UPlayerListWidget::Clear()
+{
+	length = 0;
+	for(int i=0;i<PlayerElements.Num();i++)
+	{
+		PlayerElements[i]->Clear();
+	}
+}
+
 int32 UPlayerListWidget::GetLength()
 {
 	return length;

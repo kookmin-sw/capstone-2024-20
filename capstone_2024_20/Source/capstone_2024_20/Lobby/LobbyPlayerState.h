@@ -10,7 +10,7 @@
  * 
  */
 
-DECLARE_DYNAMIC_DELEGATE(FIsReadyChanged);
+DECLARE_MULTICAST_DELEGATE(FIsReadyChanged);
 
 UCLASS()
 class CAPSTONE_2024_20_API ALobbyPlayerState : public APlayerState

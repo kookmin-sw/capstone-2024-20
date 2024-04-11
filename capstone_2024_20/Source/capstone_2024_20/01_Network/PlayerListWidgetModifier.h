@@ -14,11 +14,13 @@ class CAPSTONE_2024_20_API UPlayerListWidgetModifier : public IPlayerList
 {
 public:
 	UPlayerListWidgetModifier(UPlayerListWidget* NewPlayerListWidget);
-private:
+protected:
 	UPlayerListWidget* PlayerListWidget;
 
 	TMap<int32, int32> IdIndexMap;
+
+	virtual void Refresh(TArray<APlayerState*> PlayerStates);
 public:
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-	virtual void Logout(AController* Exiting) override;
+	virtual void PostLogin(TArray<APlayerState*> PlayerStates) override;
+	virtual void Logout(APlayerState* Exiting) override;
 };

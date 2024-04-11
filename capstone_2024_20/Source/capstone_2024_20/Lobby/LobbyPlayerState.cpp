@@ -39,9 +39,9 @@ void ALobbyPlayerState::SetReady()
 }
 
 void ALobbyPlayerState::OnRep_IsReady()
-{
+{	
 	bIsCanReady = true;
-	OnIsReadyChanged.Execute();
+	OnIsReadyChanged.Broadcast();
 }
 
 void ALobbyPlayerState::SetInitPlayerNumber(int Number)
