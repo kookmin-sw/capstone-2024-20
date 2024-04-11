@@ -212,6 +212,7 @@ void AMyPlayerController::Interaction_Released()
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
 			Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 			ViewChange();
+			CurrentHitObject->Interact();
 		}
 	
 		else if(PressDuration >= 3.0f)
