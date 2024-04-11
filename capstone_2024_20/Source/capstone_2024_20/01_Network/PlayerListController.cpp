@@ -23,71 +23,27 @@ APlayerListController::APlayerListController()
 void APlayerListController::BeginPlay()
 {
 	Super::BeginPlay();
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
-	{
-		PlayerController->InputComponent->BindKey(EKeys::G, IE_Pressed,
-												  this, &APlayerListController::TTEE);
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Purple,
-	                                 TEXT("Begin PPPPP"));
-
-	const ENetRole NetRole = GetLocalRole();
-	FString RoleString;
-
-	switch (NetRole)
-	{
-	case ROLE_None:
-		RoleString = "None";
-		break;
-	case ROLE_SimulatedProxy:
-		RoleString = "SimulatedProxy";
-		break;
-	case ROLE_AutonomousProxy:
-		RoleString = "AutonomousProxy";
-		break;
-	case ROLE_Authority:
-		RoleString = "Authority";
-		break;
-	default:
-		RoleString = "Unknown";
-		break;
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-		RoleString);
+	
 	PlayerListWidgetCreate* PlayerListWigetCreate = new PlayerListWidgetCreate(GetWorld(), PlayerListWigetClass,
 	                                                                           &PlayerListWidget, &PlayerListUpdate);
 	PlayerListUpdate = PlayerListWigetCreate;
 }
 
-void APlayerListController::PostLogin_Implementation(APlayerController* NewPlayer)
+void APlayerListController::PostLogin_Implementation(APlayerState* NewPlayer)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-										 TEXT("NOT NOT"));
-		
 	if (PlayerListUpdate)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-		                                 TEXT("NOT NOT"));
 		PlayerListUpdate->PostLogin(NewPlayer);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-		                                 TEXT("nullptr"));
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-		                                 TEXT("nullptr2"));
 	}
 }
 
-void APlayerListController::Logout_Implementation(AController* Exiting)
+void APlayerListController::Logout_Implementation(APlayerState* Exiting)
 {
 	PlayerListUpdate->Logout(Exiting);
 }
 
 
-APlayerListController* APlayerListController::Create(UWorld* World)
+APlayerListController* APlayerListController::Find(UWorld* World)
 {
 	TArray<AActor*> FoundActors;
 	APlayerListController* PlayerListController = nullptr;
@@ -99,8 +55,21 @@ APlayerListController* APlayerListController::Create(UWorld* World)
 	return PlayerListController;
 }
 
-void APlayerListController::TTEE_Implementation()
+void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController** PlayerListController,
+	APlayerState* PlayerState)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Blue,
-										 TEXT("aaaaa"));
+	FTimerHandle TimerHandle;
+	const FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda(
+		&APlayerListController::PostLoginTimerCallback, PlayerListController, PlayerState);
+	World->GetTimerManager().SetTimer(
+		TimerHandle,
+		MyTimerDelegate,
+		2.0f,
+		false);
+}
+
+void APlayerListController::PostLoginTimerCallback(APlayerListController** PlayerListController,
+	APlayerState* PlayerState)
+{
+	(*PlayerListController)->PostLogin(PlayerState);
 }

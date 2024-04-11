@@ -25,14 +25,12 @@ private:
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void PostLogin(APlayerState* NewPlayer) override;
 	
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void Logout(AController* Exiting) override;
+	virtual void Logout(APlayerState* Exiting) override;
 
-	static APlayerListController* Create(UWorld* World);
-
-
-	UFUNCTION(NetMulticast, Reliable)
-	void TTEE();
+	static APlayerListController* Find(UWorld* World);
+	static void PostLoginTimer(UWorld* World, APlayerListController** PlayerListController, APlayerState* PlayerState);
+	static void PostLoginTimerCallback(APlayerListController** PlayerListController, APlayerState* PlayerState);
 };
