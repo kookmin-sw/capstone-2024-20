@@ -9,27 +9,32 @@
 class UPlayerListWidget;
 
 UCLASS()
-class CAPSTONE_2024_20_API APlayerListController :public AActor
+class CAPSTONE_2024_20_API APlayerListController : public AActor
 {
 	GENERATED_BODY()
 
+protected:
 	APlayerListController();
+
 public:
 	virtual void BeginPlay() override;
-private:
+	UFUNCTION()
+	virtual void Init();
+
+protected:
+	IPlayerList* PlayerListUpdate;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UPlayerListWidget> PlayerListWigetClass;
-	
+
 	UPlayerListWidget* PlayerListWidget;
-	IPlayerList* PlayerListUpdate;
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MutliRPC_PostLogin();
 
 	UFUNCTION()
-	void PostLogin();
-	
+	virtual void PostLogin();
+
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void Logout(APlayerState* Exiting);
 

@@ -20,6 +20,6 @@ public:
 	
 	virtual void PostLogin(TArray<APlayerState*> PlayerStates) override;
 
-private:
+protected:
 	UPlayerListWidget* CreatePlayerListWidget();
 };

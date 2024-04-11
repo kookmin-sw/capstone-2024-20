@@ -25,8 +25,14 @@ void APlayerListController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Init();
+}
+
+void APlayerListController::Init()
+{
 	PlayerListWidgetCreate* PlayerListWigetCreate = new PlayerListWidgetCreate(GetWorld(), PlayerListWigetClass,
-	                                                                           &PlayerListWidget, &PlayerListUpdate);
+																		   &PlayerListWidget, &PlayerListUpdate);
+	
 	PlayerListUpdate = PlayerListWigetCreate;
 }
 
