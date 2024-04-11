@@ -45,6 +45,16 @@ void AMyShip::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AMyShip, TargetRotation);
 }
 
+void AMyShip::Upgrade()
+{
+	MoveSpeed += 100.0f; // Todo@autumn replace with data table
+}
+
+float AMyShip::GetMoveSpeed() const
+{
+	return MoveSpeed;
+}
+
 
 // Called to bind functionality to input
 void AMyShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

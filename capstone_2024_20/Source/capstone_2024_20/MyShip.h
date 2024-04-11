@@ -36,7 +36,12 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void Upgrade();
+	float GetMoveSpeed() const;
+
 	UPROPERTY(Replicated)
 	FRotator TargetRotation;
 
+	UPROPERTY(Replicated)
+	float MoveSpeed = 600.0f; // Todo@autumn replace with data table
 };
