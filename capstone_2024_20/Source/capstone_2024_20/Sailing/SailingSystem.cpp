@@ -67,6 +67,12 @@ void ASailingSystem::Tick(float DeltaTime)
 		}
 	}
 
+	for (const auto Enemy : Enemies)
+	{
+		// Todo@autumn - This is a temporary solution
+		Enemy->MoveToMyCharacter(MyCharacters[0]);
+	}
+
 	SpawnEventTimer += DeltaTime;
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	if (SpawnEventTimer >= 10.0f)
