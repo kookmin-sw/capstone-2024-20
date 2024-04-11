@@ -22,7 +22,7 @@ class CAPSTONE_2024_20_API AStageGameMode : public AGameModeBase
 	void InitRoomInfo();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPlayerListController* PlayerListController;
+	APlayerListController* PlayerListController;
 	
 	class AStageSelectController* StageSelectController;
 

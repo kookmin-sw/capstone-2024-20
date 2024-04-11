@@ -22,6 +22,10 @@ void AStageGameMode::BeginPlay()
 	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
 	                                 FString(TEXT("Init진출")));
+
+	PlayerListController = APlayerListController::Create(GetWorld());
+	PlayerListController->TTEE();
+	
 	InitRoomInfo();
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStageSelectController::StaticClass(), FoundActors);
@@ -29,6 +33,8 @@ void AStageGameMode::BeginPlay()
 	{
 		StageSelectController = Cast<AStageSelectController>(FoundActors[0]);
 	}
+
+
 }
 
 void AStageGameMode::InitRoomInfo()
@@ -69,6 +75,7 @@ void AStageGameMode::Logout(AController* Exiting)
 
 void AStageGameMode::PostLoginTimer(APlayerController* NewPlayer)
 {
+	PlayerListController->TTEE();
 	PlayerListController->PostLogin(NewPlayer);
 	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
 	                                 TEXT("POST LOGIN"));
@@ -101,6 +108,6 @@ void AStageGameMode::PostLogin(APlayerController* NewPlayer)
 	GetWorldTimerManager().SetTimer(
 		TimerHandle,
 		MyTimerDelegate,
-		2.0f,
+		5.0f,
 		false);
 }

@@ -9,9 +9,11 @@
 class UPlayerListWidget;
 
 UCLASS()
-class CAPSTONE_2024_20_API UPlayerListController :public UActorComponent, public IPlayerList
+class CAPSTONE_2024_20_API APlayerListController :public AActor, public IPlayerList
 {
 	GENERATED_BODY()
+
+	APlayerListController();
 public:
 	virtual void BeginPlay() override;
 private:
@@ -22,6 +24,15 @@ private:
 	IPlayerList* PlayerListUpdate;
 
 public:
+	UFUNCTION(NetMulticast, Reliable)
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	
+	UFUNCTION(NetMulticast, Reliable)
 	virtual void Logout(AController* Exiting) override;
+
+	static APlayerListController* Create(UWorld* World);
+
+
+	UFUNCTION(NetMulticast, Reliable)
+	void TTEE();
 };

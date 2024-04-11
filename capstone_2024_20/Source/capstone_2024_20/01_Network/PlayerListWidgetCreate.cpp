@@ -18,12 +18,12 @@ PlayerListWidgetCreate::PlayerListWidgetCreate(UWorld* World, TSubclassOf<UPlaye
 
 void PlayerListWidgetCreate::PostLogin(APlayerController* NewPlayer)
 {
-	UPlayerListWidget* PlayerListWidget = CreatePlayerListWidget();
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
+	// UPlayerListWidget* PlayerListWidget = CreatePlayerListWidget();
+	 GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
 	                                 TEXT("Create PostLogin"));
-	*ControllerPlayerList = new UPlayerListWidgetModifier(PlayerListWidget);
-	(**ControllerPlayerList).PostLogin(NewPlayer);
-	*ControllerPlayerListWidget = PlayerListWidget;
+	// *ControllerPlayerList = new UPlayerListWidgetModifier(PlayerListWidget);
+	// (**ControllerPlayerList).PostLogin(NewPlayer);
+	// *ControllerPlayerListWidget = PlayerListWidget;
 }
 
 UPlayerListWidget* PlayerListWidgetCreate::CreatePlayerListWidget()
