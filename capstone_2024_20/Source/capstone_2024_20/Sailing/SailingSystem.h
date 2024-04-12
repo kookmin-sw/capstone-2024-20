@@ -29,6 +29,7 @@ public:
 
 	void UpgradeMyShip() const;
 
+	float GetElapsedTime() const;
 	void SetMyShip();
 	void SetMyCharacters();
 
@@ -53,4 +54,7 @@ private:
 	AMyShip* MyShip;
 
 	int32 Currency = 0;
+
+	bool bIsClear = false;
+	float ElapsedTime = 0;
 };
