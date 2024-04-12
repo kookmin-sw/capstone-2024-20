@@ -6,7 +6,7 @@
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
-AMyObject::AMyObject()
+AMyObject::AMyObject() : CanBeOperated(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -45,6 +45,18 @@ void AMyObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(AMyObject, TargetRotation);
 }
 
+void AMyObject::Interact()
+{
+	if (CanBeOperated)
+	{
+		Operate();
+	}
+}
+
+void AMyObject::Operate()
+{
+	// do nothing, override if needed
+}
 
 
 bool AMyObject::GetIsDragging()

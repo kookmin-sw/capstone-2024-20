@@ -59,3 +59,8 @@ void AInGameModeBaseTest::PrintRoomCode()
 
 	UE_LOG(LogTemp, Warning, TEXT("Test"));
 }
+
+bool AInGameModeBaseTest::AllowCheats(APlayerController* P)
+{
+	return true;
+}

@@ -5,6 +5,7 @@
 #include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
 #include "Blueprint/UserWidget.h"
+#include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
@@ -24,6 +25,7 @@ void ASailingSystem::BeginPlay()
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -82,6 +84,12 @@ void ASailingSystem::Tick(float DeltaTime)
 		}
 	}
 
+	for (const auto Enemy : Enemies)
+	{
+		// Todo@autumn - This is a temporary solution
+		Enemy->MoveToMyCharacter(MyCharacters[0]);
+	}
+
 	SpawnEventTimer += DeltaTime;
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	if (SpawnEventTimer >= 10.0f)
@@ -110,10 +118,11 @@ void ASailingSystem::SpawnEvent()
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 880.0f);
-
-	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(MyShip->GetActorLocation() + RandomLocation));
+	const auto RandomLocation = FVector(RandomX, RandomY, 850.0f);
+	
+	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
 	Events.Add(SpawnedEvent);
 }
 
@@ -143,6 +152,11 @@ void ASailingSystem::UpgradeMyShip() const
 	MyShip->Upgrade();
 }
 
+float ASailingSystem::GetElapsedTime() const
+{
+	return ElapsedTime;
+}
+
 void ASailingSystem::SetMyShip()
 {
 	// Todo@autumn - This is a temporary solution, replace it.
@@ -154,7 +168,12 @@ void ASailingSystem::SetMyShip()
 	}
 }
 
-float ASailingSystem::GetElapsedTime() const
+void ASailingSystem::SetMyCharacters()
 {
-	return ElapsedTime;
+	TArray<AActor*> FoundMyCharacters;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCharacter::StaticClass(), FoundMyCharacters);
+	for (const auto FoundMyCharacter : FoundMyCharacters)
+	{
+		MyCharacters.Add(Cast<AMyCharacter>(FoundMyCharacter));
+	}
 }

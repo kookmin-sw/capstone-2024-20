@@ -50,6 +50,7 @@ void ALobbyCharacter::Init()
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
+			PlayerController->EnableCheats();
 			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
 			                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
 		}
