@@ -29,8 +29,8 @@ void UPlayerListWidgetModifier::PostLogin(TArray<APlayerState*> PlayerStates)
 
 void UPlayerListWidgetModifier::Logout(APlayerState* Exiting)
 {
-	int32 Id = Exiting->GetPlayerId();
-	int32* Index = IdIndexMap.Find(Id);
-
-	PlayerListWidget->Remove(*Index);
+	// int32 Id = Exiting->GetPlayerId();
+	// int32* Index = IdIndexMap.Find(Id);
+	//
+	// PlayerListWidget->Remove(*Index);
 }
