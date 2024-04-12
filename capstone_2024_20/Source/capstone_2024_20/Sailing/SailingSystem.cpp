@@ -4,6 +4,7 @@
 #include "../MyShip.h"
 #include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
+#include "../Map/Obstacle.h"
 #include "Blueprint/UserWidget.h"
 #include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,6 +23,8 @@ void ASailingSystem::BeginPlay()
 	
 	GameOverTrigger = NewObject<UTrigger>();
 	GameOverTrigger->Initialize("T_0002", this);
+
+	GenerateMap();
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
@@ -96,6 +99,26 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		SpawnEvent();
 		SpawnEventTimer = 0.0f;
+	}
+}
+
+void ASailingSystem::GenerateMap() const
+{
+	constexpr int32 GridCount = 20; // Todo@autumn - This is a temporary solution, replace it with data.
+
+	for(int x = 0; x < GridCount; x++)
+	{
+		for (int y = 0; y < GridCount; y++)
+		{
+			constexpr float GridSize = 10000.0f;
+			const float XPos = (x - GridCount / 2) * GridSize + GridSize / 2;
+			const float YPos = (y - GridCount / 2) * GridSize + GridSize / 2;
+			FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
+			const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
+
+			const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), GridTransform);
+			SpawnedObstacle->SetActorRotation(RandRotator);
+		}
 	}
 }
 
