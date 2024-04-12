@@ -46,6 +46,11 @@ void ALobbyGameMode::Logout(AController* Exiting)
 	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
 }
 
+bool ALobbyGameMode::AllowCheats(APlayerController* P)
+{
+	return true;
+}
+
 void ALobbyGameMode::GameStart()
 {
 	if (IsReadyAllPlayer() == true)
