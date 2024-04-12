@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <functional>
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Trigger.generated.h"
@@ -15,7 +16,7 @@ public:
 	UTrigger();
 	void Initialize(const FString& Id, ASailingSystem* InSailingSystem);
 
-	bool (*IsTriggered)();
+	std::function<bool()> IsTriggered;
 
 	UPROPERTY()
 	ASailingSystem* SailingSystem;

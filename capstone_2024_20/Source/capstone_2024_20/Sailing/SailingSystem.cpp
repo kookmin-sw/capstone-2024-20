@@ -5,6 +5,8 @@
 #include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
 #include "../Map/Obstacle.h"
+#include "Blueprint/UserWidget.h"
+#include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
@@ -26,6 +28,7 @@ void ASailingSystem::BeginPlay()
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -37,10 +40,26 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		return;
 	}
-	
-	if (ClearTrigger->IsTriggered())
+
+	if (bIsClear)
 	{
-		// Todo@autumn do something
+		return;
+	}
+
+	ElapsedTime += DeltaTime;
+	
+	if (ClearTrigger->IsTriggered() && !bIsClear)
+	{
+		const auto ClearWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageClearPopUpWidget.StageClearPopUpWidget_C'");
+		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,ClearWidgetRef); StagePopUpWidgetClass != nullptr)
+		{
+			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
+			{
+				PopUpWidget->AddToViewport();
+			}
+		}
+		
+		bIsClear = true;
 	}
 
 	if (GameOverTrigger->IsTriggered())
@@ -66,6 +85,12 @@ void ASailingSystem::Tick(float DeltaTime)
 		{
 			Enemies.Add(SpawnedEnemy);
 		}
+	}
+
+	for (const auto Enemy : Enemies)
+	{
+		// Todo@autumn - This is a temporary solution
+		Enemy->MoveToMyCharacter(MyCharacters[0]);
 	}
 
 	SpawnEventTimer += DeltaTime;
@@ -116,10 +141,11 @@ void ASailingSystem::SpawnEvent()
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 880.0f);
-
-	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(MyShip->GetActorLocation() + RandomLocation));
+	const auto RandomLocation = FVector(RandomX, RandomY, 850.0f);
+	
+	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
 	Events.Add(SpawnedEvent);
 }
 
@@ -149,6 +175,11 @@ void ASailingSystem::UpgradeMyShip() const
 	MyShip->Upgrade();
 }
 
+float ASailingSystem::GetElapsedTime() const
+{
+	return ElapsedTime;
+}
+
 void ASailingSystem::SetMyShip()
 {
 	// Todo@autumn - This is a temporary solution, replace it.
@@ -157,5 +188,15 @@ void ASailingSystem::SetMyShip()
 	if (FoundActors.Num() > 0)
 	{
 		MyShip = Cast<AMyShip>(FoundActors[0]);
+	}
+}
+
+void ASailingSystem::SetMyCharacters()
+{
+	TArray<AActor*> FoundMyCharacters;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCharacter::StaticClass(), FoundMyCharacters);
+	for (const auto FoundMyCharacter : FoundMyCharacters)
+	{
+		MyCharacters.Add(Cast<AMyCharacter>(FoundMyCharacter));
 	}
 }
