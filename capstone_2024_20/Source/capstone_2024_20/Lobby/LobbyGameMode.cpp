@@ -28,15 +28,16 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
-
+	
 	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
 
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
 
+	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 	ALobbyPlayerListController::RegisterReadyEventTimer(GetWorld(),
 		&PlayerListController, LobbyPlayerState);
+	
 	SpawnPlayer(NewPlayer);
 }
 

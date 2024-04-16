@@ -62,7 +62,7 @@ void ALobbyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 2.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 5.0f, false);
 }
 
 void ALobbyCharacter::Tick(float DeltaTime)
