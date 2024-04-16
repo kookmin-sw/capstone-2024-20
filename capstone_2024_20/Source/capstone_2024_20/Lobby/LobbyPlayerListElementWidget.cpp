@@ -19,3 +19,9 @@ void ULobbyPlayerListElementWidget::SetVisibilityFromBool(bool IsVisible)
 		Image->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+
+void ULobbyPlayerListElementWidget::Clear()
+{
+	Super::Clear();
+	SetVisibilityFromBool(false);
+}

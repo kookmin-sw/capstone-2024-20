@@ -30,7 +30,7 @@ public:
 	void Refresh();
 
 	UFUNCTION()
-	void Refresh2();
+	void RefreshTimer();
 	
 	static void RegisterReadyEventTimer(UWorld* World, APlayerListController** LobbyPlayerListController,
 	                               ALobbyPlayerState* PlayerState);

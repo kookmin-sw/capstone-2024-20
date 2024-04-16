@@ -25,4 +25,6 @@ public:
 
 	UFUNCTION()
 	void SetVisibilityFromBool(bool IsVisible);
+
+	virtual void Clear() override;
 };

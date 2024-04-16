@@ -14,8 +14,8 @@ class CAPSTONE_2024_20_API ULobbyPlayerListWidgetModifier : public UPlayerListWi
 public:
 	ULobbyPlayerListWidgetModifier(UPlayerListWidget* NewPlayerListWidget);
 
-public:
-	virtual void Refresh(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState = nullptr) override;
+protected:
+	virtual void RefreshItem(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState) override;
 };
 
 

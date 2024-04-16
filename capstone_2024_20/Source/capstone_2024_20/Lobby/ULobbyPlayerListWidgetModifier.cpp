@@ -9,30 +9,31 @@ ULobbyPlayerListWidgetModifier::ULobbyPlayerListWidgetModifier(UPlayerListWidget
 {
 }
 
-void ULobbyPlayerListWidgetModifier::Refresh(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState)
+void ULobbyPlayerListWidgetModifier::RefreshItem(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState)
 {
-	UPlayerListWidgetModifier::Refresh(PlayerStates, LogoutPlayerState);
+	UPlayerListWidgetModifier::RefreshItem(PlayerStates, LogoutPlayerState);
 
-	int length = 1;
-	for (int i = 0; i < PlayerStates.Num(); i++)
+	int index = 0;
+	for (int32 i = 0; i < PlayerStates.Num(); i++)
 	{
-		
-		ALobbyPlayerState* PlayerState = Cast<ALobbyPlayerState>(PlayerStates[i]);
 		ULobbyPlayerListElementWidget* LobbyPlayerListElement =
-			Cast<ULobbyPlayerListElementWidget>(PlayerListWidget->PlayerElements[i]);
+			Cast<ULobbyPlayerListElementWidget>(PlayerListWidget->PlayerElements[index]);
 
-		if(LogoutPlayerState == PlayerStates[i])
-		{
-			LobbyPlayerListElement->SetVisibilityFromBool(false);
-			
-		}
-		else if (length != 1)
+		ALobbyPlayerState* PlayerState = Cast<ALobbyPlayerState>(PlayerStates[i]);
+
+		if (PlayerStates[i] == LogoutPlayerState)
+			continue;
+		if (PlayerState->PlayerNumber != 1)
 		{
 			LobbyPlayerListElement->SetVisibilityFromBool(PlayerState->IsReady());
 			FLinearColor LinearColor = ULobbyPlayerLinearColorFactory::GetLinearColor(i + 1);
 			LobbyPlayerListElement->ChangeColor(LinearColor);
 		}
+		else
+		{
+			LobbyPlayerListElement->SetVisibilityFromBool(true);
+		}
 
-		length++;
+		index++;
 	}
 }
