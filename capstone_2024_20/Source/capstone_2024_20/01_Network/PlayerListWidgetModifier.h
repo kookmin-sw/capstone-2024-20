@@ -19,8 +19,8 @@ protected:
 
 	TMap<int32, int32> IdIndexMap;
 
-	virtual void Refresh(TArray<APlayerState*> PlayerStates);
+	virtual void Refresh(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState = nullptr);
 public:
 	virtual void PostLogin(TArray<APlayerState*> PlayerStates) override;
-	virtual void Logout(APlayerState* Exiting) override;
+	virtual void Logout(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState) override;;
 };

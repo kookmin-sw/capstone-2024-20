@@ -67,7 +67,7 @@ void AStageGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 
-	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
+	PlayerListController->Logout(Exiting);
 }
 
 void AStageGameMode::PrintRoomCode()

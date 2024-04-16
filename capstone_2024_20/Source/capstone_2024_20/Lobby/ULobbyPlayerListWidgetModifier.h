@@ -15,7 +15,7 @@ public:
 	ULobbyPlayerListWidgetModifier(UPlayerListWidget* NewPlayerListWidget);
 
 public:
-	virtual void Refresh(TArray<APlayerState*> PlayerStates);
+	virtual void Refresh(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState = nullptr) override;
 };
 
 

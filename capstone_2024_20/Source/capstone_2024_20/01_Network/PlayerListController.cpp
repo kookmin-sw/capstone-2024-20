@@ -36,11 +36,6 @@ void APlayerListController::Init()
 	PlayerListUpdate = PlayerListWigetCreate;
 }
 
-void APlayerListController::Logout_Implementation(APlayerState* Exiting)
-{
-	PlayerListUpdate->Logout(Exiting);
-}
-
 void APlayerListController::MutliRPC_PostLogin_Implementation()
 {
 	if (PlayerListUpdate)
@@ -49,9 +44,22 @@ void APlayerListController::MutliRPC_PostLogin_Implementation()
 	}
 }
 
+void APlayerListController::MultiRPC_Logout_Implementation(APlayerState* ExitingPlayerState)
+{
+	if (PlayerListUpdate)
+	{
+		PlayerListUpdate->Logout(GetWorld()->GetGameState()->PlayerArray, ExitingPlayerState);
+	}
+}
+
 void APlayerListController::PostLogin()
 {
 	MutliRPC_PostLogin();
+}
+
+void APlayerListController::Logout(AController* Exiting)
+{
+	MultiRPC_Logout(Exiting->PlayerState);
 }
 
 APlayerListController* APlayerListController::Find(UWorld* World)

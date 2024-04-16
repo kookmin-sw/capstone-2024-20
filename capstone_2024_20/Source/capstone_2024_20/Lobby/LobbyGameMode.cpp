@@ -44,7 +44,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 void ALobbyGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-	PlayerListController->Logout(Exiting->GetPlayerState<APlayerState>());
+	PlayerListController->Logout(Exiting);
 }
 
 bool ALobbyGameMode::AllowCheats(APlayerController* P)
