@@ -5,37 +5,82 @@
 
 #include "PlayerListWidgetCreate.h"
 #include "PlayerListWidgetModifier.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
 
 
-void UPlayerListController::BeginPlay()
+APlayerListController::APlayerListController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SetRootComponent(RootComponent);
+
+	static ConstructorHelpers::FClassFinder<UPlayerListWidget>
+		BP_PlayerListWidget(TEXT("/Game/WidgetBlueprints/BP_PlayerListWidget.BP_PlayerListWidget_C"));
+	PlayerListWigetClass = BP_PlayerListWidget.Class;
+	bReplicates = true;
+}
+
+void APlayerListController::BeginPlay()
 {
 	Super::BeginPlay();
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Purple,
-		TEXT("Begin PPPPP"));
+
+	Init();
+}
+
+void APlayerListController::Init()
+{
 	PlayerListWidgetCreate* PlayerListWigetCreate = new PlayerListWidgetCreate(GetWorld(), PlayerListWigetClass,
-	&PlayerListWidget, &PlayerListUpdate);
+																		   &PlayerListWidget, &PlayerListUpdate);
+	
 	PlayerListUpdate = PlayerListWigetCreate;
 }
 
-void UPlayerListController::PostLogin(APlayerController* NewPlayer)
+void APlayerListController::Logout_Implementation(APlayerState* Exiting)
 {
-	if(PlayerListUpdate)
+	PlayerListUpdate->Logout(Exiting);
+}
+
+void APlayerListController::MutliRPC_PostLogin_Implementation()
+{
+	if (PlayerListUpdate)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-			TEXT("NOT NOT"));
-		PlayerListUpdate->PostLogin(NewPlayer);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-		TEXT("nullptr"));
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-			TEXT("nullptr2"));
+		PlayerListUpdate->PostLogin(GetWorld()->GetGameState()->PlayerArray);
 	}
 }
 
-void UPlayerListController::Logout(AController* Exiting)
+void APlayerListController::PostLogin()
 {
-	IPlayerList::Logout(Exiting);
-	PlayerListUpdate->Logout(Exiting);
+	MutliRPC_PostLogin();
+}
+
+APlayerListController* APlayerListController::Find(UWorld* World)
+{
+	TArray<AActor*> FoundActors;
+	APlayerListController* PlayerListController = nullptr;
+	UGameplayStatics::GetAllActorsOfClass(World, APlayerListController::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0)
+	{
+		PlayerListController = Cast<APlayerListController>(FoundActors[0]);
+	}
+	return PlayerListController;
+}
+
+void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController** PlayerListController)
+{
+	FTimerHandle TimerHandle;
+
+	const FTimerDelegate MyTimerDelegate = FTimerDelegate::CreateLambda(
+		&APlayerListController::PostLoginTimerCallback, PlayerListController);
+
+	World->GetTimerManager().SetTimer(
+		TimerHandle,
+		MyTimerDelegate,
+		2.0f,
+		false);
+}
+
+void APlayerListController::PostLoginTimerCallback(APlayerListController** PlayerListController)
+{
+	(*PlayerListController)->PostLogin();
 }

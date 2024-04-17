@@ -3,7 +3,9 @@
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 class AStaticMeshActor;
@@ -11,11 +13,17 @@ class AStaticMeshActor;
 AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
 	TextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 	TextWidget->SetupAttachment(GetMesh());
 	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
 	TextWidget->SetWidgetSpace(EWidgetSpace::Screen);
+
+	NamePlateWidget = CreateDefaultSubobject<UNamePlateWidgetComponent>(TEXT("NICKNAMEWIDGET"));
+	NamePlateWidget->SetupAttachment(RootComponent);
+	
+	
+	
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
 	if(UI_HUD.Succeeded())
 	{
@@ -66,8 +74,12 @@ void AMyCharacter::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
-	
+
+	FTimerHandle timer;
+	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 2.0f, false);
 }
+
+
 
 
 
@@ -88,8 +100,10 @@ void AMyCharacter::Tick(float DeltaTime)
 		if(FMath::IsNearlyEqual(M_SpringArmComponent->TargetArmLength, TargetArmLength, 0.01f)
 			&& M_SpringArmComponent->GetComponentRotation().Equals(TargetRotation, 0.01f))
 			bIsChanging = false;
-		
 	}
+
+	GetMesh()->SetWorldRotation(MeshRotation);
+	
 }
 
 //충돌 처리
@@ -132,6 +146,26 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 }
 
+
+void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMyCharacter, MeshRotation);
+}
+
+
+void AMyCharacter::ServerRPC_MeshRotation_Implementation(FRotator NewRotation)
+{
+	MeshRotation = NewRotation;
+}
+
+void AMyCharacter::SetNamePlate()
+{
+	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
+}
+
+
 bool AMyCharacter::GetIsOverLap()
 {
 	return bIsOverlap;
@@ -165,24 +199,9 @@ FString AMyCharacter::GetCurrentHitObjectName()
 	return CurrentHitObjectName;
 }
 
-void AMyCharacter::SpawnCannonBall()
+void AMyCharacter::SetCurrentCarryObject(AActor* obj)
 {
-	if (!BP_CannonBallClass) return;
-
-	// 캐릭터 앞 방향에 캐논볼을 소환할 위치 및 회전 계산
-	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.0f;
-	FRotator SpawnRotation = GetActorRotation();
-
-	
-	// 캐논볼 소환
-	SpawnedCannonBall = GetWorld()->SpawnActor<AActor>(BP_CannonBallClass, SpawnLocation, SpawnRotation);
-
-	if (SpawnedCannonBall != nullptr)
-	{
-		// 캐논볼을 캐릭터의 RootComponent에 붙입니다.
-		SpawnedCannonBall->AttachToComponent(GetRootComponent(),FAttachmentTransformRules::KeepWorldTransform);
-	}
-
+	CurrentCarryObject = obj;
 }
 
 void AMyCharacter::SetPlayerState(UserState NewPlayerState)
@@ -207,10 +226,10 @@ UserState AMyCharacter::GetUserStateDragging()
 
 void AMyCharacter::DestroyCannonBall()
 {
-	if(SpawnedCannonBall)
+	if(CurrentCarryObject)
 	{
-		SpawnedCannonBall->Destroy();
-		SpawnedCannonBall = nullptr;
+		CurrentCarryObject->Destroy();
+		CurrentCarryObject = nullptr;
 	}	
 }
 
@@ -317,6 +336,11 @@ void AMyCharacter::DecreaseMaxHP(int minusHP)
 void AMyCharacter::PlayerDead()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Dead"));
+}
+
+FRotator AMyCharacter::GetMeshRotation()
+{
+	return MeshRotation;
 }
 
 

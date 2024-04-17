@@ -27,7 +27,10 @@ private:
 	UPROPERTY(Replicated)
 	bool IsDragging;
 
-
+protected:
+	UPROPERTY(Replicated)
+	bool CanBeOperated;
+	
 public:
 	bool GetIsDragging();
 	void SetIsDragging(bool b);
@@ -42,5 +45,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_TurnOnCollision();
-	
+
+	void Interact();
+	virtual void Operate();
 };

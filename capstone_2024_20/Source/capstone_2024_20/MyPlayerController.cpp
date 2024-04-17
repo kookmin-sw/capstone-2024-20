@@ -7,6 +7,7 @@
 #include "CharacterControlStrategy.h"
 #include "MyShip.h"
 #include "ShipControlStrategy.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 class AStaticMeshActor;
@@ -48,6 +49,7 @@ AMyPlayerController::AMyPlayerController()
 void AMyPlayerController::BeginPlay()
 {
 	//플레이어 할당
+
 	if (HasAuthority())
 	{
 		GEngine->AddOnScreenDebugMessage(
@@ -82,7 +84,11 @@ void AMyPlayerController::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
 	}
 	
+	EnableCheats();
 }
+
+
+
 
 void AMyPlayerController::Tick(float DeltaSeconds)
 {
@@ -93,7 +99,7 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 		{
 			Player = Cast<AMyCharacter>(GetPawn());
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
-
+	
 			if (Player)
 			{
 				ControlledActor = Player;
@@ -140,6 +146,16 @@ void AMyPlayerController::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		Input->BindAction(DraggingRotateAction, ETriggerEvent::Triggered, this, &AMyPlayerController::DraggingRotate);
 		Input->BindAction(ShootAction, ETriggerEvent::Started, this, &AMyPlayerController::Shoot);
 	}
+}
+
+void AMyPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	Player = Cast<AMyCharacter>(InPawn);
+
+	//Player->NamePlateWidget->SetName(Player->GetPlayerState()->GetPlayerName());
+	
 }
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
@@ -198,6 +214,7 @@ void AMyPlayerController::Interaction_Released()
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
 			Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 			ViewChange();
+			CurrentHitObject->Interact();
 		}
 	
 		else if(PressDuration >= 3.0f)
@@ -297,10 +314,9 @@ void AMyPlayerController::ViewChange()
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
 
 				ServerRPC_LoadCannonBall(Cannon);
-				//Cannon->SetIsLoad(true);
 				Player->SetPlayerState(Player->GetUserStateNone());
 				Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
-				Player->DestroyCannonBall();        
+				ServerRPC_DestroyCarryCannonBall(Player);      
 			}
 
 			
@@ -309,8 +325,10 @@ void AMyPlayerController::ViewChange()
 		{
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
+				CannonBallBox = Cast<AMyCannonBallBox>(Player->GetCurrentHitObject());
 				// 현재 접근한 오브젝트가 "CannonBallBox"면 캐논볼 생성
-				Player->SpawnCannonBall();
+				ServerRPC_SpawnCarryCannonBall(Player, CannonBallBox);
+				//Player->SpawnCannonBall();
 				Player->SetPlayerState(Player->GetUserStateCarrying());
 			}
 		}
@@ -428,6 +446,23 @@ void AMyPlayerController::ServerRPC_RotateDraggingObject_Implementation(AMyObjec
 		
 	}
 }
+
+void AMyPlayerController::ServerRPC_SpawnCarryCannonBall_Implementation(AMyCharacter* user, AMyCannonBallBox* box)
+{
+	if(HasAuthority())
+	{
+		box->SpawnCarryCannonBall(user);
+	}
+}
+
+void AMyPlayerController::ServerRPC_DestroyCarryCannonBall_Implementation(AMyCharacter* user)
+{
+	if(HasAuthority())
+	{
+		user->DestroyCannonBall();
+	}
+}
+
 
 
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "ReadyCharacterWidget.h"
+#include "capstone_2024_20/01_Network/PlayerListController.h"
 #include "LobbyGameMode.generated.h"
 
 /**
@@ -19,8 +20,12 @@ class CAPSTONE_2024_20_API ALobbyGameMode : public AGameModeBase
 
 	virtual void BeginPlay() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
-
+	virtual void Logout(AController* Exiting) override;
+	virtual bool AllowCheats(APlayerController* P) override;
 public:
+	UPROPERTY(EditAnywhere)
+	APlayerListController* PlayerListController;
+	
 	void GameStart();
 	bool IsReadyAllPlayer() const;
 

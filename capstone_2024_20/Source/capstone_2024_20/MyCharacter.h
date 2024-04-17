@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "MyObject.h"
 #include "Camera/CameraComponent.h"
+#include "Common/NamePlateWidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "UObject/ObjectRename.h"
 #include "MyCharacter.generated.h"
@@ -40,6 +41,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 private:
 
 	UPROPERTY(Category=Character, VisibleAnywhere)
@@ -55,6 +57,9 @@ private:
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	class UWidgetComponent* TextWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UNamePlateWidgetComponent* NamePlateWidget;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> ClearPopUpWidgetClass;
@@ -79,6 +84,7 @@ protected:
 	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
 	AActor* SpawnedCannonBall;
+	AActor* CurrentCarryObject;
 	
 	UFUNCTION()
 	virtual void BeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -93,6 +99,9 @@ protected:
 
 
 	
+private:
+	UPROPERTY(Replicated)
+	FRotator MeshRotation;
 
 	
 public:
@@ -112,6 +121,12 @@ public:
 	UserState GetUserStateNone();
 	UserState GetUserStateCarrying();
 	UserState GetUserStateDragging();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_MeshRotation(FRotator NewRotation);
+
+	UFUNCTION()
+	void SetNamePlate();
 	
 	UFUNCTION()
 	bool GetIsOverLap();
@@ -132,7 +147,7 @@ public:
 	FString GetCurrentHitObjectName();
 
 	UFUNCTION()
-	void SpawnCannonBall();	
+	void SetCurrentCarryObject(AActor* obj);
 
 	UFUNCTION()
 	void DestroyCannonBall();
@@ -170,4 +185,6 @@ public:
 	UFUNCTION()
 	void PlayerDead();
 
+	UFUNCTION()
+	FRotator GetMeshRotation();
 };

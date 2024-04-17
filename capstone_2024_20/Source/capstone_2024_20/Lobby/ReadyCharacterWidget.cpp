@@ -10,11 +10,6 @@ void UReadyCharacterWidget::ChangeColor(FLinearColor color)
 	ReadyImage->SetColorAndOpacity(color);
 }
 
-void UReadyCharacterWidget::SetName(FString Name)
-{
-	NameText->SetText(FText::FromString(Name));
-}
-
 void UReadyCharacterWidget::SetVisibilityFromBool(bool IsVisible)
 {
 	if (IsVisible == true)

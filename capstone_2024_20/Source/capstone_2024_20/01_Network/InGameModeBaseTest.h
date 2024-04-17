@@ -27,4 +27,6 @@ public:
 
 	UFUNCTION()
 	void PrintRoomCode();
+
+	virtual bool AllowCheats(APlayerController* P) override;
 };

@@ -17,7 +17,7 @@ void ShipControlStrategy::Move(const FInputActionInstance& Instance, AActor* Act
 			FVector ForwardDirection = Ship->GetActorForwardVector();
 			//Ship->AddActorWorldOffset(-ForwardDirection * MoveVec.Y * MoveSpeed * DeltaTime, true);
 
-			FVector newLoc = ForwardDirection * MoveVec.Y * MoveSpeed * DeltaTime;
+			FVector newLoc = ForwardDirection * MoveVec.Y * Ship->GetMoveSpeed() * DeltaTime;
 			AMyPlayerController* Controller = Cast<AMyPlayerController>(PlayerController);
 			Controller->ServerRPC_MoveShip_Loc(newLoc);
 			

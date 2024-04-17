@@ -28,7 +28,7 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip)
 	const auto Direction = MyShipLocation - GetActorLocation();
 
 	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (Direction.Size() < 4000.0f)
+	if (Direction.Size() < 11000.0f)
 	{
 		return;
 	}
@@ -50,7 +50,7 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	}
 
 	const auto MyShipLocation = MyShip->GetActorLocation();
-	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() > 5000.0f)
+	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() > 12000.0f) // Todo@autumn - This is a temporary solution, replace it with data.
 	{
 		return nullptr;
 	}
@@ -58,10 +58,11 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 0.0f);
+	const auto RandomLocation = FVector(RandomX, RandomY, 880.0f);
 
-	AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(MyShip->GetActorLocation() + RandomLocation));
+	AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
 	SpawnedEnemy->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedEnemy->SetActorRelativeLocation(RandomLocation);
 
 	SpawnEnemyTimer = 0.0f;
 
