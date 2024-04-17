@@ -79,7 +79,7 @@ E-mail: sotetero11@gmail.com
 
 ## 릴리즈 다운로드 (권장)
 
-최신 릴리즈 버전 : 0.0.2
+최신 릴리즈 버전 : 0.1.0
 
 1. [Google Drive](https://drive.google.com/drive/folders/1x4PCA_ipOcgtplP-wAv5WBOhIzESkYWc?usp=sharing) 에서 원하는 버전의 릴리즈를 다운로드 합니다.
 
