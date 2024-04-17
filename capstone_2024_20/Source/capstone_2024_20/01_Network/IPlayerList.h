@@ -10,5 +10,5 @@ public:
 	virtual ~IPlayerList() = default;
 	
 	virtual void PostLogin(TArray<APlayerState*> PlayerStates) = 0;
-	virtual void Logout(APlayerState* Exiting){}
+	virtual void Logout(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState){}
 };

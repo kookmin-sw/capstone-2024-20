@@ -22,7 +22,7 @@ public:
 	UTextBlock* Name;
 
 	void SetInfo(const FString& NewNumber, const FString& NewName);
-	void Clear();
+	virtual void Clear();
 
 	FString GetName();
 };

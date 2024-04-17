@@ -32,11 +32,13 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MutliRPC_PostLogin();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_Logout(APlayerState* ExitingPlayerState);
+	
 	UFUNCTION()
 	virtual void PostLogin();
-
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void Logout(APlayerState* Exiting);
+	UFUNCTION()
+	virtual void Logout(AController* Exiting);
 
 	static APlayerListController* Find(UWorld* World);
 	static void PostLoginTimer(UWorld* World, APlayerListController** PlayerListController);
