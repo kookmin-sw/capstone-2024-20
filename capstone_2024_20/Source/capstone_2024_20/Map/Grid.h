@@ -4,6 +4,15 @@
 #include "UObject/Object.h"
 #include "Grid.generated.h"
 
+enum class EGridType : uint8
+{
+	Empty,
+	Obstacle,
+	Ship,
+	Enemy,
+	Event
+};
+
 UCLASS()
 class CAPSTONE_2024_20_API UGrid : public UObject
 {
@@ -12,8 +21,10 @@ class CAPSTONE_2024_20_API UGrid : public UObject
 public:
 	UGrid();
 
-	int GetValue() const;
-	void SetValue(const int NewValue);
+	void SetIsProtected(const bool bNewIsProtected);
+	
+	EGridType GetGridType() const;
+	void SetGridType(const EGridType NewGridType);
 	
 	FTransform GetTransform() const;
 	void SetTransform(const FTransform& NewTransform);
@@ -22,7 +33,8 @@ public:
 	void SetRotator(const FRotator& NewRotator);
 	
 private:
-	int Value;
+	bool bIsProtected = false;
+	EGridType GridType;
 	FTransform Transform;
 	FRotator Rotator;
 };

@@ -17,7 +17,7 @@ void UMap::Initialize()
 		for (int y = 0; y < GridCount; y++)
 		{
 			Grids[x].Add(NewObject<UGrid>());
-			Grids[x][y]->SetValue(0);
+			Grids[x][y]->SetGridType(EGridType::Empty);
 			
 			constexpr float GridSize = 10000.0f;
 			const float XPos = (x - GridCount / 2) * GridSize + GridSize / 2;
@@ -34,11 +34,11 @@ void UMap::Initialize()
 	constexpr int MidY = GridCount / 2;
 	
 	// 시작 지점에 Obstacle을 생성하지 않도록 하기 위함
-	Grids[MidX][MidY]->SetValue(-1);
-	Grids[MidX + 1][MidY]->SetValue(-1);
-	Grids[MidX - 1][MidY]->SetValue(-1);
-	Grids[MidX][MidY + 1]->SetValue(-1);
-	Grids[MidX][MidY - 1]->SetValue(-1);
+	Grids[MidX][MidY]->SetIsProtected(true);
+	Grids[MidX + 1][MidY]->SetIsProtected(true);
+	Grids[MidX - 1][MidY]->SetIsProtected(true);
+	Grids[MidX][MidY + 1]->SetIsProtected(true);
+	Grids[MidX][MidY - 1]->SetIsProtected(true);
 }
 
 void UMap::Divide()
@@ -85,7 +85,7 @@ void UMap::Divide()
 			
 			for (int x = LeftBound + 1; x < RightBound; x++)
 			{
-				Grids[x][Mid]->SetValue(1);
+				Grids[x][Mid]->SetGridType(EGridType::Obstacle);
 			}
 
 			LeftBoundQueue.Enqueue(LeftBound);
@@ -106,7 +106,7 @@ void UMap::Divide()
 			
 			for (int y = TopBound + 1; y < BottomBound; y++)
 			{
-				Grids[Mid][y]->SetValue(1);
+				Grids[Mid][y]->SetGridType(EGridType::Obstacle);
 			}
 
 			LeftBoundQueue.Enqueue(LeftBound);
@@ -135,7 +135,7 @@ void UMap::Debug()
 		FString RowString;
 		for (int x = 0; x < Grids[0].Num(); x++)
 		{
-			RowString += FString::FromInt(Grids[x][y]->GetValue());
+			RowString += FString::FromInt(static_cast<int32>(Grids[x][y]->GetGridType()));
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *RowString);
 	}
@@ -149,7 +149,7 @@ TArray<UGrid*> UMap::GetObstacleGrids() const
 	{
 		for (int y = 0; y < Grids[0].Num(); y++)
 		{
-			if (const auto Grid = Grids[x][y]; Grid->GetValue() == 1)
+			if (const auto Grid = Grids[x][y]; Grid->GetGridType() == EGridType::Obstacle)
 			{
 				ObstacleGrids.Add(Grid);
 			}

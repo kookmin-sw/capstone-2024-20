@@ -1,23 +1,28 @@
 ﻿#include "Grid.h"
 
-UGrid::UGrid(): Value(0)
+UGrid::UGrid(): GridType(EGridType::Empty)
 {
 	// do nothing
 }
 
-int UGrid::GetValue() const
+void UGrid::SetIsProtected(const bool bNewIsProtected)
 {
-	return Value;
+	bIsProtected = bNewIsProtected;
 }
 
-void UGrid::SetValue(const int NewValue)
+EGridType UGrid::GetGridType() const
 {
-	if (Value == -1)
+	return GridType;
+}
+
+void UGrid::SetGridType(const EGridType NewGridType)
+{
+	if (bIsProtected)
 	{
 		return;
 	}
 
-	Value = NewValue;
+	GridType = NewGridType;
 }
 
 FTransform UGrid::GetTransform() const

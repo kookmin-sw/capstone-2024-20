@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "capstone_2024_20/Map/Grid.h"
 #include "GameFramework/Actor.h"
 #include "SailingSystem.generated.h"
 
