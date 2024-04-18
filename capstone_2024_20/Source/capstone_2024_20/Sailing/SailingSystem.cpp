@@ -8,8 +8,10 @@
 #include "Blueprint/UserWidget.h"
 #include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Map/Map.h"
+#include "../Map/Grid.h"
 
-ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
+ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -24,7 +26,7 @@ void ASailingSystem::BeginPlay()
 	GameOverTrigger = NewObject<UTrigger>();
 	GameOverTrigger->Initialize("T_0002", this);
 
-	GenerateMap();
+	CreateMap();
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
@@ -102,23 +104,21 @@ void ASailingSystem::Tick(float DeltaTime)
 	}
 }
 
-void ASailingSystem::GenerateMap() const
+void ASailingSystem::CreateMap()
 {
-	constexpr int32 GridCount = 20; // Todo@autumn - This is a temporary solution, replace it with data.
+	Map = NewObject<UMap>();
+	Map->Initialize();
+	Map->CellularAutomata();
 
-	for(int x = 0; x < GridCount; x++)
+	CreateObstacles();
+}
+
+void ASailingSystem::CreateObstacles() const
+{
+	for (auto ObstacleGrids = Map->GetObstacleGrids(); const auto ObstacleGrid : ObstacleGrids)
 	{
-		for (int y = 0; y < GridCount; y++)
-		{
-			constexpr float GridSize = 10000.0f;
-			const float XPos = (x - GridCount / 2) * GridSize + GridSize / 2;
-			const float YPos = (y - GridCount / 2) * GridSize + GridSize / 2;
-			FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
-			const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-
-			const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), GridTransform);
-			SpawnedObstacle->SetActorRotation(RandRotator);
-		}
+		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
+		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
 	}
 }
 
