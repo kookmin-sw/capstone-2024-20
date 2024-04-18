@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Enemy/Enemy.h"
 
 
 class AStaticMeshActor;
@@ -276,6 +277,15 @@ void AMyCharacter::DropObject(AActor* ship)
 	}
 }
 
+void AMyCharacter::Attack() const
+{
+	if (EnemyInAttackRange != nullptr)
+	{
+		// Todo@autumn - Need to change the damage value
+		EnemyInAttackRange->Damage(1);
+	}
+}
+
 unsigned int AMyCharacter::GetPlayerHP()
 {
 	return PlayerHP;
@@ -341,6 +351,11 @@ void AMyCharacter::PlayerDead()
 FRotator AMyCharacter::GetMeshRotation()
 {
 	return MeshRotation;
+}
+
+void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
+{
+	EnemyInAttackRange = Enemy;
 }
 
 

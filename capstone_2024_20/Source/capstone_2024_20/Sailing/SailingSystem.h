@@ -25,6 +25,9 @@ public:
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();
+
+	void CalculateEnemyInAttackRange();
+	void CalculateEnemy();
 	
 	void EarnCurrency(int32 Amount);
 	void UseCurrency(int32 Amount);

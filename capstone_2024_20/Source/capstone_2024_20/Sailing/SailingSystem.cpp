@@ -93,6 +93,8 @@ void ASailingSystem::Tick(float DeltaTime)
 		Enemy->MoveToMyCharacter(MyCharacters[0]);
 	}
 
+	CalculateEnemyInAttackRange();
+
 	SpawnEventTimer += DeltaTime;
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	if (SpawnEventTimer >= 10.0f)
@@ -147,6 +149,30 @@ void ASailingSystem::SpawnEvent()
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
 	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
 	Events.Add(SpawnedEvent);
+}
+
+void ASailingSystem::CalculateEnemyInAttackRange()
+{
+	for (const auto Character : MyCharacters)
+	{
+		FTransform CharacterTransform = Character->GetActorTransform();
+
+		double MinDistance = TNumericLimits<double>::Max();
+		AEnemy* EnemyInAttackRange = nullptr;
+		
+		for (const auto Enemy : Enemies)
+		{
+			// Todo@autumn - This is a temporary solution, replace it with data.
+			if (const auto Distance = FVector::Dist(CharacterTransform.GetLocation(), Enemy->GetActorLocation()); Distance < 200.0f && Distance < MinDistance)
+			{
+				MinDistance = Distance;
+				EnemyInAttackRange = Enemy;
+			}
+		}
+
+		// ! nullable
+		Character->SetEnemyInAttackRange(EnemyInAttackRange);
+	}
 }
 
 void ASailingSystem::EarnCurrency(const int32 Amount)
