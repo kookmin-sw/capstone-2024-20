@@ -1,4 +1,5 @@
 ﻿#include "Map.h"
+#include "Grid.h"
 
 UMap::UMap()
 {
@@ -9,20 +10,24 @@ void UMap::Initialize()
 {
 	constexpr int32 GridCount = 20; // Todo@autumn - This is a temporary solution, replace it with data.
 
-	Grids.Init(TArray<int>(), GridCount);
+	Grids.Init(TArray<UGrid*>(), GridCount);
 	for (int i = 0; i < GridCount; i++)
 	{
-		Grids[i].Init(0, GridCount);
+		for (int j = 0; j < GridCount; j++)
+		{
+			Grids[i].Add(NewObject<UGrid>());
+		}
 	}
 
 	constexpr int MidX = GridCount / 2;
 	constexpr int MidY = GridCount / 2;
-
-	Grids[MidX][MidY] = -1;
-	Grids[MidX + 1][MidY] = -1;
-	Grids[MidX - 1][MidY] = -1;
-	Grids[MidX][MidY + 1] = -1;
-	Grids[MidX][MidY - 1] = -1;
+	
+	// 시작 지점에 Obstacle을 생성하지 않도록 하기 위함
+	Grids[MidX][MidY]->SetValue(-1);
+	Grids[MidX + 1][MidY]->SetValue(-1);
+	Grids[MidX - 1][MidY]->SetValue(-1);
+	Grids[MidX][MidY + 1]->SetValue(-1);
+	Grids[MidX][MidY - 1]->SetValue(-1);
 }
 
 void UMap::Divide()
@@ -69,7 +74,7 @@ void UMap::Divide()
 			
 			for (int x = LeftBound + 1; x < RightBound; x++)
 			{
-				Grids[x][Mid] = 1;
+				Grids[x][Mid]->SetValue(1);
 			}
 
 			LeftBoundQueue.Enqueue(LeftBound);
@@ -90,7 +95,7 @@ void UMap::Divide()
 			
 			for (int y = TopBound + 1; y < BottomBound; y++)
 			{
-				Grids[Mid][y] = 1;
+				Grids[Mid][y]->SetValue(1);
 			}
 
 			LeftBoundQueue.Enqueue(LeftBound);
@@ -118,7 +123,7 @@ void UMap::Debug()
 		FString RowString;
 		for (int x = 0; x < Grids[0].Num(); x++)
 		{
-			RowString += FString::FromInt(Grids[x][y]);
+			RowString += FString::FromInt(Grids[x][y]->GetValue());
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *RowString);
 	}

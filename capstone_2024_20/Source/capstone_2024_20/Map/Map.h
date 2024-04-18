@@ -4,6 +4,8 @@
 #include "UObject/Object.h"
 #include "Map.generated.h"
 
+class UGrid;
+
 UCLASS()
 class CAPSTONE_2024_20_API UMap : public UObject
 {
@@ -16,5 +18,5 @@ public:
 	void Divide();
 	void Debug();
 	
-	TArray<TArray<int>> Grids;
+	TArray<TArray<UGrid*>> Grids;
 };

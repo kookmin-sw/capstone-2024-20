@@ -9,6 +9,7 @@
 #include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
+#include "../Map/Grid.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
 {
@@ -108,7 +109,6 @@ void ASailingSystem::CreateMap()
 	Map = NewObject<UMap>();
 	Map->Initialize();
 	Map->Divide();
-	Map->Debug();
 
 	CreateObstacles();
 }
@@ -119,7 +119,7 @@ void ASailingSystem::CreateObstacles() const
 	{
 		for (int y = 0; y < Map->Grids[0].Num(); y++)
 		{
-			switch (Map->Grids[x][y])
+			switch (Map->Grids[x][y]->GetValue())
 			{
 			case -1:
 				continue;
