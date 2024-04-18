@@ -22,7 +22,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void GenerateMap();
-	void CreateObstacle(const int X, const int Y);
+	void InitMap();
+	void DivideMap();
+	void CreateObstacles();
+	void CreateObstacle(int32 Row, int32 Col);
+	void DebugMap();
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();
