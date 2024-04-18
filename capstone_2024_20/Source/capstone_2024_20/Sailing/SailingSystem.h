@@ -11,6 +11,7 @@ class AEnemy;
 class AEvent;
 class UTrigger;
 class AMyCharacter;
+class UMap;
 
 UCLASS()
 class CAPSTONE_2024_20_API ASailingSystem : public AActor
@@ -24,7 +25,8 @@ public:
 
 	void OnEnemyDie(AEnemy* Enemy);
 
-	void GenerateMap() const;
+	void CreateMap();
+	void CreateObstacles() const;
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();
@@ -41,6 +43,9 @@ public:
 	void SetMyCharacters();
 
 private:
+	UPROPERTY()
+	UMap* Map;
+	
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
 
