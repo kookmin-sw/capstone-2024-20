@@ -41,94 +41,19 @@ void UMap::Initialize()
 	Grids[MidX][MidY - 1]->SetIsProtected(true);
 }
 
-void UMap::Divide()
-{
-	int Width = Grids.Num();
-	int Height = Grids[0].Num();
-
-	TQueue<int> LeftBoundQueue;
-	TQueue<int> RightBoundQueue;
-	TQueue<int> TopBoundQueue;
-	TQueue<int> BottomBoundQueue;
-
-	LeftBoundQueue.Enqueue(-1);
-	RightBoundQueue.Enqueue(Width);
-	TopBoundQueue.Enqueue(-1);
-	BottomBoundQueue.Enqueue(Height);
-	
-	for (int i = 0; i < 10; i++)
-	{
-		constexpr int MinHeight = 5;
-		int LeftBound;
-		int RightBound;
-		int TopBound;
-		int BottomBound;
-
-		LeftBoundQueue.Dequeue(LeftBound);
-		RightBoundQueue.Dequeue(RightBound);
-		TopBoundQueue.Dequeue(TopBound);
-		BottomBoundQueue.Dequeue(BottomBound);
-		
-		Width = RightBound - LeftBound - 1;
-		Height = BottomBound - TopBound - 1;
-
-		if (constexpr int MinWidth = 5; Width < MinWidth || Height < MinHeight)
-		{
-			continue;
-		}
-		
-		if (Width < Height)
-		{
-			// Divide horizontally
-			
-			const int Mid = FMath::RandRange(TopBound + Height * 0.4, BottomBound - Height * 0.4);
-			
-			for (int x = LeftBound + 1; x < RightBound; x++)
-			{
-				Grids[x][Mid]->SetGridType(EGridType::Obstacle);
-			}
-
-			LeftBoundQueue.Enqueue(LeftBound);
-			RightBoundQueue.Enqueue(RightBound);
-			TopBoundQueue.Enqueue(TopBound);
-			BottomBoundQueue.Enqueue(Mid);
-
-			LeftBoundQueue.Enqueue(LeftBound);
-			RightBoundQueue.Enqueue(RightBound);
-			TopBoundQueue.Enqueue(Mid);
-			BottomBoundQueue.Enqueue(BottomBound);
-		}
-		else
-		{
-			// Divide vertically
-			
-			const int Mid = FMath::RandRange(LeftBound + Width * 0.4, RightBound - Width * 0.4);
-			
-			for (int y = TopBound + 1; y < BottomBound; y++)
-			{
-				Grids[Mid][y]->SetGridType(EGridType::Obstacle);
-			}
-
-			LeftBoundQueue.Enqueue(LeftBound);
-			RightBoundQueue.Enqueue(Mid);
-			TopBoundQueue.Enqueue(TopBound);
-			BottomBoundQueue.Enqueue(BottomBound);
-
-			LeftBoundQueue.Enqueue(Mid);
-			RightBoundQueue.Enqueue(RightBound);
-			TopBoundQueue.Enqueue(TopBound);
-			BottomBoundQueue.Enqueue(BottomBound);
-		}
-	}
-
-	LeftBoundQueue.Empty();
-	RightBoundQueue.Empty();
-	TopBoundQueue.Empty();
-	BottomBoundQueue.Empty();
-}
-
 void UMap::CellularAutomata()
 {
+	for (int x = 0; x < Grids.Num(); x++)
+	{
+		for (int y = 0; y < Grids[0].Num(); y++)
+		{
+			if (FMath::RandRange(0, 100) < 50)
+			{
+				Grids[x][y]->SetGridType(EGridType::Obstacle);
+			}
+		}
+	}
+	
 	for (int i = 0; i < 3; i ++)
 	{
 		// 메모리 침범을 방지하기 위해 1부터 시작
@@ -137,7 +62,6 @@ void UMap::CellularAutomata()
 			for (int y = 1; y < Grids[0].Num() - 1; y++) // 상동
 			{
 				TArray<UGrid*> Neighbors;
-				Neighbors.Add(Grids[x][y]);
 				Neighbors.Add(Grids[x + 1][y]);
 				Neighbors.Add(Grids[x - 1][y]);
 				Neighbors.Add(Grids[x][y + 1]);
@@ -146,7 +70,7 @@ void UMap::CellularAutomata()
 				Neighbors.Add(Grids[x - 1][y - 1]);
 				Neighbors.Add(Grids[x + 1][y - 1]);
 				Neighbors.Add(Grids[x - 1][y + 1]);
-
+	
 				int ObstacleCount = 0;
 				for (const auto Neighbor : Neighbors)
 				{
@@ -155,19 +79,19 @@ void UMap::CellularAutomata()
 						ObstacleCount++;
 					}
 				}
-
+	
 				const int EmptyCount = Neighbors.Num() - ObstacleCount;
-
+	
 				switch (Grids[x][y]->GetGridType())
 				{
 				case EGridType::Empty:
-					if (ObstacleCount >= 5)
+					if (ObstacleCount > 4)
 					{
 						Grids[x][y]->SetGridType(EGridType::Obstacle);
 					}
 					break;
 				case EGridType::Obstacle:
-					if (EmptyCount >= 5)
+					if (EmptyCount > 4)
 					{
 						Grids[x][y]->SetGridType(EGridType::Empty);
 					}

@@ -108,7 +108,6 @@ void ASailingSystem::CreateMap()
 {
 	Map = NewObject<UMap>();
 	Map->Initialize();
-	Map->Divide();
 	Map->CellularAutomata();
 
 	CreateObstacles();

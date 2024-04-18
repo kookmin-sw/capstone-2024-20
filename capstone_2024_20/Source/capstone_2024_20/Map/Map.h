@@ -15,7 +15,6 @@ public:
 	UMap();
 
 	void Initialize();
-	void Divide();
 	void CellularAutomata();
 	void Debug();
 
