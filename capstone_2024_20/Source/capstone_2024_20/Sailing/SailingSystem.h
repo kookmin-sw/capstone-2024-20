@@ -10,6 +10,7 @@ class AEnemy;
 class AEvent;
 class UTrigger;
 class AMyCharacter;
+class UMap;
 
 UCLASS()
 class CAPSTONE_2024_20_API ASailingSystem : public AActor
@@ -21,12 +22,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void GenerateMap();
-	void InitMap();
-	void DivideMap();
-	void CreateObstacles();
-	void CreateObstacle(int32 Row, int32 Col);
-	void DebugMap();
+	void CreateMap();
+	void CreateObstacles() const;
+	void CreateObstacle(int32 Row, int32 Col) const;
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();
@@ -41,7 +39,8 @@ public:
 	void SetMyCharacters();
 
 private:
-	TArray<TArray<int>> Map;
+	UPROPERTY()
+	UMap* Map;
 	
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
