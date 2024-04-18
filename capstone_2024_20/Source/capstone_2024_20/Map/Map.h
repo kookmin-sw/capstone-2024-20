@@ -16,6 +16,7 @@ public:
 
 	void Initialize();
 	void Divide();
+	void CellularAutomata();
 	void Debug();
 
 	TArray<UGrid*> GetObstacleGrids() const;

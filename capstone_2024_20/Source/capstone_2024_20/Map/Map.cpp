@@ -127,6 +127,59 @@ void UMap::Divide()
 	BottomBoundQueue.Empty();
 }
 
+void UMap::CellularAutomata()
+{
+	for (int i = 0; i < 3; i ++)
+	{
+		// 메모리 침범을 방지하기 위해 1부터 시작
+		for (int x = 1; x < Grids.Num() - 1; x++)
+		{
+			for (int y = 1; y < Grids[0].Num() - 1; y++) // 상동
+			{
+				TArray<UGrid*> Neighbors;
+				Neighbors.Add(Grids[x][y]);
+				Neighbors.Add(Grids[x + 1][y]);
+				Neighbors.Add(Grids[x - 1][y]);
+				Neighbors.Add(Grids[x][y + 1]);
+				Neighbors.Add(Grids[x][y - 1]);
+				Neighbors.Add(Grids[x + 1][y + 1]);
+				Neighbors.Add(Grids[x - 1][y - 1]);
+				Neighbors.Add(Grids[x + 1][y - 1]);
+				Neighbors.Add(Grids[x - 1][y + 1]);
+
+				int ObstacleCount = 0;
+				for (const auto Neighbor : Neighbors)
+				{
+					if (Neighbor->GetGridType() == EGridType::Obstacle)
+					{
+						ObstacleCount++;
+					}
+				}
+
+				const int EmptyCount = Neighbors.Num() - ObstacleCount;
+
+				switch (Grids[x][y]->GetGridType())
+				{
+				case EGridType::Empty:
+					if (ObstacleCount >= 5)
+					{
+						Grids[x][y]->SetGridType(EGridType::Obstacle);
+					}
+					break;
+				case EGridType::Obstacle:
+					if (EmptyCount >= 5)
+					{
+						Grids[x][y]->SetGridType(EGridType::Empty);
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+}
+
 // For debugging, do not remove this function even if it is not used.
 void UMap::Debug()
 {
