@@ -21,7 +21,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void GenerateMap() const;
+	void GenerateMap();
+	void CreateObstacle(const int X, const int Y);
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();
@@ -36,6 +37,8 @@ public:
 	void SetMyCharacters();
 
 private:
+	TArray<TArray<int>> Map;
+	
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
 

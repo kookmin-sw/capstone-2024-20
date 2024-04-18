@@ -102,24 +102,49 @@ void ASailingSystem::Tick(float DeltaTime)
 	}
 }
 
-void ASailingSystem::GenerateMap() const
+void ASailingSystem::GenerateMap()
 {
 	constexpr int32 GridCount = 20; // Todo@autumn - This is a temporary solution, replace it with data.
 
-	for(int x = 0; x < GridCount; x++)
+	// 1. Initialize the map with 0
+	Map.Init(TArray<int>(), GridCount);
+	for (int i = 0; i < GridCount; i++)
 	{
-		for (int y = 0; y < GridCount; y++)
-		{
-			constexpr float GridSize = 10000.0f;
-			const float XPos = (x - GridCount / 2) * GridSize + GridSize / 2;
-			const float YPos = (y - GridCount / 2) * GridSize + GridSize / 2;
-			FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
-			const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
+		Map[i].Init(0, GridCount);
+	}
 
-			const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), GridTransform);
-			SpawnedObstacle->SetActorRotation(RandRotator);
+	// 2. Divide the map
+	// Todo@autumn
+
+	// 3. Create Obstacles with the map
+	for(int x = 0; x < Map.Num(); x++)
+	{
+		for (int y = 0; y < Map[x].Num(); y++)
+		{
+			switch (Map[x][y])
+			{
+			case 0:
+				CreateObstacle(x, y);
+				break;
+			case 1:
+				continue;
+			default:
+				continue;
+			}
 		}
 	}
+}
+
+void ASailingSystem::CreateObstacle(const int X, const int Y)
+{
+	constexpr float GridSize = 10000.0f;
+	const float XPos = (X - Map.Num() / 2) * GridSize + GridSize / 2;
+	const float YPos = (Y - Map[X].Num() / 2) * GridSize + GridSize / 2;
+	const FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
+	const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
+
+	const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), GridTransform);
+	SpawnedObstacle->SetActorRotation(RandRotator);
 }
 
 void ASailingSystem::SpawnEnemyShip()
