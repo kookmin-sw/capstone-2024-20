@@ -12,11 +12,21 @@ AEnemy::AEnemy(): StaticMesh(nullptr)
 	StaticMesh->SetSimulatePhysics(false);
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
+
+	// Todo@autumn - This is a temporary solution, replace it with data.
+	SetMaxHP(2);
+	SetCurrentHP(2);
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AEnemy::Die()
+{
+	IHP::Die();
+	Destroy();
 }
 
 void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)

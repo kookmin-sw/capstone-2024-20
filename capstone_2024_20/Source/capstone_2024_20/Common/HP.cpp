@@ -40,4 +40,14 @@ void IHP::Heal(const int32 HealAmount)
 void IHP::Damage(const int32 DamageAmount)
 {
 	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, MaxHP);
+
+	if (CurrentHP == 0)
+	{
+		Die();
+	}
+}
+
+void IHP::Die()
+{
+	// do nothing, override if needed
 }

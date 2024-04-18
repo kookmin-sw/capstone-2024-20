@@ -15,6 +15,8 @@ class CAPSTONE_2024_20_API AEnemy : public AActor, public IHP
 public:
 	AEnemy();
 	virtual void BeginPlay() override;
+	virtual void Die() override;
+	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
 	
 	UPROPERTY(EditAnywhere)
