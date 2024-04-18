@@ -115,36 +115,11 @@ void ASailingSystem::CreateMap()
 
 void ASailingSystem::CreateObstacles() const
 {
-	for(int x = 0; x < Map->Grids.Num(); x++)
+	for (auto ObstacleGrids = Map->GetObstacleGrids(); const auto ObstacleGrid : ObstacleGrids)
 	{
-		for (int y = 0; y < Map->Grids[0].Num(); y++)
-		{
-			switch (Map->Grids[x][y]->GetValue())
-			{
-			case -1:
-				continue;
-			case 0:
-				continue;
-			case 1:
-				CreateObstacle(x, y);
-				break;
-			default:
-				continue;
-			}
-		}
+		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
+		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
 	}
-}
-
-void ASailingSystem::CreateObstacle(const int32 Row, const int32 Col) const
-{
-	constexpr float GridSize = 10000.0f;
-	const float XPos = (Col - Map->Grids.Num() / 2) * GridSize + GridSize / 2;
-	const float YPos = (Row - Map->Grids[Col].Num() / 2) * GridSize + GridSize / 2;
-	const FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
-	const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-
-	const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), GridTransform);
-	SpawnedObstacle->SetActorRotation(RandRotator);
 }
 
 void ASailingSystem::SpawnEnemyShip()

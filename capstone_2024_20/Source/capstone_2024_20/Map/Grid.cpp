@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "Grid.h"
+﻿#include "Grid.h"
 
 UGrid::UGrid(): Value(0)
 {
@@ -21,4 +18,24 @@ void UGrid::SetValue(const int NewValue)
 	}
 
 	Value = NewValue;
+}
+
+FTransform UGrid::GetTransform() const
+{
+	return Transform;
+}
+
+void UGrid::SetTransform(const FTransform& NewTransform)
+{
+	Transform = NewTransform;
+}
+
+FRotator UGrid::GetRotator() const
+{
+	return Rotator;
+}
+
+void UGrid::SetRotator(const FRotator& NewRotator)
+{
+	Rotator = NewRotator;
 }

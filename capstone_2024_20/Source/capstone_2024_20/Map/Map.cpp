@@ -9,13 +9,24 @@ UMap::UMap()
 void UMap::Initialize()
 {
 	constexpr int32 GridCount = 20; // Todo@autumn - This is a temporary solution, replace it with data.
-
-	Grids.Init(TArray<UGrid*>(), GridCount);
-	for (int i = 0; i < GridCount; i++)
+	
+	for (int x = 0; x < GridCount; x++)
 	{
-		for (int j = 0; j < GridCount; j++)
+		Grids.Add(TArray<UGrid*>());
+		
+		for (int y = 0; y < GridCount; y++)
 		{
-			Grids[i].Add(NewObject<UGrid>());
+			Grids[x].Add(NewObject<UGrid>());
+			Grids[x][y]->SetValue(0);
+			
+			constexpr float GridSize = 10000.0f;
+			const float XPos = (x - GridCount / 2) * GridSize + GridSize / 2;
+			const float YPos = (y - GridCount / 2) * GridSize + GridSize / 2;
+			const FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
+			const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
+			
+			Grids[x][y]->SetTransform(GridTransform);
+			Grids[x][y]->SetRotator(RandRotator);
 		}
 	}
 
@@ -116,6 +127,7 @@ void UMap::Divide()
 	BottomBoundQueue.Empty();
 }
 
+// For debugging, do not remove this function even if it is not used.
 void UMap::Debug()
 {
 	for (int y = 0; y < Grids.Num(); y++)
@@ -127,4 +139,22 @@ void UMap::Debug()
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *RowString);
 	}
+}
+
+TArray<UGrid*> UMap::GetObstacleGrids() const
+{
+	TArray<UGrid*> ObstacleGrids;
+	
+	for (int x = 0; x < Grids.Num(); x++)
+	{
+		for (int y = 0; y < Grids[0].Num(); y++)
+		{
+			if (const auto Grid = Grids[x][y]; Grid->GetValue() == 1)
+			{
+				ObstacleGrids.Add(Grid);
+			}
+		}
+	}
+
+	return ObstacleGrids;
 }

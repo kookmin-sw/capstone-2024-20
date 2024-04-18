@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "capstone_2024_20/Map/Grid.h"
 #include "GameFramework/Actor.h"
 #include "SailingSystem.generated.h"
 
@@ -24,7 +25,6 @@ public:
 
 	void CreateMap();
 	void CreateObstacles() const;
-	void CreateObstacle(int32 Row, int32 Col) const;
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();

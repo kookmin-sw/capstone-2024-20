@@ -17,6 +17,9 @@ public:
 	void Initialize();
 	void Divide();
 	void Debug();
-	
+
+	TArray<UGrid*> GetObstacleGrids() const;
+
+private:
 	TArray<TArray<UGrid*>> Grids;
 };
