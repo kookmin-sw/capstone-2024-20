@@ -26,7 +26,7 @@ void AEnemy::BeginPlay()
 void AEnemy::Die()
 {
 	IHP::Die();
-	Destroy();
+	EnemyDieDelegate.Execute(this);
 }
 
 void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)

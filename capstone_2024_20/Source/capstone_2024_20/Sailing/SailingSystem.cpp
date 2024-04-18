@@ -84,6 +84,7 @@ void ASailingSystem::Tick(float DeltaTime)
 		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
 		{
 			Enemies.Add(SpawnedEnemy);
+			SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
 		}
 	}
 
@@ -102,6 +103,13 @@ void ASailingSystem::Tick(float DeltaTime)
 		SpawnEvent();
 		SpawnEventTimer = 0.0f;
 	}
+}
+
+void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
+{
+	Enemies.Remove(Enemy);
+	Enemy->Destroy();
+	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
 }
 
 void ASailingSystem::GenerateMap() const

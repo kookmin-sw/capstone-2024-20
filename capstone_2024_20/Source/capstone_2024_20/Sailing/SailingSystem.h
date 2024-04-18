@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "capstone_2024_20/Enemy/Enemy.h"
 #include "GameFramework/Actor.h"
 #include "SailingSystem.generated.h"
 
@@ -21,13 +22,14 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void OnEnemyDie(AEnemy* Enemy);
+
 	void GenerateMap() const;
 	
 	void SpawnEnemyShip();
 	void SpawnEvent();
 
 	void CalculateEnemyInAttackRange();
-	void CalculateEnemy();
 	
 	void EarnCurrency(int32 Amount);
 	void UseCurrency(int32 Amount);

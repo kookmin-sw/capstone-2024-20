@@ -6,6 +6,9 @@
 #include "Enemy.generated.h"
 
 class AMyCharacter;
+class AEnemy;
+
+DECLARE_DELEGATE_OneParam(FEnemyDie, AEnemy*);
 
 UCLASS()
 class CAPSTONE_2024_20_API AEnemy : public AActor, public IHP
@@ -21,4 +24,6 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMesh;
+
+	FEnemyDie EnemyDieDelegate;
 };
