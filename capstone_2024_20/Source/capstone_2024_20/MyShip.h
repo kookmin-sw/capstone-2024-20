@@ -48,4 +48,8 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* CameraOne;
 
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	AActor* CameraTwo;
+	
 };

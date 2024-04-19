@@ -91,6 +91,8 @@ void AMyPlayerController::BeginPlay()
 	}
 
 	CurrentControlMode = ControlMode::CHARACTER;
+
+	SetViewTarget(Ship->CameraTwo);
 	
 	EnableCheats();
 }
@@ -117,6 +119,7 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Component NOT NULL"));
 					flag = false;
 				}
+				
 			}
 		}
 	}
@@ -269,9 +272,10 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 		break;
 
 	case ControlMode::CHARACTER:
-		TargetArmLength = 1000.0f;
-		TargetRotation = FRotator(-25.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength, FVector(0.0f),TargetRotation, true);
+		// TargetArmLength = 1000.0f;
+		// TargetRotation = FRotator(-25.0f, 0.0f, 0.0f);
+		// Player->SetIsChanging(TargetArmLength, FVector(0.0f),TargetRotation, true);
+		SetViewTargetWithBlend(Ship->CameraTwo, 0.75f);
 		break;
 
 	case ControlMode::CANNON:
