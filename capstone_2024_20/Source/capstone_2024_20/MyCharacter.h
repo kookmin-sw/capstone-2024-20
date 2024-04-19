@@ -14,6 +14,7 @@
 
 
 class USpringArmComponent;
+class AEnemy;
 
 UENUM()
 enum class UserState : uint8
@@ -103,6 +104,8 @@ private:
 	UPROPERTY(Replicated)
 	FRotator MeshRotation;
 
+	UPROPERTY()
+	AEnemy* EnemyInAttackRange = nullptr;
 	
 public:
 
@@ -158,6 +161,8 @@ public:
 	UFUNCTION()
 	void DropObject(AActor* ship);
 
+	void Attack() const;
+
 	UFUNCTION()
 	unsigned int GetPlayerHP();
 
@@ -187,4 +192,6 @@ public:
 
 	UFUNCTION()
 	FRotator GetMeshRotation();
+
+	void SetEnemyInAttackRange(AEnemy* Enemy);
 };

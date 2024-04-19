@@ -25,6 +25,8 @@ AMyPlayerController::AMyPlayerController()
 		TEXT("/Script/EnhancedInput.InputAction'/Game/Inputs/Actions/Shoot.Shoot'"));
 	static ConstructorHelpers::FObjectFinder<UInputAction> AC_DraggingRotate(
 		TEXT("/Script/EnhancedInput.InputAction'/Game/Inputs/Actions/DraggingRotate.DraggingRotate'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> AC_Attack(
+		TEXT("/Script/EnhancedInput.InputAction'/Game/Inputs/Actions/AC_Attack.AC_Attack'"));
 	
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> IMC_Default_Mapping(
 		TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Inputs/Mappings/IMC_test.IMC_test'"));
@@ -35,6 +37,7 @@ AMyPlayerController::AMyPlayerController()
 	InteractionAction = AC_Interaction.Object;
 	ShootAction = AC_Shoot.Object;
 	DraggingRotateAction = AC_DraggingRotate.Object;
+	AttackAction = AC_Attack.Object;
 	DefaultMappingContext = IMC_Default_Mapping.Object;
 	CannonMappingContext = IMC_Shoot_Mapping.Object;
 
@@ -145,6 +148,7 @@ void AMyPlayerController::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		Input->BindAction(InteractionAction, ETriggerEvent::Completed, this, &AMyPlayerController::Interaction_Released);
 		Input->BindAction(DraggingRotateAction, ETriggerEvent::Triggered, this, &AMyPlayerController::DraggingRotate);
 		Input->BindAction(ShootAction, ETriggerEvent::Started, this, &AMyPlayerController::Shoot);
+		Input->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMyPlayerController::Attack);
 	}
 }
 
@@ -359,6 +363,11 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 		ServerRPC_UseCannonBall(Cannon);
 		//Cannon->SetIsLoad(false);
 	}
+}
+
+void AMyPlayerController::Attack(const FInputActionInstance& Instance)
+{
+	Player->Attack();
 }
 
 void AMyPlayerController::ServerRPC_Shoot_Implementation(AMyCannon* CannonActor)
