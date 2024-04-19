@@ -132,11 +132,12 @@ protected:
 	{
 		CHARACTER,
 		SHIP,
-		CANNON
+		CANNON,
+		TELESCOPE
 	};
 	
 	void SetControlMode(ControlMode NewControlMode);
-	ControlMode CurrentControlMode=ControlMode::CHARACTER;
+	ControlMode CurrentControlMode=ControlMode::SHIP;
 	void ViewChange();
 
 	float TargetArmLength;

@@ -41,6 +41,8 @@ AMyPlayerController::AMyPlayerController()
 	// test
 
 	CurrentStrategy = new CharacterControlStrategy();
+
+
 }
 
 
@@ -48,6 +50,7 @@ AMyPlayerController::AMyPlayerController()
 
 void AMyPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
 	//플레이어 할당
 
 	if (HasAuthority())
@@ -160,7 +163,7 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
 {
-	if (CurrentStrategy != nullptr)
+	if (CurrentStrategy != nullptr && CurrentControlMode != ControlMode::TELESCOPE)
 	{
 		CurrentStrategy->Move(Instance, ControlledActor,this, GetWorld()->GetDeltaSeconds());
 	}
@@ -254,21 +257,28 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 	case ControlMode::SHIP:
 		Player->bUseControllerRotationYaw = false;
 		TargetArmLength = 6000.0f;
-		TargetRotation = FRotator(-70.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength, TargetRotation, true);
+		TargetRotation = Ship->GetActorRotation()+FRotator(-70.0f, 0.0f, 0.0f);
+		Player->SetIsChanging(TargetArmLength,FVector(0.0f,0.0f,200.0f), TargetRotation, true);
 		break;
 
 	case ControlMode::CHARACTER:
 		TargetArmLength = 1000.0f;
 		TargetRotation = FRotator(-25.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength, TargetRotation, true);
+		Player->SetIsChanging(TargetArmLength, FVector(0.0f),TargetRotation, true);
 		break;
 
 	case ControlMode::CANNON:
 		TargetArmLength = 1500.0f;
 		TargetRotation = Cannon->GetActorRotation() + FRotator(-30.0f, -90.0f, 0.0f);
 		//TargetRotation = FRotator(-30.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength, TargetRotation, true);
+		Player->SetIsChanging(TargetArmLength,FVector(0.0f), TargetRotation, true);
+		break;
+
+	case ControlMode::TELESCOPE:
+		TargetArmLength = 10000.0f;
+		TargetRotation = FRotator(-90.0f, 0.0f, 0.0f);
+		Player->SetIsChanging(TargetArmLength,FVector(0.0f), TargetRotation, true);
+		
 	}
 }
 
@@ -332,10 +342,21 @@ void AMyPlayerController::ViewChange()
 				Player->SetPlayerState(Player->GetUserStateCarrying());
 			}
 		}
+
+		else if(Player->GetCurrentHitObjectName().Equals(TEXT("Telescope")))
+		{
+			if(Player->CurrentPlayerState == Player->GetUserStateNone())
+			{
+				SetControlMode(ControlMode::TELESCOPE);
+				
+			}
+		}
+		
 		break;
 
 	case ControlMode::SHIP:
 	case ControlMode::CANNON:
+	case ControlMode::TELESCOPE:
 		// 현재 컨트롤 모드가 SHIP 또는 CANNON일 경우, 무조건 CHARACTER 모드로 전환
 		SetControlMode(ControlMode::CHARACTER);
 		Subsystem->RemoveMappingContext(LastMappingContext);

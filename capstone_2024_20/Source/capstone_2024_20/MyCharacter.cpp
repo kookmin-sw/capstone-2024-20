@@ -181,9 +181,10 @@ bool AMyCharacter::GetTextWidgetVisible()
 	return TextWidget->IsVisible();
 }
 
-void AMyCharacter::SetIsChanging(float length, FRotator rot, bool b)
+void AMyCharacter::SetIsChanging(float length,FVector Loc, FRotator rot, bool b)
 {
 	TargetArmLength = length;
+	TargetLocation = Loc;
 	TargetRotation = rot;
 	bIsChanging = b;
 }
