@@ -14,6 +14,7 @@
 
 
 class USpringArmComponent;
+class AEnemy;
 
 UENUM()
 enum class UserState : uint8
@@ -77,6 +78,7 @@ protected:
 	
 	bool bIsChanging=false;
 	float TargetArmLength;
+	FVector TargetLocation;
 	FRotator TargetRotation;
 	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
@@ -103,6 +105,8 @@ private:
 	UPROPERTY(Replicated)
 	FRotator MeshRotation;
 
+	UPROPERTY()
+	AEnemy* EnemyInAttackRange = nullptr;
 	
 public:
 
@@ -138,7 +142,7 @@ public:
 	bool GetTextWidgetVisible();
 
 	UFUNCTION()
-	void SetIsChanging(float length, FRotator rot, bool b);
+	void SetIsChanging(float length, FVector Loc, FRotator rot, bool b);
 
 	UFUNCTION()
 	AMyObject* GetCurrentHitObject();
@@ -157,6 +161,8 @@ public:
 
 	UFUNCTION()
 	void DropObject(AActor* ship);
+
+	void Attack() const;
 
 	UFUNCTION()
 	unsigned int GetPlayerHP();
@@ -187,4 +193,6 @@ public:
 
 	UFUNCTION()
 	FRotator GetMeshRotation();
+
+	void SetEnemyInAttackRange(AEnemy* Enemy);
 };

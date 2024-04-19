@@ -26,4 +26,6 @@ public:
 
 	void Heal(const int32 HealAmount);
 	void Damage(const int32 DamageAmount);
+
+	virtual void Die();
 };

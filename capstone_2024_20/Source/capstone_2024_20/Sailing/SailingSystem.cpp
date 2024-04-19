@@ -8,8 +8,11 @@
 #include "Blueprint/UserWidget.h"
 #include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Map/Map.h"
+#include "../Map/Grid.h"
+#include "../Object/UpgradeObject.h"
 
-ASailingSystem::ASailingSystem(): ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
+ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -24,7 +27,15 @@ void ASailingSystem::BeginPlay()
 	GameOverTrigger = NewObject<UTrigger>();
 	GameOverTrigger->Initialize("T_0002", this);
 
-	GenerateMap();
+	CreateMap();
+
+	// Todo@autumn - This is a temporary solution, replace it with data.
+	
+	//Spawn UpgradeObject
+	const FVector Location = FVector(1400, 400, 1000);
+	AUpgradeObject* SpawnedUpgradeObject = GetWorld()->SpawnActor<AUpgradeObject>(AUpgradeObject::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
+	SpawnedUpgradeObject->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedUpgradeObject->SetActorRelativeLocation(Location);
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
@@ -84,6 +95,7 @@ void ASailingSystem::Tick(float DeltaTime)
 		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
 		{
 			Enemies.Add(SpawnedEnemy);
+			SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
 		}
 	}
 
@@ -92,6 +104,8 @@ void ASailingSystem::Tick(float DeltaTime)
 		// Todo@autumn - This is a temporary solution
 		Enemy->MoveToMyCharacter(MyCharacters[0]);
 	}
+
+	CalculateEnemyInAttackRange();
 
 	SpawnEventTimer += DeltaTime;
 	// Todo@autumn - This is a temporary solution, replace it with data.
@@ -102,23 +116,28 @@ void ASailingSystem::Tick(float DeltaTime)
 	}
 }
 
-void ASailingSystem::GenerateMap() const
+void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
 {
-	constexpr int32 GridCount = 20; // Todo@autumn - This is a temporary solution, replace it with data.
+	Enemies.Remove(Enemy);
+	Enemy->Destroy();
+	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
+}
 
-	for(int x = 0; x < GridCount; x++)
+void ASailingSystem::CreateMap()
+{
+	Map = NewObject<UMap>();
+	Map->Initialize();
+	Map->CellularAutomata();
+
+	CreateObstacles();
+}
+
+void ASailingSystem::CreateObstacles() const
+{
+	for (auto ObstacleGrids = Map->GetObstacleGrids(); const auto ObstacleGrid : ObstacleGrids)
 	{
-		for (int y = 0; y < GridCount; y++)
-		{
-			constexpr float GridSize = 10000.0f;
-			const float XPos = (x - GridCount / 2) * GridSize + GridSize / 2;
-			const float YPos = (y - GridCount / 2) * GridSize + GridSize / 2;
-			FTransform GridTransform = FTransform(FVector(XPos, YPos, 0.0f));
-			const FRotator RandRotator = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-
-			const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), GridTransform);
-			SpawnedObstacle->SetActorRotation(RandRotator);
-		}
+		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
+		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
 	}
 }
 
@@ -147,6 +166,30 @@ void ASailingSystem::SpawnEvent()
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
 	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
 	Events.Add(SpawnedEvent);
+}
+
+void ASailingSystem::CalculateEnemyInAttackRange()
+{
+	for (const auto Character : MyCharacters)
+	{
+		FTransform CharacterTransform = Character->GetActorTransform();
+
+		double MinDistance = TNumericLimits<double>::Max();
+		AEnemy* EnemyInAttackRange = nullptr;
+		
+		for (const auto Enemy : Enemies)
+		{
+			// Todo@autumn - This is a temporary solution, replace it with data.
+			if (const auto Distance = FVector::Dist(CharacterTransform.GetLocation(), Enemy->GetActorLocation()); Distance < 200.0f && Distance < MinDistance)
+			{
+				MinDistance = Distance;
+				EnemyInAttackRange = Enemy;
+			}
+		}
+
+		// ! nullable
+		Character->SetEnemyInAttackRange(EnemyInAttackRange);
+	}
 }
 
 void ASailingSystem::EarnCurrency(const int32 Amount)

@@ -9,7 +9,7 @@ void ALobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALobbyPlayerState, bIsReady);
-	DOREPLIFETIME_CONDITION(ALobbyPlayerState, PlayerNumber, COND_InitialOnly);
+	DOREPLIFETIME(ALobbyPlayerState, PlayerNumber);
 }
 
 void ALobbyPlayerState::BeginPlay()
@@ -62,7 +62,7 @@ void ALobbyPlayerState::Server_SetReady_Implementation(bool IsReady)
 
 bool ALobbyPlayerState::IsReady() const
 {
-	if(PlayerNumber == 1)
+	if(PlayerNumber == 0)
 	{
 		return true;
 	}

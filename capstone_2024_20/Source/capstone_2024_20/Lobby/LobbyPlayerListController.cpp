@@ -28,7 +28,7 @@ void ALobbyPlayerListController::Init()
 	PlayerListUpdate = PlayerListWigetCreate;
 }
 
-void ALobbyPlayerListController::Refresh2()
+void ALobbyPlayerListController::RefreshTimer()
 {
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -67,7 +67,7 @@ void ALobbyPlayerListController::RegisterReadyEventCallback(APlayerListControlle
 		ALobbyPlayerListController* PlayerListController = Cast<ALobbyPlayerListController>(*LobbyPlayerListController);
 		PlayerState->OnIsReadyChanged.AddLambda([PlayerListController]()
 		{
-			PlayerListController->Refresh2();
+			PlayerListController->RefreshTimer();
 		});
 	}
 }
@@ -80,5 +80,6 @@ void ALobbyPlayerListController::Refresh_Implementation()
 	{
 		LobbyPlayerListWidgetModifier = new ULobbyPlayerListWidgetModifier(PlayerListWidget);
 	}
+	
 	LobbyPlayerListWidgetModifier->Refresh(PlayerStates);
 }

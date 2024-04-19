@@ -56,6 +56,9 @@ private:
 
 	UPROPERTY(Category=Input, VisibleAnywhere)
 	UInputAction* DraggingRotateAction;
+
+	UPROPERTY(Category=Input, VisibleAnywhere)
+	UInputAction* AttackAction;
 	
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
@@ -92,6 +95,7 @@ public:
 	void Move(const FInputActionInstance& Instance);
     void Interaction(const FInputActionInstance& Instance);
     void Shoot(const FInputActionInstance& Instance);
+	void Attack(const FInputActionInstance& Instance);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Shoot(AMyCannon* CannonActor);
@@ -132,11 +136,12 @@ protected:
 	{
 		CHARACTER,
 		SHIP,
-		CANNON
+		CANNON,
+		TELESCOPE
 	};
 	
 	void SetControlMode(ControlMode NewControlMode);
-	ControlMode CurrentControlMode=ControlMode::CHARACTER;
+	ControlMode CurrentControlMode=ControlMode::SHIP;
 	void ViewChange();
 
 	float TargetArmLength;
