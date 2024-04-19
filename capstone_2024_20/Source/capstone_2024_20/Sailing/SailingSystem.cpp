@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
+#include "../Object/UpgradeObject.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
 {
@@ -27,6 +28,14 @@ void ASailingSystem::BeginPlay()
 	GameOverTrigger->Initialize("T_0002", this);
 
 	CreateMap();
+
+	// Todo@autumn - This is a temporary solution, replace it with data.
+	
+	//Spawn UpgradeObject
+	const FVector Location = FVector(1400, 400, 1000);
+	AUpgradeObject* SpawnedUpgradeObject = GetWorld()->SpawnActor<AUpgradeObject>(AUpgradeObject::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
+	SpawnedUpgradeObject->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedUpgradeObject->SetActorRelativeLocation(Location);
 	
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
