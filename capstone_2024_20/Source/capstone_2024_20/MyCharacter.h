@@ -78,6 +78,7 @@ protected:
 	
 	bool bIsChanging=false;
 	float TargetArmLength;
+	FVector TargetLocation;
 	FRotator TargetRotation;
 	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
@@ -141,7 +142,7 @@ public:
 	bool GetTextWidgetVisible();
 
 	UFUNCTION()
-	void SetIsChanging(float length, FRotator rot, bool b);
+	void SetIsChanging(float length, FVector Loc, FRotator rot, bool b);
 
 	UFUNCTION()
 	AMyObject* GetCurrentHitObject();
