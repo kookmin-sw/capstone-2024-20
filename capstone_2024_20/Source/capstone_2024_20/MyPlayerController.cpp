@@ -259,10 +259,11 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 	switch (CurrentControlMode)
 	{
 	case ControlMode::SHIP:
-		Player->bUseControllerRotationYaw = false;
-		TargetArmLength = 6000.0f;
-		TargetRotation = Ship->GetActorRotation()+FRotator(-70.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength,FVector(0.0f,0.0f,200.0f), TargetRotation, true);
+		//Player->bUseControllerRotationYaw = false;
+		//TargetArmLength = 6000.0f;
+		//TargetRotation = Ship->GetActorRotation()+FRotator(-70.0f, 0.0f, 0.0f);
+		//Player->SetIsChanging(TargetArmLength,FVector(0.0f,0.0f,200.0f), TargetRotation, true);
+		SetViewTargetWithBlend(Ship->CameraOne, 0.75f);
 		break;
 
 	case ControlMode::CHARACTER:
