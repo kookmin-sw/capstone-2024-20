@@ -89,6 +89,8 @@ void AMyPlayerController::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
 	}
+
+	CurrentControlMode = ControlMode::CHARACTER;
 	
 	EnableCheats();
 }
@@ -298,10 +300,12 @@ void AMyPlayerController::ViewChange()
 		{
 			// 현재 접근한 오브젝트가 "SteelWheel"이면, 컨트롤 모드를 SHIP으로 변경
 			
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("제대로 들어왓습니다"));
 			LastMappingContext = DefaultMappingContext;
 			CurrentStrategy = new ShipControlStrategy;
 			ControlledActor = Ship;
 			SetControlMode(ControlMode::SHIP);
+			
 		}
 		else if (Player->GetCurrentHitObjectName().Equals(TEXT("Cannon")))
 		{
