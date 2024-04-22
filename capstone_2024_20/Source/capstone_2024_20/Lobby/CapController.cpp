@@ -29,5 +29,12 @@ void ACapController::OnRep_Pawn()
 
 void ACapController::RefreshMappingContext(APawn* InPawn) const
 {
+	ICapPawn* CapPawn = Cast<ICapPawn>(InPawn);
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
+	if(Subsystem == nullptr || CapPawn == nullptr)
+		return;
+
+	Subsystem->AddMappingContext(CapPawn->GetMappingContext(), 0);
 }
