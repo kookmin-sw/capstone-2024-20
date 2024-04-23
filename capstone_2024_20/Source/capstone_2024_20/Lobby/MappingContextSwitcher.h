@@ -22,9 +22,11 @@ private:
 	bool CheckSubsystemNull() const;
 
 public:
+	UPROPERTY()
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	
 	void Init(const APlayerController* PlayerController);
 
+	void ReplaceMappingContext(UInputMappingContext* NewMappingContext);
 	void ReplaceMappingContext(TArray<UInputMappingContext*> NewMappingContexts);
 };

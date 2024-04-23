@@ -30,6 +30,14 @@ void UMappingContextSwitcher::Init(const APlayerController* PlayerController)
 		UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 }
 
+void UMappingContextSwitcher::ReplaceMappingContext(UInputMappingContext* NewMappingContext)
+{
+	TArray<UInputMappingContext*> NewMappingContexts;
+	NewMappingContexts.Add(NewMappingContext);
+	
+	ReplaceMappingContext(NewMappingContexts);
+}
+
 void UMappingContextSwitcher::ReplaceMappingContext(TArray<UInputMappingContext*> NewMappingContexts)
 {
 	if (CheckSubsystemNull() == true)
