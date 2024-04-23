@@ -75,7 +75,9 @@ private:
 	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
-	
+
+	// 카메라 전환 중인지 체크하는 변수
+	bool bIsCameraTransitioning = false;
 	
 	// 키를 누르고 있는지의 상태를 추적하는 변수
 	bool bIsPressingKey = false;
@@ -93,8 +95,8 @@ private:
 	
 public:
 	void Move(const FInputActionInstance& Instance);
-    void Interaction(const FInputActionInstance& Instance);
-    void Shoot(const FInputActionInstance& Instance);
+	void Interaction(const FInputActionInstance& Instance);
+	void Shoot(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
 	
 	UFUNCTION(Server, Reliable)
@@ -141,7 +143,7 @@ protected:
 	};
 	
 	void SetControlMode(ControlMode NewControlMode);
-	ControlMode CurrentControlMode=ControlMode::SHIP;
+	ControlMode CurrentControlMode=ControlMode::CHARACTER;
 	void ViewChange();
 
 	float TargetArmLength;
@@ -149,6 +151,4 @@ protected:
 	float ChangeSpeed = 5.0f;
 
 	bool flag = true;
-	
-	
 };
