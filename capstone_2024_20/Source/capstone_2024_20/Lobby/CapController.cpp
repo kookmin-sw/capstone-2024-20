@@ -4,7 +4,12 @@
 #include "CapController.h"
 
 #include "CapCharacter.h"
-#include "EnhancedInputSubsystems.h"
+#include "MappingContextSwitcher.h"
+
+ACapController::ACapController()
+{
+	MappingContextSwitcher = CreateDefaultSubobject<UMappingContextSwitcher>(TEXT("MappingContextSwitcher"));
+}
 
 void ACapController::BeginPlay()
 {
@@ -20,21 +25,18 @@ void ACapController::OnPossess(APawn* InPawn)
 void ACapController::OnRep_Pawn()
 {
 	Super::OnRep_Pawn();
-	
-	if(IsLocalPlayerController() == false)
+
+	if (IsLocalPlayerController() == false)
 		return;
-		
+
 	RefreshMappingContext(GetPawn());
 }
 
 void ACapController::RefreshMappingContext(APawn* InPawn) const
 {
 	ICapPawn* CapPawn = Cast<ICapPawn>(InPawn);
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
-		UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-
-	if(Subsystem == nullptr || CapPawn == nullptr)
+	if (CapPawn == nullptr)
 		return;
 
-	Subsystem->AddMappingContext(CapPawn->GetMappingContext(), 0);
+	MappingContextSwitcher->ReplaceMappingContext(CapPawn->GetMappingContext());
 }
