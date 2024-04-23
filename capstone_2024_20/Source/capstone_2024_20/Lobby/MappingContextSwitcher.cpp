@@ -6,12 +6,17 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
+UMappingContextSwitcher::UMappingContextSwitcher()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
 void UMappingContextSwitcher::ClearPrevMappingContext()
 {
 	if (CheckSubsystemNull() == true)
 		return;
 
-	for (const auto MappingContext : InputMappingContexts)
+	for (const auto& MappingContext : InputMappingContexts)
 	{
 		Subsystem->RemoveMappingContext(MappingContext);
 	}
@@ -19,22 +24,23 @@ void UMappingContextSwitcher::ClearPrevMappingContext()
 	InputMappingContexts.Empty();
 }
 
-bool UMappingContextSwitcher::CheckSubsystemNull() const
+bool UMappingContextSwitcher::CheckSubsystemNull()
 {
-	return Subsystem;
-}
+	if (Subsystem == nullptr)
+	{
+		APlayerController* PlayerController = GetOwner<APlayerController>();
+		Subsystem = ULocalPlayer::GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	}
 
-void UMappingContextSwitcher::Init(const APlayerController* PlayerController)
-{
-	Subsystem = ULocalPlayer::GetSubsystem<
-		UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	return Subsystem == nullptr;
 }
 
 void UMappingContextSwitcher::ReplaceMappingContext(UInputMappingContext* NewMappingContext)
 {
 	TArray<UInputMappingContext*> NewMappingContexts;
 	NewMappingContexts.Add(NewMappingContext);
-	
+
 	ReplaceMappingContext(NewMappingContexts);
 }
 
@@ -42,10 +48,10 @@ void UMappingContextSwitcher::ReplaceMappingContext(TArray<UInputMappingContext*
 {
 	if (CheckSubsystemNull() == true)
 		return;
-	
+
 	ClearPrevMappingContext();
-	
-	for (const auto MappingContext : NewMappingContexts)
+
+	for (const auto& MappingContext : NewMappingContexts)
 	{
 		Subsystem->AddMappingContext(MappingContext, 1);
 	}

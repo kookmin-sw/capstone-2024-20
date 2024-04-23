@@ -12,20 +12,22 @@ class UEnhancedInputLocalPlayerSubsystem;
  * 
  */
 UCLASS()
-class CAPSTONE_2024_20_API UMappingContextSwitcher : public UObject
+class CAPSTONE_2024_20_API UMappingContextSwitcher : public UActorComponent
 {
 	GENERATED_BODY()
-private:
+
+	UMappingContextSwitcher();
+
+public:
+	UPROPERTY()
 	TArray<UInputMappingContext*> InputMappingContexts;
 
 	void ClearPrevMappingContext();
-	bool CheckSubsystemNull() const;
+	bool CheckSubsystemNull();
 
 public:
 	UPROPERTY()
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
-	
-	void Init(const APlayerController* PlayerController);
 
 	void ReplaceMappingContext(UInputMappingContext* NewMappingContext);
 	void ReplaceMappingContext(TArray<UInputMappingContext*> NewMappingContexts);
