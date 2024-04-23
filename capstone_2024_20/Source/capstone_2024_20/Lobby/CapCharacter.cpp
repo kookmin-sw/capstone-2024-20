@@ -17,7 +17,6 @@ ACapCharacter::ACapCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	InitSpringArmCamera();
 	InitMovement();
 }
 
@@ -56,20 +55,6 @@ void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 	}
-}
-
-void ACapCharacter::InitSpringArmCamera()
-{
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
-	SpringArmComponent->SetupAttachment(RootComponent);
-	SpringArmComponent->TargetArmLength = 1000.0f;
-	SpringArmComponent->SocketOffset = FVector(0, 0, 800.0f);
-	SpringArmComponent->bUsePawnControlRotation = true;
-	SpringArmComponent->bEnableCameraLag = true;
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
-	CameraComponent->bUsePawnControlRotation = false;
 }
 
 void ACapCharacter::InitMovement()
