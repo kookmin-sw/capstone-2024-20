@@ -64,6 +64,9 @@ public:
 
 	bool GetIsLoad();
 	void SetIsLoad(bool b);
-	
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	AActor* Camera_Cannon;
+
 	
 };

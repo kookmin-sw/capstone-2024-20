@@ -89,6 +89,10 @@ void AMyPlayerController::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
 	}
+
+	CurrentControlMode = ControlMode::CHARACTER;
+
+	SetViewTarget(Ship->Camera_Character);
 	
 	EnableCheats();
 }
@@ -114,7 +118,9 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 					SetupPlayerInputComponent(Player->InputComponent);
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Component NOT NULL"));
 					flag = false;
+					SetViewTarget(Ship->Camera_Character);
 				}
+				
 			}
 		}
 	}
@@ -215,7 +221,7 @@ void AMyPlayerController::Interaction_Released()
 	bIsPressingKey = false;
 	if (Player->GetIsOverLap() && CurrentHitObject)
 	{
-		if (PressDuration < 3.0f && !Player->GetCurrentHitObject()->GetIsDragging()) // 3초 안됐으면 그냥 상호작용
+		if (PressDuration < 3.0f && !Player->GetCurrentHitObject()->GetIsDragging() && !bIsCameraTransitioning) // 3초 안됐으면 그냥 상호작용
 		{
 			UE_LOG(LogTemp, Log, TEXT("interaction"));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
@@ -256,34 +262,35 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
 
-	switch (CurrentControlMode)
+	float BlendTime = 0.5f;
+	if(!bIsCameraTransitioning)
 	{
-	case ControlMode::SHIP:
-		Player->bUseControllerRotationYaw = false;
-		TargetArmLength = 6000.0f;
-		TargetRotation = Ship->GetActorRotation()+FRotator(-70.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength,FVector(0.0f,0.0f,200.0f), TargetRotation, true);
-		break;
+		bIsCameraTransitioning = true;
+		switch (CurrentControlMode)
+		{
+			case ControlMode::SHIP:
+				SetViewTargetWithBlend(Ship->Camera_Ship, BlendTime);
+				break;
 
-	case ControlMode::CHARACTER:
-		TargetArmLength = 1000.0f;
-		TargetRotation = FRotator(-25.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength, FVector(0.0f),TargetRotation, true);
-		break;
+			case ControlMode::CHARACTER:
+				SetViewTargetWithBlend(Ship->Camera_Character, BlendTime);
+				break;
 
-	case ControlMode::CANNON:
-		TargetArmLength = 1500.0f;
-		TargetRotation = Cannon->GetActorRotation() + FRotator(-30.0f, -90.0f, 0.0f);
-		//TargetRotation = FRotator(-30.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength,FVector(0.0f), TargetRotation, true);
-		break;
+			case ControlMode::CANNON:
+				SetViewTargetWithBlend(Cannon->Camera_Cannon,BlendTime);
+				break;
 
-	case ControlMode::TELESCOPE:
-		TargetArmLength = 10000.0f;
-		TargetRotation = FRotator(-90.0f, 0.0f, 0.0f);
-		Player->SetIsChanging(TargetArmLength,FVector(0.0f), TargetRotation, true);
+			case ControlMode::TELESCOPE:
+				SetViewTargetWithBlend(Ship->Camera_Telescope,BlendTime);
+		}
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+		{
+			bIsCameraTransitioning = false;
+		}, BlendTime, false);
 		
 	}
+	
 }
 
 //모드 변환
@@ -297,10 +304,12 @@ void AMyPlayerController::ViewChange()
 		{
 			// 현재 접근한 오브젝트가 "SteelWheel"이면, 컨트롤 모드를 SHIP으로 변경
 			
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("제대로 들어왓습니다"));
 			LastMappingContext = DefaultMappingContext;
 			CurrentStrategy = new ShipControlStrategy;
 			ControlledActor = Ship;
 			SetControlMode(ControlMode::SHIP);
+			
 		}
 		else if (Player->GetCurrentHitObjectName().Equals(TEXT("Cannon")))
 		{
