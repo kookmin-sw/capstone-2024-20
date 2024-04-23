@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "CannonPawn.generated.h"
 
+class UCannonRotationMovementComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
@@ -27,6 +28,9 @@ class CAPSTONE_2024_20_API ACannonPawn : public APawn
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere)
+	UCannonRotationMovementComponent* RotationMovementComponent;
 public:
 	ACannonPawn();
 
