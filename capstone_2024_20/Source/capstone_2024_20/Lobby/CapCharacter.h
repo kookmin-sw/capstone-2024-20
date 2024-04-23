@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ICapPawn.h"
 #include "GameFramework/Character.h"
 #include "CapCharacter.generated.h"
 
@@ -13,7 +14,7 @@ class USpringArmComponent;
 struct FInputActionValue;
 
 UCLASS()
-class CAPSTONE_2024_20_API ACapCharacter : public ACharacter
+class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public ICapPawn
 {
 	GENERATED_BODY()
 
@@ -31,6 +32,10 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter
 
 public:
 	ACapCharacter();
+	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
+	{
+		return DefaultMappingContext;
+	};
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,7 +44,6 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:

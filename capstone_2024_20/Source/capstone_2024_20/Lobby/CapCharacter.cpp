@@ -24,15 +24,6 @@ ACapCharacter::ACapCharacter()
 void ACapCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
-			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)
@@ -47,7 +38,7 @@ void ACapCharacter::Move(const FInputActionValue& Value)
 
 	const FVector RightVector = FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y);
 	const FVector ForwardVector = FRotationMatrix(Yaw).GetUnitAxis(EAxis::X);
-
+	
 	AddMovementInput(RightVector, MovementVector.X);
 	AddMovementInput(ForwardVector, MovementVector.Y);
 }
