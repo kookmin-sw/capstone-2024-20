@@ -31,15 +31,6 @@ ACannonPawn::ACannonPawn()
 void ACannonPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
-			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 void ACannonPawn::Move(const FInputActionValue& Value)
