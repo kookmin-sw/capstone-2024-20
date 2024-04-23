@@ -6,17 +6,41 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
-void UMappingContextSwitcher::Init(APlayerController* PlayerController)
+void UMappingContextSwitcher::ClearPrevMappingContext()
 {
+	if (CheckSubsystemNull() == true)
+		return;
+
+	for (const auto MappingContext : InputMappingContexts)
+	{
+		Subsystem->RemoveMappingContext(MappingContext);
+	}
+
+	InputMappingContexts.Empty();
 }
 
-void UMappingContextSwitcher::ReplaceMappingContext(TArray<UInputMappingContext*> NewMapingContexts)
+bool UMappingContextSwitcher::CheckSubsystemNull() const
 {
-	if(Subsystem == nullptr)
+	return Subsystem;
+}
+
+void UMappingContextSwitcher::Init(const APlayerController* PlayerController)
+{
+	Subsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+}
+
+void UMappingContextSwitcher::ReplaceMappingContext(TArray<UInputMappingContext*> NewMappingContexts)
+{
+	if (CheckSubsystemNull() == true)
 		return;
 	
-	for(const auto MappingContext: NewMapingContexts)
+	ClearPrevMappingContext();
+	
+	for (const auto MappingContext : NewMappingContexts)
 	{
 		Subsystem->AddMappingContext(MappingContext, 1);
 	}
+
+	InputMappingContexts.Append(NewMappingContexts);
 }

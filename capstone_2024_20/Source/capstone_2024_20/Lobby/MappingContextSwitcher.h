@@ -18,10 +18,13 @@ class CAPSTONE_2024_20_API UMappingContextSwitcher : public UObject
 private:
 	TArray<UInputMappingContext*> InputMappingContexts;
 
+	void ClearPrevMappingContext();
+	bool CheckSubsystemNull() const;
+
 public:
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
+	
+	void Init(const APlayerController* PlayerController);
 
-	void Init(APlayerController* PlayerController);
-
-	void ReplaceMappingContext(TArray<UInputMappingContext*> NewMapingContexts);
+	void ReplaceMappingContext(TArray<UInputMappingContext*> NewMappingContexts);
 };
