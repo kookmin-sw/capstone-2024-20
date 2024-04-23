@@ -17,13 +17,7 @@ UCLASS()
 class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public ICapPawn
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	USpringArmComponent* SpringArmComponent;
-
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* CameraComponent;
-
+	
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* DefaultMappingContext;
 
@@ -47,6 +41,5 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
-	void InitSpringArmCamera();
 	void InitMovement();
 };
