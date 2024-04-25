@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "CapGameMode.generated.h"
 
-namespace RoomState
+namespace FRoomState
 {
 	const FName EnteringMap = FName(TEXT("EnteringMap"));
 	const FName JoiningUser = FName(TEXT("JoiningUser"));
