@@ -65,7 +65,7 @@ void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor);
 	if(EnemyShip)
 	{
-		EnemyShip->Damage(1);
+		EnemyShip->Damage(damage);
 		int CurrentHP = EnemyShip->GetCurrentHP();
 
 		FString HPMessage = FString::Printf(TEXT("Enemy Ship HP: %d"), CurrentHP);
@@ -80,3 +80,15 @@ void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, destroyDelayTime, false);
 	}
 }
+
+int32 ACannonBall::GetDamage()
+{
+	return damage;
+}
+
+void ACannonBall::SetDamage(int32 dmg)
+{
+	damage = dmg;
+}
+
+
