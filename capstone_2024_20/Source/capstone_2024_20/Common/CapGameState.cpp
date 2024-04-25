@@ -46,6 +46,16 @@ void ACapGameState::OnRep_RoomState()
 	}
 }
 
+void ACapGameState::SetRoomState(const FName NewRoomState)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		RoomState = NewRoomState;
+
+		OnRep_RoomState();
+	}
+}
+
 
 void ACapGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

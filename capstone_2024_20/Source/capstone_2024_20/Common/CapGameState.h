@@ -20,16 +20,21 @@ class CAPSTONE_2024_20_API ACapGameState : public AGameState
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_RoomState, BlueprintReadOnly, VisibleInstanceOnly)
 	FName RoomState;
-	
+
 	virtual void HandleNone();
-	
+
 	virtual void HandleJoiningUser();
-	
+
 	virtual void HandleAllReady();
-	
+
 	virtual void HandleGameStart();
 
 public:
 	UFUNCTION()
 	void OnRep_RoomState();
+
+	FORCEINLINE FName GetRoomState() const { return RoomState; }
+
+	UFUNCTION()
+	void SetRoomState(const FName NewRoomState);
 };
