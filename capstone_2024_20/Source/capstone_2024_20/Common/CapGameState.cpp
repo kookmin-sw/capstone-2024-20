@@ -7,11 +7,43 @@
 
 ACapGameState::ACapGameState()
 {
-	RoomState = FRoomState::EnteringMap;
+	RoomState = FRoomState::None;
+}
+
+void ACapGameState::HandleNone()
+{
+}
+
+void ACapGameState::HandleJoiningUser()
+{
+}
+
+void ACapGameState::HandleAllReady()
+{
+}
+
+void ACapGameState::HandleGameStart()
+{
 }
 
 void ACapGameState::OnRep_RoomState()
 {
+	if(RoomState == FRoomState::None)
+	{
+		HandleNone();
+	}
+	else if(RoomState == FRoomState::JoiningUser)
+	{
+		HandleJoiningUser();
+	}
+	else if(RoomState == FRoomState::AllReady)
+	{
+		HandleAllReady();
+	}
+	else if(RoomState == FRoomState::GameStart)
+	{
+		HandleGameStart();
+	}
 }
 
 

@@ -8,7 +8,7 @@
 
 namespace FRoomState
 {
-	const FName EnteringMap = FName(TEXT("EnteringMap"));
+	const FName None = FName(TEXT("None"));
 	const FName JoiningUser = FName(TEXT("JoiningUser"));
 	const FName AllReady = FName(TEXT("AllReady"));
 	const FName GameStart = FName(TEXT("GameStart"));
