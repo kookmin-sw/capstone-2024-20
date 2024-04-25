@@ -8,6 +8,9 @@ AEnemyShip::AEnemyShip(): StaticMesh(nullptr)
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Game/GameObjects/FlatShip/Ship_Ship.Ship_Ship'")));
 	RootComponent = StaticMesh;
+
+	SetMaxHP(2);
+	SetCurrentHP(2);
 }
 
 void AEnemyShip::BeginPlay()
@@ -68,3 +71,10 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 
 	return SpawnedEnemy;
 }
+
+void AEnemyShip::Die()
+{
+	IHP::Die();
+	EnemyShipDieDelegate.Execute(this);
+}
+
