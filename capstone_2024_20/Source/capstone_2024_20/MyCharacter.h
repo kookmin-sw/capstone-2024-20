@@ -42,18 +42,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-private:
-
-	UPROPERTY(Category=Character, VisibleAnywhere)
-	USpringArmComponent* M_SpringArmComponent;
-	
-	UPROPERTY(Category=Character, VisibleAnywhere)
-	UCameraComponent* M_CameraComponent;
-	
-	UPROPERTY(Category=Character, VisibleAnywhere)
-	UStaticMeshComponent* M_MeshComponent;
-
 
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
@@ -140,9 +128,6 @@ public:
 
 	UFUNCTION()
 	bool GetTextWidgetVisible();
-
-	UFUNCTION()
-	void SetIsChanging(float length, FVector Loc, FRotator rot, bool b);
 
 	UFUNCTION()
 	AMyObject* GetCurrentHitObject();
