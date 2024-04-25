@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoomListElement.generated.h"
 
+class URoomPasswordInputPopupWidget;
 class UImage;
 /**
  * 
@@ -30,8 +31,10 @@ public:
 
 private:
 	class URoomListElementData* RoomListElementData;
-
+	URoomPasswordInputPopupWidget* RPIWidget;
 public:
 	UFUNCTION()
 	void OnClickJoin();
+	UFUNCTION()
+	void OnClickPasswordJoin();
 };
