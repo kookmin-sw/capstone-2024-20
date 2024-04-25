@@ -21,7 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	float destroyDelayTime = 2.0f;
+	float destroyDelayTime = 1.0f;
 
 public:	
 	// Called every frame

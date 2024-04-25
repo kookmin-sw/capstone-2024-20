@@ -3,6 +3,7 @@
 
 #include "CannonBall.h"
 
+#include "EnemyShip/EnemyShip.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -20,7 +21,7 @@ ACannonBall::ACannonBall()
 	ProjectileMovement->InitialSpeed = 3000.f;
 	ProjectileMovement->MaxSpeed = 6000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->bShouldBounce = false; // 튕겨나가지않음
 
 	// 충돌 시 OnHit 함수를 호출하도록 설정합니다.
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &ACannonBall::OnHit);
@@ -60,8 +61,19 @@ void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator(0.0f), Scale);
 	}
 	// 충돌 후 발사체를 제거합니다.
+	
+	AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor);
+	if(EnemyShip)
+	{
+		EnemyShip->Damage(1);
+		int CurrentHP = EnemyShip->GetCurrentHP();
 
+		FString HPMessage = FString::Printf(TEXT("Enemy Ship HP: %d"), CurrentHP);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, HPMessage);
+	}
 
+	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	if (GetWorld())
 	{
 		FTimerHandle TimerHandle;
