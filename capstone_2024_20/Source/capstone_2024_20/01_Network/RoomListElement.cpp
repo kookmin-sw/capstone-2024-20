@@ -9,6 +9,7 @@
 #include "RoomPasswordInputPopupWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 
 void URoomListElement::NativeOnListItemObjectSet(UObject* ListItemObject)
@@ -20,16 +21,22 @@ void URoomListElement::NativeOnListItemObjectSet(UObject* ListItemObject)
 	JoinButton->OnClicked.AddDynamic(this, &URoomListElement::OnClickJoin);
 
 	RPIWidget = RoomListElementData->RoomPasswordInputPopupWidget;
+
+	RoomListElementData->Result.Session.SessionSettings.Get(RoomTEXT::ISPRIVATE, IsPrivate);
+	if(IsPrivate == false)
+	{
+		LockImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+	
 }
 
 void URoomListElement::OnClickJoin()
 {
-	bool IsPrivate;
-	RoomListElementData->Result.Session.SessionSettings.Get(RoomTEXT::ISPRIVATE, IsPrivate);
-
 	if(IsPrivate == true)
 	{
 		RPIWidget->SetActive(true);
+		RPIWidget->RoomName->SetText(RoomName->GetText());
+		RPIWidget->PasswordTextBox->SetText(FText::FromString(""));
 		RPIWidget->JoinButton->OnClicked.Clear();
 		RPIWidget->JoinButton->OnClicked.AddDynamic(this, &ThisClass::OnClickPasswordJoin);
 	}

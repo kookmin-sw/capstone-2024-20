@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoomPasswordInputPopupWidget.generated.h"
 
+class UTextBlock;
 class UButton;
 class UEditableTextBox;
 /**
@@ -17,6 +18,9 @@ class CAPSTONE_2024_20_API URoomPasswordInputPopupWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* RoomName;
+	
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	UEditableTextBox* PasswordTextBox;
 

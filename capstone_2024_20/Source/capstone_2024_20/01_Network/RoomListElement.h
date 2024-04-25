@@ -32,6 +32,8 @@ public:
 private:
 	class URoomListElementData* RoomListElementData;
 	URoomPasswordInputPopupWidget* RPIWidget;
+
+	bool IsPrivate = false;
 public:
 	UFUNCTION()
 	void OnClickJoin();
