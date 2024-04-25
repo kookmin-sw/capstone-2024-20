@@ -3,33 +3,39 @@
 
 #include "CapGameState.h"
 
+#include "CapPlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 ACapGameState::ACapGameState()
 {
 	RoomState = FRoomState::None;
+	NumReadyPlayers = 0;
+	bReplicates = true;
 }
 
 void ACapGameState::HandleNone()
 {
+	NoneDelegate.Broadcast();
 }
 
 void ACapGameState::HandleJoiningUser()
 {
+	JoiningUserDelegate.Broadcast();
 }
 
 void ACapGameState::HandleAllReady()
 {
+	AllReadyDelegate.Broadcast();
 }
 
 void ACapGameState::HandleGameStart()
 {
+	GameStartDelegate.Broadcast();
 }
 
 void ACapGameState::OnRep_ReplicatedHasBegunPlay()
 {
 	Super::OnRep_ReplicatedHasBegunPlay();
-	HandleReady();
 }
 
 void ACapGameState::HandleBeginPlay()
@@ -40,20 +46,15 @@ void ACapGameState::HandleBeginPlay()
 
 void ACapGameState::HandleReady()
 {
-	ServerRPC_Ready();
+	SetRoomState(FRoomState::AllReady);
 }
 
-void ACapGameState::ServerRPC_Ready_Implementation()
+void ACapGameState::Ready()
 {
 	if (HasAuthority() == false)
 		return;
-
-	NumReadyPlayers++;
-	if (NumReadyPlayers == GetWorld()->GetAuthGameMode()->GetNumPlayers())
-	{
-		SetRoomState(FRoomState::AllReady);
-	}
 }
+
 
 void ACapGameState::OnRep_RoomState()
 {
@@ -77,6 +78,9 @@ void ACapGameState::OnRep_RoomState()
 
 void ACapGameState::SetRoomState(const FName NewRoomState)
 {
+	if (RoomState == NewRoomState)
+		return;
+
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		RoomState = NewRoomState;

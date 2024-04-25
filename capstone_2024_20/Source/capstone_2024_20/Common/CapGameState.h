@@ -7,6 +7,8 @@
 #include "GameFramework/GameState.h"
 #include "CapGameState.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FRoomStateChangedDelegate);
+
 UCLASS()
 class CAPSTONE_2024_20_API ACapGameState : public AGameStateBase
 {
@@ -15,7 +17,7 @@ class CAPSTONE_2024_20_API ACapGameState : public AGameStateBase
 	ACapGameState();
 
 private:
-	uint32 NumReadyPlayers : 0;
+	uint32 NumReadyPlayers;
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_RoomState, BlueprintReadOnly, VisibleInstanceOnly)
@@ -30,15 +32,16 @@ protected:
 	virtual void HandleGameStart();
 
 public:
+	FRoomStateChangedDelegate NoneDelegate;
+	FRoomStateChangedDelegate JoiningUserDelegate;
+	FRoomStateChangedDelegate AllReadyDelegate;
+	FRoomStateChangedDelegate GameStartDelegate;
+	
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
 	virtual void HandleBeginPlay() override;
 	virtual void HandleReady();
 
-	UFUNCTION(Server)
-	void ServerRPC_Ready();
-
-	UFUNCTION()
-	virtual void ServerRPC_Ready_Implementation();
+	virtual void Ready();
 
 	UFUNCTION()
 	void OnRep_RoomState();
