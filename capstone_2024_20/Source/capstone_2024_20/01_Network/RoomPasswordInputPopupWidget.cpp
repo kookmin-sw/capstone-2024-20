@@ -7,10 +7,10 @@ void URoomPasswordInputPopupWidget::SetActive(bool IsActive)
 {
 	if (IsActive == true)
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
-		SetVisibility(ESlateVisibility::Visible);
+		SetVisibility(ESlateVisibility::Hidden);
 	}
 }

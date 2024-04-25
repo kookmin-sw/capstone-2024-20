@@ -44,6 +44,7 @@ void AJoinMenuGameMode::BeginPlay()
 		if(RoomPasswordInputPopupWidget != nullptr)
 		{
 			RoomPasswordInputPopupWidget->AddToViewport();
+			RoomPasswordInputPopupWidget->SetActive(false);
 		}
 	}
 
