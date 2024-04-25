@@ -39,6 +39,8 @@ void AJoinMenuGameMode::BeginPlay()
 
 	MainUI->RoomNameTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomName);
 	MainUI->RoomCodeTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomCode);
+	MainUI->RoomPasswordTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomPassword);
+
 	MainUI->CreateButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::CreateGameSession);
 	MainUI->JoinRoomCodeButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::JoinGameSession);
 	MainUI->RefreshButton->OnClicked.AddDynamic(this, &ThisClass::OnClickRefreshButton);

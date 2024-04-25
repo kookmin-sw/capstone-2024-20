@@ -34,4 +34,10 @@ public:
 
 	UFUNCTION()
 	void SetRoomCode(const FText& RoomCode);
+	
+	UFUNCTION()
+	void SetRoomPassword(const FText& RoomCode);
+
+	UFUNCTION()
+	bool IsPrivateRoom() const;
 };

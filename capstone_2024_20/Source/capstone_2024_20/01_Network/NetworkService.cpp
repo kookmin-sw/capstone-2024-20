@@ -226,7 +226,7 @@ TSharedPtr<FOnlineSessionSettings> ANetworkService::GetSessionSettings()
 		RoomData.Code = ANetworkService::CreateRoomCode();
 		SessionSettings->Set(RoomTEXT::CODE, RoomData.Code, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
-		if(RoomData.Password.IsEmpty() == false)
+		if(LobbyGameState->IsPrivateRoom() == true)
 		{
 			SessionSettings->Set(RoomTEXT::ISPRIVATE, true, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 			SessionSettings->Set(RoomTEXT::PASSWORD, RoomData.Password, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
