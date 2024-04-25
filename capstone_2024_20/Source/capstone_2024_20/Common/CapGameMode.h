@@ -17,4 +17,11 @@ UCLASS()
 class CAPSTONE_2024_20_API ACapGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+	ACapGameMode();
+	
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+public:
+	int32 numnum = 0;
 };
