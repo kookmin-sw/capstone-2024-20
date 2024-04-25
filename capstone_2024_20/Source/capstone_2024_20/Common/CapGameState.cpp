@@ -26,6 +26,27 @@ void ACapGameState::HandleGameStart()
 {
 }
 
+void ACapGameState::OnRep_ReplicatedHasBegunPlay()
+{
+	Super::OnRep_ReplicatedHasBegunPlay();
+	HandleReady();
+}
+
+void ACapGameState::HandleBeginPlay()
+{
+	Super::HandleBeginPlay();
+	HandleReady();
+}
+
+void ACapGameState::HandleReady()
+{
+	ServerRPC_Ready();
+}
+
+void ACapGameState::ServerRPC_Ready_Implementation()
+{
+}
+
 void ACapGameState::OnRep_RoomState()
 {
 	if(RoomState == FRoomState::None)
