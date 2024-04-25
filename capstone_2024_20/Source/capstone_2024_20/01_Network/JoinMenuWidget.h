@@ -7,6 +7,7 @@
 #include "Interfaces/OnlineSessionDelegates.h"
 #include "JoinMenuWidget.generated.h"
 
+class URoomPasswordInputPopupWidget;
 /**
  * 
  */
@@ -39,7 +40,8 @@ public:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UListView* RoomListView;
 
-	void RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults) const;
+	void RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults,
+		URoomPasswordInputPopupWidget* RoomPasswordInputPopupWidget) const;
 
 private:
 	UFUNCTION()

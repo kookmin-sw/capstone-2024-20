@@ -7,6 +7,7 @@
 #include "JoinMenuWidget.h"
 #include "NetworkService.h"
 #include "OnlineSessionSettings.h"
+#include "RoomPasswordInputPopupWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ListView.h"
@@ -37,6 +38,15 @@ void AJoinMenuGameMode::BeginPlay()
 		}
 	}
 
+	if(RoomPasswordInputPopupWidgetClass != nullptr)
+	{
+		RoomPasswordInputPopupWidget = CreateWidget<URoomPasswordInputPopupWidget>(World, RoomPasswordInputPopupWidgetClass);
+		if(RoomPasswordInputPopupWidget != nullptr)
+		{
+			RoomPasswordInputPopupWidget->AddToViewport();
+		}
+	}
+
 	MainUI->RoomNameTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomName);
 	MainUI->RoomCodeTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomCode);
 	MainUI->RoomPasswordTextBox->OnTextChanged.AddDynamic(LobbyGameState, &AJoinMenuGameState::SetRoomPassword);
@@ -44,6 +54,7 @@ void AJoinMenuGameMode::BeginPlay()
 	MainUI->CreateButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::CreateGameSession);
 	MainUI->JoinRoomCodeButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::JoinGameSession);
 	MainUI->RefreshButton->OnClicked.AddDynamic(this, &ThisClass::OnClickRefreshButton);
+	
 	//OnClickRefreshButton();
 }
 
@@ -66,5 +77,5 @@ void AJoinMenuGameMode::RefreshRoomListUI(bool bWasSuccessful) const
 	}
 
 	MainUI->RoomListView->ClearListItems();
-	MainUI->RefreshRoomList(NetworkService->GetSessionSearch()->SearchResults);
+	MainUI->RefreshRoomList(NetworkService->GetSessionSearch()->SearchResults, RoomPasswordInputPopupWidget);
 }
