@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "OnlineSessionSettings.h"
-#include "UObject/NoExportTypes.h"
 #include "RoomListElementData.generated.h"
 
 UCLASS()

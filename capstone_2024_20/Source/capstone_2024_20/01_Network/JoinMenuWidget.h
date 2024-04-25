@@ -23,6 +23,9 @@ public:
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UEditableTextBox* RoomCodeTextBox;
+	
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	class UEditableTextBox* RoomPasswordTextBox;
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UButton* CreateButton;

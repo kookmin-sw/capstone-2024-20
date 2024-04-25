@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoomListElement.generated.h"
 
+class UImage;
 /**
  * 
  */
@@ -22,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UButton* JoinButton;
 
+	UPROPERTY(meta=(BindWidget))
+	UImage* LockImage;
+	
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
