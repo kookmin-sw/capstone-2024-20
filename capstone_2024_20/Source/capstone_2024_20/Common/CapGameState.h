@@ -14,6 +14,9 @@ class CAPSTONE_2024_20_API ACapGameState : public AGameStateBase
 
 	ACapGameState();
 
+private:
+	uint32 NumReadyPlayers : 0;
+
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_RoomState, BlueprintReadOnly, VisibleInstanceOnly)
 	FName RoomState;
@@ -33,7 +36,7 @@ public:
 
 	UFUNCTION(Server)
 	void ServerRPC_Ready();
-	
+
 	UFUNCTION()
 	virtual void ServerRPC_Ready_Implementation();
 

@@ -45,23 +45,31 @@ void ACapGameState::HandleReady()
 
 void ACapGameState::ServerRPC_Ready_Implementation()
 {
+	if (HasAuthority() == false)
+		return;
+
+	NumReadyPlayers++;
+	if (NumReadyPlayers == GetWorld()->GetAuthGameMode()->GetNumPlayers())
+	{
+		SetRoomState(FRoomState::AllReady);
+	}
 }
 
 void ACapGameState::OnRep_RoomState()
 {
-	if(RoomState == FRoomState::None)
+	if (RoomState == FRoomState::None)
 	{
 		HandleNone();
 	}
-	else if(RoomState == FRoomState::JoiningUser)
+	else if (RoomState == FRoomState::JoiningUser)
 	{
 		HandleJoiningUser();
 	}
-	else if(RoomState == FRoomState::AllReady)
+	else if (RoomState == FRoomState::AllReady)
 	{
 		HandleAllReady();
 	}
-	else if(RoomState == FRoomState::GameStart)
+	else if (RoomState == FRoomState::GameStart)
 	{
 		HandleGameStart();
 	}
@@ -80,7 +88,7 @@ void ACapGameState::SetRoomState(const FName NewRoomState)
 
 void ACapGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::GetLifetimeReplicatedProps( OutLifetimeProps );
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACapGameState, RoomState);
 }
