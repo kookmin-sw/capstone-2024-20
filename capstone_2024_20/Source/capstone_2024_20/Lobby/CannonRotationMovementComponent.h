@@ -16,11 +16,19 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	FRotator Velocity;
 
-	static constexpr float RotationSpeed = 10.0f;
+	UPROPERTY(ReplicatedUsing=On_MovementBase)
+	FRotator MovementBase;
+	
+	UFUNCTION()
+	void On_MovementBase();
+
+	UPROPERTY(EditAnywhere)
+	float RotationSpeed = 10.0f;
 
 	UPROPERTY()
 	USceneComponent* UpdatedComponent;
-	
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	UCannonRotationMovementComponent();
 	
@@ -30,6 +38,11 @@ public:
 	UFUNCTION()
 	virtual void AddMovementRotation(FRotator WorldDirection);
 
+	void ControlledCharacterMove();
+	
+	UFUNCTION(Unreliable, Server)
+	void ServerToMove(FRotator Rotation);
+	
 protected:
 	virtual void BeginPlay() override;
 
