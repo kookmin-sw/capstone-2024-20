@@ -25,6 +25,7 @@ void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomRe
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString::Printf(TEXT("UI업데이트 시작")));
 	}
+	
 	if (RoomResults.Num() == 0)
 		return;
 

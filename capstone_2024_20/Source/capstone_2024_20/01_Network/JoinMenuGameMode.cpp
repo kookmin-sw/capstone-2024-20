@@ -56,7 +56,8 @@ void AJoinMenuGameMode::BeginPlay()
 	MainUI->JoinRoomCodeButton->OnClicked.AddDynamic(NetworkService, &ANetworkService::JoinGameSession);
 	MainUI->RefreshButton->OnClicked.AddDynamic(this, &ThisClass::OnClickRefreshButton);
 	
-	//OnClickRefreshButton();
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AJoinMenuGameMode::OnClickRefreshButton, 1.0f, false);
 }
 
 void AJoinMenuGameMode::OnClickRefreshButton()
