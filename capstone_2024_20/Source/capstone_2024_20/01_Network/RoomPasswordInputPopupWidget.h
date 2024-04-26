@@ -17,9 +17,18 @@ class CAPSTONE_2024_20_API URoomPasswordInputPopupWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+	virtual void NativeConstruct() override;
+
+private:
+	UFUNCTION()
+	void OnCloseButtonClicked();
+	
 public:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	UTextBlock* RoomName;
+
+	UPROPERTY(EditAnywhere, meta=(BindWIdget))
+	UButton* CloseButton;
 	
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	UEditableTextBox* PasswordTextBox;
