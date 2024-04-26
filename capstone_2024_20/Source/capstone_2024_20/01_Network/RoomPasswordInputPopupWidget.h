@@ -22,8 +22,10 @@ class CAPSTONE_2024_20_API URoomPasswordInputPopupWidget : public UUserWidget
 private:
 	UFUNCTION()
 	void OnCloseButtonClicked();
-	
+
 public:
+	const FString RoomNameSuffix = TEXT(" 방");
+	
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	UTextBlock* RoomName;
 

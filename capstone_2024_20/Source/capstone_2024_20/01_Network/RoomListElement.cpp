@@ -35,7 +35,8 @@ void URoomListElement::OnClickJoin()
 	if(IsPrivate == true)
 	{
 		RPIWidget->SetActive(true);
-		RPIWidget->RoomName->SetText(RoomName->GetText());
+		const FString NewRoomName = RoomName->GetText().ToString() + RPIWidget->RoomNameSuffix;
+		RPIWidget->RoomName->SetText(FText::FromString(NewRoomName));
 		RPIWidget->PasswordTextBox->SetText(FText::FromString(""));
 		RPIWidget->JoinButton->OnClicked.Clear();
 		RPIWidget->JoinButton->OnClicked.AddDynamic(this, &ThisClass::OnClickPasswordJoin);
