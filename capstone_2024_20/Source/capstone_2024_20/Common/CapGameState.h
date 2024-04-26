@@ -36,6 +36,7 @@ public:
 	FRoomStateChangedDelegate JoiningUserDelegate;
 	FRoomStateChangedDelegate AllReadyDelegate;
 	FRoomStateChangedDelegate GameStartDelegate;
+	FRoomStateChangedDelegate LocalReadyDelegate;
 	
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
 	virtual void HandleBeginPlay() override;

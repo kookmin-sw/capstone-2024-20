@@ -36,6 +36,7 @@ void ACapGameState::HandleGameStart()
 void ACapGameState::OnRep_ReplicatedHasBegunPlay()
 {
 	Super::OnRep_ReplicatedHasBegunPlay();
+	HandleReady();
 }
 
 void ACapGameState::HandleBeginPlay()
@@ -46,13 +47,15 @@ void ACapGameState::HandleBeginPlay()
 
 void ACapGameState::HandleReady()
 {
-	SetRoomState(FRoomState::AllReady);
+	LocalReadyDelegate.Broadcast();
 }
 
 void ACapGameState::Ready()
 {
 	if (HasAuthority() == false)
 		return;
+	
+	SetRoomState(FRoomState::AllReady);
 }
 
 

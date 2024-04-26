@@ -3,10 +3,12 @@
 
 #include "CapGameMode.h"
 #include "CapGameState.h"
+#include "CapPlayerState.h"
 
 ACapGameMode::ACapGameMode()
 {
 	GameStateClass = ACapGameState::StaticClass();
+	PlayerStateClass = ACapPlayerState::StaticClass();
 }
 
 
