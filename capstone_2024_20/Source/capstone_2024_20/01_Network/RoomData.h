@@ -7,6 +7,8 @@ namespace RoomTEXT
 {
 	const static FName NAME = TEXT("RoomName");
 	const static FName CODE = TEXT("RoomCode");
+	const static FName PASSWORD = TEXT("RoomPassword");
+	const static FName ISPRIVATE = TEXT("IsPrivate");
 }
 
 USTRUCT(BlueprintType)
@@ -19,4 +21,7 @@ struct FRoomData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Code;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Password;
 };

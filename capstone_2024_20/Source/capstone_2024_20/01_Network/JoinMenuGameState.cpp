@@ -39,3 +39,13 @@ void AJoinMenuGameState::SetRoomCode(const FText& RoomCode)
 {
 	RoomData.Code = RoomCode.ToString();
 }
+
+void AJoinMenuGameState::SetRoomPassword(const FText& RoomCode)
+{
+	RoomData.Password = RoomCode.ToString();
+}
+
+bool AJoinMenuGameState::IsPrivateRoom() const
+{
+	return RoomData.Password.IsEmpty() == false;
+}

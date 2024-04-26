@@ -7,6 +7,8 @@
 #include "Blueprint/UserWidget.h"
 #include "RoomListElement.generated.h"
 
+class URoomPasswordInputPopupWidget;
+class UImage;
 /**
  * 
  */
@@ -22,12 +24,19 @@ public:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UButton* JoinButton;
 
+	UPROPERTY(meta=(BindWidget))
+	UImage* LockImage;
+	
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
 	class URoomListElementData* RoomListElementData;
+	URoomPasswordInputPopupWidget* RPIWidget;
 
+	bool IsPrivate = false;
 public:
 	UFUNCTION()
 	void OnClickJoin();
+	UFUNCTION()
+	void OnClickPasswordJoin();
 };

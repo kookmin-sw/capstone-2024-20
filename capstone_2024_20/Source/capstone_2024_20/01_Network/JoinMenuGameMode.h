@@ -19,9 +19,13 @@ protected:
 
 public:
 	class UJoinMenuWidget* MainUI;
+	class URoomPasswordInputPopupWidget* RoomPasswordInputPopupWidget;
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UJoinMenuWidget> MainWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URoomPasswordInputPopupWidget> RoomPasswordInputPopupWidgetClass;
 private:
 	UFUNCTION()
 	void OnClickRefreshButton();

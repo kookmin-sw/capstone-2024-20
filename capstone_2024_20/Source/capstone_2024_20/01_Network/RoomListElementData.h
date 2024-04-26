@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "OnlineSessionSettings.h"
-#include "UObject/NoExportTypes.h"
 #include "RoomListElementData.generated.h"
+
+class URoomPasswordInputPopupWidget;
 
 UCLASS()
 class CAPSTONE_2024_20_API URoomListElementData : public UObject
@@ -20,4 +21,6 @@ public:
 	class ANetworkService* NetworkService;
 	
 	FOnlineSessionSearchResult Result;
+
+	URoomPasswordInputPopupWidget* RoomPasswordInputPopupWidget;
 };

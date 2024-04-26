@@ -222,10 +222,20 @@ TSharedPtr<FOnlineSessionSettings> ANetworkService::GetSessionSettings()
 	if (const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>())
 	{
 		FRoomData RoomData = LobbyGameState->RoomData;
-		SessionSettings->Set(FName("RoomName"), RoomData.Name, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		SessionSettings->Set(RoomTEXT::NAME, RoomData.Name, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 		RoomData.Code = ANetworkService::CreateRoomCode();
-		SessionSettings->Set(FName("RoomCode"), RoomData.Code, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		SessionSettings->Set(RoomTEXT::CODE, RoomData.Code, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
+		if(LobbyGameState->IsPrivateRoom() == true)
+		{
+			SessionSettings->Set(RoomTEXT::ISPRIVATE, true, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+			SessionSettings->Set(RoomTEXT::PASSWORD, RoomData.Password, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		}
+		else
+		{
+			SessionSettings->Set(RoomTEXT::ISPRIVATE, false, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		}
+		
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
 		                                 FString::Printf(TEXT("RoomCode : %s"), *RoomData.Code));
 	}
