@@ -123,6 +123,14 @@ void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
 	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
 }
 
+void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
+{
+	EnemyShips.Remove(EnemyShip);
+	EnemyShip->Destroy();
+	EarnCurrency(100);
+}
+
+
 void ASailingSystem::CreateMap()
 {
 	Map = NewObject<UMap>();
@@ -153,6 +161,8 @@ void ASailingSystem::SpawnEnemyShip()
 	const auto RandomLocation = FVector(RandomX, RandomY, 0.0f);
 	AEnemyShip* SpawnedEnemyShip = GetWorld()->SpawnActor<AEnemyShip>(AEnemyShip::StaticClass(), FTransform(RandomLocation));
 	EnemyShips.Add(SpawnedEnemyShip);
+	
+	SpawnedEnemyShip->EnemyShipDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyShipDie);
 }
 
 void ASailingSystem::SpawnEvent()

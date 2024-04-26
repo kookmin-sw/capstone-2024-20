@@ -7,6 +7,7 @@
 #include "JoinMenuGameState.h"
 #include "OnlineSessionSettings.h"
 #include "RoomListElementData.h"
+#include "RoomPasswordInputPopupWidget.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ListView.h"
 
@@ -17,12 +18,14 @@ void UJoinMenuWidget::NativeConstruct()
 	RoomCodeTextBox->OnTextChanged.AddDynamic(this, &ThisClass::ChangeRoomCodeTextBoxUpper);
 }
 
-void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults) const
+void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults,
+	URoomPasswordInputPopupWidget* RoomPasswordInputPopupWidget) const
 {
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString::Printf(TEXT("UI업데이트 시작")));
 	}
+	
 	if (RoomResults.Num() == 0)
 		return;
 
@@ -42,6 +45,7 @@ void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomRe
 		FText RoomText = FText::Format(FText::FromString(TEXT("{0}")), FText::FromString(ResultRoomName));
 
 		URoomListElementData* RoomListData = NewObject<URoomListElementData>();
+		RoomListData->RoomPasswordInputPopupWidget = RoomPasswordInputPopupWidget;
 		RoomListData->Result = Room;
 		if (const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>())
 		{

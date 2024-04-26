@@ -61,7 +61,8 @@ void AMyCannon::MultiCastRPC_FireCannon_Implementation()
 	// 발사체 생성
 	if (HasAuthority())
 	{
-		GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
+		ACannonBall* ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
+		ball->SetDamage(1);
 	}
 
 	if (FireEffect)

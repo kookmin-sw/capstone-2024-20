@@ -21,8 +21,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	float destroyDelayTime = 2.0f;
-
+	float destroyDelayTime = 1.0f;
+	int32 damage = 1;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -41,6 +42,8 @@ public:
 	UParticleSystem* WaterSplashEffect;
 
 
+	int32 GetDamage();
+	void SetDamage(int32 dmg);
 	
 	// 충돌 시 호출될 함수
 	UFUNCTION()
