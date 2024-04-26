@@ -3,16 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ICapPawn.h"
 #include "GameFramework/Pawn.h"
 #include "CannonPawn.generated.h"
 
+class UCannonRotationMovementComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 class UArrowComponent;
 
 UCLASS()
-class CAPSTONE_2024_20_API ACannonPawn : public APawn
+class CAPSTONE_2024_20_API ACannonPawn : public APawn, public ICapPawn
 {
 	GENERATED_BODY()
 	
@@ -27,8 +29,16 @@ class CAPSTONE_2024_20_API ACannonPawn : public APawn
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere)
+	UCannonRotationMovementComponent* RotationMovementComponent;
 public:
 	ACannonPawn();
+
+	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
+	{
+		return DefaultMappingContext;
+	};
 
 protected:
 	virtual void BeginPlay() override;
