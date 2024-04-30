@@ -155,6 +155,8 @@ bool AMyCharacter::GetIsOverLap()
 
 bool AMyCharacter::GetIsSleeping()
 {
+	FString Message = FString::Printf(TEXT("bIsSleeping is now: %s"), bIsSleeping ? TEXT("True") : TEXT("False"));
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, Message);
 	return bIsSleeping;
 }
 

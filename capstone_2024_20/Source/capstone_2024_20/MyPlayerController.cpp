@@ -510,8 +510,8 @@ void AMyPlayerController::ServerRPC_PlayerSleep_Implementation(AMyCharacter* use
 		user->SetActorLocation(bed->GetSleepLocation());
 		user->SetActorRotation(bed->GetSleepRotation());
 		user->bIsSleeping = b;
-		FString Message = FString::Printf(TEXT("bIsSleeping is now: %s"), user->bIsSleeping ? TEXT("True") : TEXT("False"));
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, Message);
+
+		user->GetIsSleeping();
 
 		// true false 제대로 들어가는거 같은데
 		
@@ -526,8 +526,9 @@ void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* use
 		user->SetActorLocation(bed->GetAwakeLocation());
 		user->SetActorRotation(bed->GetAwakeRotation());
 		user->bIsSleeping = b;
-		FString Message = FString::Printf(TEXT("bIsSleeping is now: %s"), user->bIsSleeping ? TEXT("True") : TEXT("False"));
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, Message);
+
+		user->GetIsSleeping();
+
 
 		// true false 제대로 들어가는거 같은데
 		

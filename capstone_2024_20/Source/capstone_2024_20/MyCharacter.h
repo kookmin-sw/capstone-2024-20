@@ -84,13 +84,14 @@ private:
 	UPROPERTY(Replicated)
 	FRotator MeshRotation;
 	
-
-	
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
 
 	
 public:
+
+	
+	
 	UPROPERTY(Replicated)
 	bool bIsSleeping = false;
 	TArray<FString> ObjectList = {
