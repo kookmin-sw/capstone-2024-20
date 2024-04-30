@@ -139,7 +139,8 @@ protected:
 		CHARACTER,
 		SHIP,
 		CANNON,
-		TELESCOPE
+		TELESCOPE,
+		BED
 	};
 	
 	void SetControlMode(ControlMode NewControlMode);

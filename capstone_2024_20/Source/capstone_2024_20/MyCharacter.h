@@ -1,16 +1,13 @@
 
 #pragma once
 
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "CoreMinimal.h"
 #include "MyObject.h"
-#include "Camera/CameraComponent.h"
 #include "Common/NamePlateWidgetComponent.h"
 #include "GameFramework/Character.h"
-#include "UObject/ObjectRename.h"
+#include "Common/HP.h"
 #include "MyCharacter.generated.h"
+
 
 
 class USpringArmComponent;
@@ -25,7 +22,7 @@ enum class UserState : uint8
 };
 
 UCLASS()
-class CAPSTONE_2024_20_API AMyCharacter : public ACharacter
+class CAPSTONE_2024_20_API AMyCharacter : public ACharacter, public IHP
 {
 	GENERATED_BODY()
 
@@ -60,9 +57,6 @@ public:
 	TSubclassOf<AActor> BP_CannonBallClass;
 	
 protected:
-
-	unsigned int PlayerMaxHP = 10;
-	unsigned int PlayerHP = PlayerMaxHP;
 	
 	bool bIsChanging=false;
 	float TargetArmLength;
@@ -102,7 +96,8 @@ public:
 		TEXT("Cannon"), 
 		TEXT("SteelWheel"), 
 		TEXT("CannonBallBox"), 
-		TEXT("Telescope")
+		TEXT("Telescope"),
+		TEXT("Bed")
 	};
 	
 	
@@ -148,33 +143,6 @@ public:
 	void DropObject(AActor* ship);
 
 	void Attack() const;
-
-	UFUNCTION()
-	unsigned int GetPlayerHP();
-
-	UFUNCTION()
-	void SetPlayerHP(unsigned int hp);
-	
-	UFUNCTION()
-	void IncreaseHP(int plusHP);
-
-	UFUNCTION()
-	void DecreaseHP(unsigned int minusHP);
-
-	UFUNCTION()
-	unsigned int GetPlayerMaxHP();
-
-	UFUNCTION()
-	void SetPlayerMaxHP(unsigned int hp);
-	
-	UFUNCTION()
-	void IncreaseMaxHP(int plusHP);
-
-	UFUNCTION()
-	void DecreaseMaxHP(int minusHP);
-
-	UFUNCTION()
-	void PlayerDead();
 
 	UFUNCTION()
 	FRotator GetMeshRotation();

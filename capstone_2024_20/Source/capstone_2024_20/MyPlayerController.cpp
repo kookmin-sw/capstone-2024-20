@@ -364,12 +364,23 @@ void AMyPlayerController::ViewChange()
 				
 			}
 		}
+
+		else if(Player->GetCurrentHitObjectName().Equals(TEXT("Bed")))
+		{
+			if(Player->CurrentPlayerState == Player->GetUserStateNone())
+			{
+				
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("취침"));
+				SetControlMode(ControlMode::BED);
+			}
+		}
 		
 		break;
 
 	case ControlMode::SHIP:
 	case ControlMode::CANNON:
 	case ControlMode::TELESCOPE:
+	case ControlMode::BED:
 		// 현재 컨트롤 모드가 SHIP 또는 CANNON일 경우, 무조건 CHARACTER 모드로 전환
 		SetControlMode(ControlMode::CHARACTER);
 		Subsystem->RemoveMappingContext(LastMappingContext);
