@@ -133,8 +133,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_DestroyCarryCannonBall(AMyCharacter* user);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPC_PlayerSleep(AMyCharacter* user, bool b);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_PlayerSleep(AMyCharacter* user, bool b, AMyBed* bed);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_PlayerAwake(AMyCharacter* user, bool b, AMyBed* bed);
 
 protected:
 	

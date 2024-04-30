@@ -358,20 +358,14 @@ void AMyPlayerController::ViewChange()
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				Bed = Cast<AMyBed>(Player->GetCurrentHitObject());
-				MulticastRPC_PlayerSleep(Player,true);
-				Player->SetPlayerState(Player->GetUserStateSleeping());
-				Player->SetActorLocation(Bed->GetSleepLocation());
-				Player->SetActorRotation(Bed->GetSleepRotation());
+				ServerRPC_PlayerSleep(Player,true, Bed);
 				SetControlMode(ControlMode::BED);
 			}
 		}
 		break;
 
 	case ControlMode::BED:
-		MulticastRPC_PlayerSleep(Player,false);
-		Player->SetPlayerState(Player->GetUserStateNone());
-		Player->SetActorLocation(Bed->GetAwakeLocation());
-		Player->SetActorRotation(Bed->GetAwakeRotation());
+		ServerRPC_PlayerAwake(Player,false, Bed);
 		
 	case ControlMode::SHIP:
 	case ControlMode::CANNON:
@@ -508,14 +502,37 @@ void AMyPlayerController::ServerRPC_DestroyCarryCannonBall_Implementation(AMyCha
 	}
 }
 
-void AMyPlayerController::MulticastRPC_PlayerSleep_Implementation(AMyCharacter* user, bool b)
+void AMyPlayerController::ServerRPC_PlayerSleep_Implementation(AMyCharacter* user, bool b, AMyBed* bed)
 {
 	if(HasAuthority())
 	{
-		user->SetIsSleeping(b);
+		user->SetPlayerState(user->GetUserStateSleeping());
+		user->SetActorLocation(bed->GetSleepLocation());
+		user->SetActorRotation(bed->GetSleepRotation());
+		user->bIsSleeping = b;
+		FString Message = FString::Printf(TEXT("bIsSleeping is now: %s"), user->bIsSleeping ? TEXT("True") : TEXT("False"));
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, Message);
+
+		// true false 제대로 들어가는거 같은데
+		
 	}
 }
 
+void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* user, bool b, AMyBed* bed)
+{
+	if(HasAuthority())
+	{
+		user->SetPlayerState(user->GetUserStateNone());
+		user->SetActorLocation(bed->GetAwakeLocation());
+		user->SetActorRotation(bed->GetAwakeRotation());
+		user->bIsSleeping = b;
+		FString Message = FString::Printf(TEXT("bIsSleeping is now: %s"), user->bIsSleeping ? TEXT("True") : TEXT("False"));
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, Message);
+
+		// true false 제대로 들어가는거 같은데
+		
+	}
+}
 
 
 
