@@ -3,3 +3,24 @@
 
 #include "MyBed.h"
 
+FVector AMyBed::GetSleepLocation()
+{
+	return SleepArrow->GetComponentLocation();
+}
+
+FRotator AMyBed::GetSleepRotation()
+{
+	return SleepArrow->GetComponentRotation();
+}
+
+FVector AMyBed::GetAwakeLocation()
+{
+	return AwakeArrow->GetComponentLocation();
+}
+
+FRotator AMyBed::GetAwakeRotation()
+{
+	return AwakeArrow->GetComponentRotation();
+}
+
+

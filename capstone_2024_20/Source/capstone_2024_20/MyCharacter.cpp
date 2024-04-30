@@ -53,6 +53,11 @@ AMyCharacter::AMyCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	SetMaxHP(10);
+	SetCurrentHP(10);
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -128,6 +133,7 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMyCharacter, MeshRotation);
+	DOREPLIFETIME(AMyCharacter, bIsSleeping);
 }
 
 
@@ -146,6 +152,23 @@ bool AMyCharacter::GetIsOverLap()
 {
 	return bIsOverlap;
 }
+
+bool AMyCharacter::GetIsSleeping()
+{
+	return bIsSleeping;
+}
+
+void AMyCharacter::SetIsSleeping(bool b)
+{
+	bIsSleeping = b;
+
+}
+
+void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(bool b)
+{
+	bIsSleeping = b;
+}
+
 
 void AMyCharacter::SetTextWidgetVisible(bool b)
 {
@@ -194,6 +217,12 @@ UserState AMyCharacter::GetUserStateDragging()
 	return UserState::DRAGGING;
 }
 
+UserState AMyCharacter::GetUserStateSleeping()
+{
+	return UserState::SLEEPING;
+}
+
+
 void AMyCharacter::DestroyCannonBall()
 {
 	if(CurrentCarryObject)
@@ -219,13 +248,8 @@ void AMyCharacter::DragObject()
 				Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			}
 		}
-
 		CurrentHitObject->SetIsDragging(true);
-		
-		
 	}
-                    
-
 }
 
 void AMyCharacter::DropObject(AActor* ship)

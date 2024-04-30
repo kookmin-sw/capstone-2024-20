@@ -18,7 +18,8 @@ enum class UserState : uint8
 {
 	NONE,
 	CARRYING,
-	DRAGGING
+	DRAGGING,
+	SLEEPING
 };
 
 UCLASS()
@@ -58,12 +59,8 @@ public:
 	
 protected:
 	
-	bool bIsChanging=false;
-	float TargetArmLength;
-	FVector TargetLocation;
-	FRotator TargetRotation;
-	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
+
 
 	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
@@ -86,9 +83,13 @@ protected:
 private:
 	UPROPERTY(Replicated)
 	FRotator MeshRotation;
-
+	
+	UPROPERTY(Replicated)
+	bool bIsSleeping = false;
+	
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
+
 	
 public:
 
@@ -108,6 +109,7 @@ public:
 	UserState GetUserStateNone();
 	UserState GetUserStateCarrying();
 	UserState GetUserStateDragging();
+	UserState GetUserStateSleeping();
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_MeshRotation(FRotator NewRotation);
@@ -117,6 +119,15 @@ public:
 	
 	UFUNCTION()
 	bool GetIsOverLap();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSleeping();
+
+	UFUNCTION()
+	void SetIsSleeping(bool b);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetIsSleeping(bool b);
 
 	UFUNCTION()
 	void SetTextWidgetVisible(bool b);

@@ -5,9 +5,7 @@
 
 #include "CannonControlStrategy.h"
 #include "CharacterControlStrategy.h"
-#include "MyShip.h"
 #include "ShipControlStrategy.h"
-#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 class AStaticMeshActor;
@@ -173,7 +171,7 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
 {
-	if (CurrentStrategy != nullptr && CurrentControlMode != ControlMode::TELESCOPE)
+	if (CurrentStrategy != nullptr && CurrentControlMode != ControlMode::TELESCOPE && CurrentControlMode != ControlMode::BED)
 	{
 		CurrentStrategy->Move(Instance, ControlledActor,this, GetWorld()->GetDeltaSeconds());
 	}
@@ -200,18 +198,14 @@ void AMyPlayerController::Interaction_Trigger()
 		if (PressDuration >= 3.0f) // 3초 넘게 누르면 DRAGGING 상태로 전환
 		{
 			//무언가를 끌고 있지 않을때만 끌기가 가능하게
-			if(Player->CurrentPlayerState == Player->GetUserStateNone())// && !Player->GetCurrentHitObject()->GetIsDragging())
+			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				ServerRPC_DragObject(Player);
-				//Player->DragObject(); // 여기서 오브젝트의 IsDragging이 true가 됨.
 				Player->SetPlayerState(Player->GetUserStateDragging());
 				GEngine->AddOnScreenDebugMessage(-1, 6.0f, FColor::Red, TEXT("Dragging 상태로 변경!"));
 			}
 		}
 	}
-
-	// if(!Player->GetCurrentHitObject()->GetIsDragging())
-	// 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("object carrying"));
 		
 }
 
@@ -233,10 +227,6 @@ void AMyPlayerController::Interaction_Released()
 		else if(PressDuration >= 3.0f)
 		{
 			Player->SetPlayerState(Player->GetUserStateNone());
-			
-			//이동하는 오브젝트 놔주는 함수
-			//다시 Ship의 자식으로
-			//Player->DropObject(Ship);
 			ServerRPC_DropObject(CurrentHitObject, Ship);
 			
 		}
@@ -282,6 +272,12 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 
 			case ControlMode::TELESCOPE:
 				SetViewTargetWithBlend(Ship->Camera_Telescope,BlendTime);
+				break;
+			
+			case ControlMode::BED:
+				SetViewTargetWithBlend(Bed->Camera_Bed, BlendTime);
+			
+
 		}
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
@@ -302,24 +298,16 @@ void AMyPlayerController::ViewChange()
 		// 플레이어가 현재 선택/접근한 오브젝트의 이름을 비교
 		if (Player->GetCurrentHitObjectName().Equals(TEXT("SteelWheel")))
 		{
-			// 현재 접근한 오브젝트가 "SteelWheel"이면, 컨트롤 모드를 SHIP으로 변경
-			
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("제대로 들어왓습니다"));
 			LastMappingContext = DefaultMappingContext;
 			CurrentStrategy = new ShipControlStrategy;
 			ControlledActor = Ship;
 			SetControlMode(ControlMode::SHIP);
-			
 		}
 		else if (Player->GetCurrentHitObjectName().Equals(TEXT("Cannon")))
 		{
-
 			// if 캐릭터 스테이트가 carrying이라면
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
-				// else None 이라면 아니면 (아무것도 들고 있지 않은 상태면 Cannon 조작으로
-				// 현재 접근한 오브젝트가 "Cannon"이면, 컨트롤 모드를 CANNON으로 변경
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("ChangeMapping"));
 				Subsystem->RemoveMappingContext(DefaultMappingContext);
 				Subsystem->AddMappingContext(CannonMappingContext, 0);
 				LastMappingContext = CannonMappingContext;
@@ -369,18 +357,25 @@ void AMyPlayerController::ViewChange()
 		{
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
-				
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("취침"));
+				Bed = Cast<AMyBed>(Player->GetCurrentHitObject());
+				MulticastRPC_PlayerSleep(Player,true);
+				Player->SetPlayerState(Player->GetUserStateSleeping());
+				Player->SetActorLocation(Bed->GetSleepLocation());
+				Player->SetActorRotation(Bed->GetSleepRotation());
 				SetControlMode(ControlMode::BED);
 			}
 		}
-		
 		break;
 
+	case ControlMode::BED:
+		MulticastRPC_PlayerSleep(Player,false);
+		Player->SetPlayerState(Player->GetUserStateNone());
+		Player->SetActorLocation(Bed->GetAwakeLocation());
+		Player->SetActorRotation(Bed->GetAwakeRotation());
+		
 	case ControlMode::SHIP:
 	case ControlMode::CANNON:
 	case ControlMode::TELESCOPE:
-	case ControlMode::BED:
 		// 현재 컨트롤 모드가 SHIP 또는 CANNON일 경우, 무조건 CHARACTER 모드로 전환
 		SetControlMode(ControlMode::CHARACTER);
 		Subsystem->RemoveMappingContext(LastMappingContext);
@@ -512,6 +507,15 @@ void AMyPlayerController::ServerRPC_DestroyCarryCannonBall_Implementation(AMyCha
 		user->DestroyCannonBall();
 	}
 }
+
+void AMyPlayerController::MulticastRPC_PlayerSleep_Implementation(AMyCharacter* user, bool b)
+{
+	if(HasAuthority())
+	{
+		user->SetIsSleeping(b);
+	}
+}
+
 
 
 

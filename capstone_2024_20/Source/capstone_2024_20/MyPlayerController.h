@@ -7,12 +7,12 @@
 #include "IControlStrategy.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
 #include "MyCannon.h"
-#include "CannonBall.h"
 #include "MyCannonBallBox.h"
-#include "MyCarryCannonBall.h"
 #include "MyCharacter.h"
 #include "MyShip.h"
+#include "MyBed.h"
 #include "MyPlayerController.generated.h"
 
 /**
@@ -72,6 +72,7 @@ private:
 	AMyCannon* Cannon;
 	AMyObject* CurrentHitObject;
 	AMyCannonBallBox* CannonBallBox;
+	AMyBed* Bed;
 	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
@@ -131,6 +132,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_DestroyCarryCannonBall(AMyCharacter* user);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_PlayerSleep(AMyCharacter* user, bool b);
 
 protected:
 	
