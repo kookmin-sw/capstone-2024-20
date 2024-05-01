@@ -6,6 +6,7 @@
 #include "CannonControlStrategy.h"
 #include "CharacterControlStrategy.h"
 #include "ShipControlStrategy.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 class AStaticMeshActor;
@@ -360,12 +361,17 @@ void AMyPlayerController::ViewChange()
 				Bed = Cast<AMyBed>(Player->GetCurrentHitObject());
 				ServerRPC_PlayerSleep(Player,true, Bed);
 				SetControlMode(ControlMode::BED);
+				FTimerHandle SleepTimerHandle;
+				GetWorld()->GetTimerManager().SetTimer(SleepTimerHandle, this, &AMyPlayerController::PlayerSleep, GetWorld()->GetDeltaSeconds(), false);
+				
+				//PlayerSleep();
 			}
 		}
 		break;
 
 	case ControlMode::BED:
 		ServerRPC_PlayerAwake(Player,false, Bed);
+		PlayerAwake();
 		
 	case ControlMode::SHIP:
 	case ControlMode::CANNON:
@@ -509,28 +515,42 @@ void AMyPlayerController::ServerRPC_PlayerSleep_Implementation(AMyCharacter* use
 		user->SetPlayerState(user->GetUserStateSleeping());
 		user->SetActorLocation(bed->GetSleepLocation());
 		user->SetActorRotation(bed->GetSleepRotation());
-		user->bIsSleeping = b;
+		user->SetIsSleeping(b);
+	}	
+}
 
-		user->GetIsSleeping();
-
-		// true false 제대로 들어가는거 같은데
+void AMyPlayerController::PlayerSleep()
+{
+	if(Bed)
+	{
+		Player->SetActorRotation(Bed->GetSleepRotation());
+		Player->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
+		Player->bUseControllerRotationYaw = true;
 		
 	}
 }
+
+void AMyPlayerController::PlayerAwake()
+{
+	Player->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	Player->bUseControllerRotationYaw = false;
+}
+
+
 
 void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* user, bool b, AMyBed* bed)
 {
 	if(HasAuthority())
 	{
 		user->SetPlayerState(user->GetUserStateNone());
-		user->SetActorLocation(bed->GetAwakeLocation());
-		user->SetActorRotation(bed->GetAwakeRotation());
-		user->bIsSleeping = b;
+		user->SetActorLocationAndRotation(bed->GetAwakeLocation(),bed->GetAwakeRotation());
+		
+		//user->SetActorLocation(bed->GetAwakeLocation());
+		//user->SetActorRotation(bed->GetAwakeRotation());
+		//user->MyRotation = bed->GetAwakeRotation();
+		user->SetIsSleeping(b);
+		//user->bIsSleeping = b;
 
-		user->GetIsSleeping();
-
-
-		// true false 제대로 들어가는거 같은데
 		
 	}
 }

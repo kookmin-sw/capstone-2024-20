@@ -72,7 +72,7 @@ void AMyCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
 
 	FTimerHandle timer;
-	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 2.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
 
 }
 
@@ -84,7 +84,7 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 }
 
 //충돌 처리
@@ -132,15 +132,10 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMyCharacter, MeshRotation);
 	DOREPLIFETIME(AMyCharacter, bIsSleeping);
 }
 
 
-void AMyCharacter::ServerRPC_MeshRotation_Implementation(FRotator NewRotation)
-{
-	MeshRotation = NewRotation;
-}
 
 void AMyCharacter::SetNamePlate()
 {
@@ -155,8 +150,6 @@ bool AMyCharacter::GetIsOverLap()
 
 bool AMyCharacter::GetIsSleeping()
 {
-	FString Message = FString::Printf(TEXT("bIsSleeping is now: %s"), bIsSleeping ? TEXT("True") : TEXT("False"));
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, Message);
 	return bIsSleeping;
 }
 
@@ -164,6 +157,7 @@ void AMyCharacter::SetIsSleeping(bool b)
 {
 	bIsSleeping = b;
 
+	//SetActorRotation(MyRotation);
 }
 
 void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(bool b)
@@ -281,10 +275,7 @@ void AMyCharacter::Attack() const
 	}
 }
 
-FRotator AMyCharacter::GetMeshRotation()
-{
-	return MeshRotation;
-}
+
 
 void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
 {

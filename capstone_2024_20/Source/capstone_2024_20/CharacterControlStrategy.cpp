@@ -16,16 +16,6 @@ void CharacterControlStrategy::Move(const FInputActionInstance& Instance, AActor
 		const FRotator YawRotation(0,Rotation.Yaw,0);
 		const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		
-		if (!MoveVec.IsNearlyZero())
-		{
-			FRotator TargetRotation = Character->GetActorRotation(); // Default to current rotation
-
-
-			
-			Character->ServerRPC_MeshRotation(TargetRotation);
-			
-		}
         
 		Character->AddMovementInput(ForwardDir, MoveVec.Y);
 		Character->AddMovementInput(RightDir, MoveVec.X);

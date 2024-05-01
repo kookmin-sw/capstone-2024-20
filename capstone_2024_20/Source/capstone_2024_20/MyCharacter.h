@@ -77,20 +77,20 @@ protected:
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+	
 
 
 	
 private:
-	UPROPERTY(Replicated)
-	FRotator MeshRotation;
+
+
+	
 	
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
 
 	
 public:
-
-	
 	
 	UPROPERTY(Replicated)
 	bool bIsSleeping = false;
@@ -111,9 +111,6 @@ public:
 	UserState GetUserStateCarrying();
 	UserState GetUserStateDragging();
 	UserState GetUserStateSleeping();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_MeshRotation(FRotator NewRotation);
 
 	UFUNCTION()
 	void SetNamePlate();
@@ -155,9 +152,6 @@ public:
 	void DropObject(AActor* ship);
 
 	void Attack() const;
-
-	UFUNCTION()
-	FRotator GetMeshRotation();
 
 	void SetEnemyInAttackRange(AEnemy* Enemy);
 };

@@ -136,6 +136,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_PlayerSleep(AMyCharacter* user, bool b, AMyBed* bed);
 
+	UFUNCTION()
+	void PlayerSleep();
+
+	UFUNCTION()
+	void PlayerAwake();
+
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_PlayerAwake(AMyCharacter* user, bool b, AMyBed* bed);
 
