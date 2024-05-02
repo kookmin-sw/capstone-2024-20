@@ -18,5 +18,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void InteractionEnter() override;
 	virtual void InteractionLongEnter() override;
+	virtual void InteractionExit() override;
 };
