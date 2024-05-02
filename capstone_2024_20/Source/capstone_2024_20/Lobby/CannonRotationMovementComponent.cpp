@@ -23,7 +23,7 @@ void UCannonRotationMovementComponent::GetLifetimeReplicatedProps(TArray<FLifeti
 UCannonRotationMovementComponent::UCannonRotationMovementComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 void UCannonRotationMovementComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
