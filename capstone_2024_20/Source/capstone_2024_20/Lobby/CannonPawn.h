@@ -9,8 +9,6 @@
 #include "CannonPawn.generated.h"
 
 class UCannonRotationMovementComponent;
-class UInputAction;
-class UInputMappingContext;
 struct FInputActionValue;
 class UArrowComponent;
 
