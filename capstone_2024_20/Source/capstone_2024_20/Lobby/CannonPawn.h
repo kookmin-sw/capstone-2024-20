@@ -14,7 +14,7 @@ struct FInputActionValue;
 class UArrowComponent;
 
 UCLASS()
-class CAPSTONE_2024_20_API ACannonPawn : public APawn, public ICapPawn
+class CAPSTONE_2024_20_API ACannonPawn : public APawn, public IMappingContextGetter
 {
 	GENERATED_BODY()
 	

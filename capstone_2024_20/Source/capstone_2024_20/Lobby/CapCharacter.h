@@ -14,7 +14,7 @@ class USpringArmComponent;
 struct FInputActionValue;
 
 UCLASS()
-class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public ICapPawn
+class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingContextGetter
 {
 	GENERATED_BODY()
 	
