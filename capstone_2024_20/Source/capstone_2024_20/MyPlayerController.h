@@ -93,6 +93,8 @@ private:
 	
 	void DraggingRotate(const FInputActionInstance& Instance);
 
+	FTimerHandle HealthTimerHandle;
+
 	
 public:
 	void Move(const FInputActionInstance& Instance);

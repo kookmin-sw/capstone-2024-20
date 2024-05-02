@@ -516,6 +516,8 @@ void AMyPlayerController::ServerRPC_PlayerSleep_Implementation(AMyCharacter* use
 		user->SetActorLocation(bed->GetSleepLocation());
 		user->SetActorRotation(bed->GetSleepRotation());
 		user->SetIsSleeping(b);
+		user->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
+		user->bUseControllerRotationYaw = true;
 	}	
 }
 
@@ -524,16 +526,25 @@ void AMyPlayerController::PlayerSleep()
 	if(Bed)
 	{
 		Player->SetActorRotation(Bed->GetSleepRotation());
-		Player->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
-		Player->bUseControllerRotationYaw = true;
+		// Player->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
+		// Player->bUseControllerRotationYaw = true;
+
+		// 타이머 시작
+		GetWorld()->GetTimerManager().SetTimer(HealthTimerHandle, [this]()
+		{
+			Player->Heal(1);
+		}, 1.0f, true);
 		
 	}
 }
 
 void AMyPlayerController::PlayerAwake()
 {
-	Player->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	Player->bUseControllerRotationYaw = false;
+	// Player->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	// Player->bUseControllerRotationYaw = false;
+
+	// 타이머 중지
+	GetWorld()->GetTimerManager().ClearTimer(HealthTimerHandle);
 }
 
 
@@ -544,14 +555,9 @@ void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* use
 	{
 		user->SetPlayerState(user->GetUserStateNone());
 		user->SetActorLocationAndRotation(bed->GetAwakeLocation(),bed->GetAwakeRotation());
-		
-		//user->SetActorLocation(bed->GetAwakeLocation());
-		//user->SetActorRotation(bed->GetAwakeRotation());
-		//user->MyRotation = bed->GetAwakeRotation();
 		user->SetIsSleeping(b);
-		//user->bIsSleeping = b;
-
-		
+		user->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		user->bUseControllerRotationYaw = false;
 	}
 }
 

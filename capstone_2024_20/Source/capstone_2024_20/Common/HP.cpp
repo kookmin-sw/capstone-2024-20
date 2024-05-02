@@ -35,6 +35,8 @@ void IHP::SetCurrentHP(const int32 NewCurrentHP)
 void IHP::Heal(const int32 HealAmount)
 {
 	CurrentHP = FMath::Clamp(CurrentHP + HealAmount, 0, MaxHP);
+	GEngine->AddOnScreenDebugMessage(
+	-1, 2.0f, FColor::Red, TEXT("회복됨"));
 }
 
 void IHP::Damage(const int32 DamageAmount)
