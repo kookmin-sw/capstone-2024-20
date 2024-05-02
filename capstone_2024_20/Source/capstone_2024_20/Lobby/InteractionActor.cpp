@@ -6,13 +6,11 @@ AInteractionActor::AInteractionActor()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AInteractionActor::BeginPlay()
+void AInteractionActor::InteractionEnter()
 {
-	Super::BeginPlay();
-	
 }
 
-void AInteractionActor::Tick(float DeltaTime)
+void AInteractionActor::InteractionExit()
 {
-	Super::Tick(DeltaTime);
 }
+

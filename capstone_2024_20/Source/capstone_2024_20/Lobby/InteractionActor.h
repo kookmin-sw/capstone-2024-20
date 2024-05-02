@@ -12,9 +12,7 @@ class CAPSTONE_2024_20_API AInteractionActor : public AActor
 public:
 	AInteractionActor();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:
-	virtual void Tick(float DeltaTime) override;
+	virtual void InteractionEnter();
+	virtual void InteractionExit();
 };
