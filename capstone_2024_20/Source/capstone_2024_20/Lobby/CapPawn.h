@@ -13,13 +13,7 @@ UCLASS()
 class CAPSTONE_2024_20_API ACapPawn : public APawn, public IMappingContextGetter
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	UInputMappingContext* DefaultMappingContext;
-
-	UPROPERTY(EditAnywhere)
-	UInputAction* MoveAction;
-
+	
 public:
 	ACapPawn();
 
@@ -29,6 +23,12 @@ public:
 	};
 
 protected:
+	UPROPERTY(EditAnywhere)
+	UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere)
+	UInputAction* MoveAction;
+
 	virtual void BeginPlay() override;
 
 public:
