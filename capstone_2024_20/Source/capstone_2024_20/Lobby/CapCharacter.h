@@ -39,6 +39,7 @@ protected:
 
 	void Move(const FInputActionValue& Value);
 	void Interact();
+	void InteractCancel();
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
