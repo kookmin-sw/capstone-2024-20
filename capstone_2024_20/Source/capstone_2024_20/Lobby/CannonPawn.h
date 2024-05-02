@@ -31,14 +31,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	void Move(const FInputActionValue& Value);
-
-private:
-	UPROPERTY(VisibleAnywhere)
-	FRotator Velocity;
-
-	static constexpr float RotationSpeed = 10.0f;
 
 public:
 	virtual void Tick(float DeltaTime) override;
