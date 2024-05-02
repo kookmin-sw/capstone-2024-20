@@ -3,6 +3,7 @@
 
 #include "CapCharacter.h"
 
+#include "CapInteractionActor.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
@@ -42,6 +43,14 @@ void ACapCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(ForwardVector, MovementVector.Y);
 }
 
+void ACapCharacter::Interact()
+{
+	if(CapInteractionActor)
+	{
+		
+	}
+}
+
 void ACapCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -54,6 +63,19 @@ void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
+	}
+}
+
+void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp,
+	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(Other);
+	if(ActorOhter)
+	{
+		CapInteractionActor = ActorOhter;
 	}
 }
 
