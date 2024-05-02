@@ -22,8 +22,8 @@ void ACapInteractionActor::InteractionEnter()
 
 void ACapInteractionActor::InteractionExit()
 {
-	GetWorldTimerManager().ClearTimer(EnterTimerHandle);
 	Super::InteractionExit();
+	GetWorldTimerManager().ClearTimer(EnterTimerHandle);
 }
 
 void ACapInteractionActor::InteractionLongEnter()
