@@ -53,6 +53,11 @@ AMyCharacter::AMyCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	SetMaxHP(10);
+	SetCurrentHP(10);
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -67,7 +72,7 @@ void AMyCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
 
 	FTimerHandle timer;
-	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 2.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
 
 }
 
@@ -79,7 +84,7 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 }
 
 //충돌 처리
@@ -127,14 +132,10 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMyCharacter, MeshRotation);
+	DOREPLIFETIME(AMyCharacter, bIsSleeping);
 }
 
 
-void AMyCharacter::ServerRPC_MeshRotation_Implementation(FRotator NewRotation)
-{
-	MeshRotation = NewRotation;
-}
 
 void AMyCharacter::SetNamePlate()
 {
@@ -146,6 +147,24 @@ bool AMyCharacter::GetIsOverLap()
 {
 	return bIsOverlap;
 }
+
+bool AMyCharacter::GetIsSleeping()
+{
+	return bIsSleeping;
+}
+
+void AMyCharacter::SetIsSleeping(bool b)
+{
+	bIsSleeping = b;
+
+	//SetActorRotation(MyRotation);
+}
+
+void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(bool b)
+{
+	bIsSleeping = b;
+}
+
 
 void AMyCharacter::SetTextWidgetVisible(bool b)
 {
@@ -194,6 +213,12 @@ UserState AMyCharacter::GetUserStateDragging()
 	return UserState::DRAGGING;
 }
 
+UserState AMyCharacter::GetUserStateSleeping()
+{
+	return UserState::SLEEPING;
+}
+
+
 void AMyCharacter::DestroyCannonBall()
 {
 	if(CurrentCarryObject)
@@ -219,13 +244,8 @@ void AMyCharacter::DragObject()
 				Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			}
 		}
-
 		CurrentHitObject->SetIsDragging(true);
-		
-		
 	}
-                    
-
 }
 
 void AMyCharacter::DropObject(AActor* ship)
@@ -255,72 +275,7 @@ void AMyCharacter::Attack() const
 	}
 }
 
-unsigned int AMyCharacter::GetPlayerHP()
-{
-	return PlayerHP;
-}
 
-void AMyCharacter::SetPlayerHP(unsigned int hp)
-{
-	PlayerHP = hp;
-}
-
-
-void AMyCharacter::IncreaseHP(int plusHP)
-{
-	if(PlayerHP + plusHP > PlayerMaxHP)
-		PlayerHP = PlayerMaxHP;
-	else
-		PlayerHP += plusHP;
-}
-
-void AMyCharacter::DecreaseHP(unsigned int minusHP)
-{
-	if(PlayerHP <= minusHP)
-	{
-		PlayerHP = 0;
-		PlayerDead();
-	}
-	else
-	{
-		PlayerHP -= minusHP;
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Player HP: %u"), PlayerHP));
-	
-}
-
-unsigned int AMyCharacter::GetPlayerMaxHP()
-{
-	return PlayerMaxHP;
-}
-
-void AMyCharacter::SetPlayerMaxHP(unsigned int hp)
-{
-	PlayerMaxHP = hp;
-}
-
-
-void AMyCharacter::IncreaseMaxHP(int plusHP)
-{
-	PlayerMaxHP += plusHP;
-}
-
-void AMyCharacter::DecreaseMaxHP(int minusHP)
-{
-	PlayerMaxHP -= minusHP;
-	if(PlayerHP > PlayerMaxHP)
-		PlayerHP = PlayerMaxHP;
-}
-
-void AMyCharacter::PlayerDead()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Dead"));
-}
-
-FRotator AMyCharacter::GetMeshRotation()
-{
-	return MeshRotation;
-}
 
 void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
 {

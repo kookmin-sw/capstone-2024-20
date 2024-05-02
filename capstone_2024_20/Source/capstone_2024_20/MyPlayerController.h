@@ -7,12 +7,12 @@
 #include "IControlStrategy.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
 #include "MyCannon.h"
-#include "CannonBall.h"
 #include "MyCannonBallBox.h"
-#include "MyCarryCannonBall.h"
 #include "MyCharacter.h"
 #include "MyShip.h"
+#include "MyBed.h"
 #include "MyPlayerController.generated.h"
 
 /**
@@ -72,6 +72,7 @@ private:
 	AMyCannon* Cannon;
 	AMyObject* CurrentHitObject;
 	AMyCannonBallBox* CannonBallBox;
+	AMyBed* Bed;
 	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
@@ -91,6 +92,8 @@ private:
 
 	
 	void DraggingRotate(const FInputActionInstance& Instance);
+
+	FTimerHandle HealthTimerHandle;
 
 	
 public:
@@ -132,6 +135,18 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_DestroyCarryCannonBall(AMyCharacter* user);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_PlayerSleep(AMyCharacter* user, bool b, AMyBed* bed);
+
+	UFUNCTION()
+	void PlayerSleep();
+
+	UFUNCTION()
+	void PlayerAwake();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_PlayerAwake(AMyCharacter* user, bool b, AMyBed* bed);
+
 protected:
 	
 	enum class ControlMode
@@ -139,7 +154,8 @@ protected:
 		CHARACTER,
 		SHIP,
 		CANNON,
-		TELESCOPE
+		TELESCOPE,
+		BED
 	};
 	
 	void SetControlMode(ControlMode NewControlMode);

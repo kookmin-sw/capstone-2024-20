@@ -1,16 +1,13 @@
 
 #pragma once
 
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "CoreMinimal.h"
 #include "MyObject.h"
-#include "Camera/CameraComponent.h"
 #include "Common/NamePlateWidgetComponent.h"
 #include "GameFramework/Character.h"
-#include "UObject/ObjectRename.h"
+#include "Common/HP.h"
 #include "MyCharacter.generated.h"
+
 
 
 class USpringArmComponent;
@@ -21,11 +18,12 @@ enum class UserState : uint8
 {
 	NONE,
 	CARRYING,
-	DRAGGING
+	DRAGGING,
+	SLEEPING
 };
 
 UCLASS()
-class CAPSTONE_2024_20_API AMyCharacter : public ACharacter
+class CAPSTONE_2024_20_API AMyCharacter : public ACharacter, public IHP
 {
 	GENERATED_BODY()
 
@@ -60,16 +58,9 @@ public:
 	TSubclassOf<AActor> BP_CannonBallClass;
 	
 protected:
-
-	unsigned int PlayerMaxHP = 10;
-	unsigned int PlayerHP = PlayerMaxHP;
 	
-	bool bIsChanging=false;
-	float TargetArmLength;
-	FVector TargetLocation;
-	FRotator TargetRotation;
-	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
+
 
 	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
@@ -86,23 +77,29 @@ protected:
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+	
 
 
 	
 private:
-	UPROPERTY(Replicated)
-	FRotator MeshRotation;
 
+
+	
+	
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
+
 	
 public:
-
+	
+	UPROPERTY(Replicated)
+	bool bIsSleeping = false;
 	TArray<FString> ObjectList = {
 		TEXT("Cannon"), 
 		TEXT("SteelWheel"), 
 		TEXT("CannonBallBox"), 
-		TEXT("Telescope")
+		TEXT("Telescope"),
+		TEXT("Bed")
 	};
 	
 	
@@ -113,15 +110,22 @@ public:
 	UserState GetUserStateNone();
 	UserState GetUserStateCarrying();
 	UserState GetUserStateDragging();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_MeshRotation(FRotator NewRotation);
+	UserState GetUserStateSleeping();
 
 	UFUNCTION()
 	void SetNamePlate();
 	
 	UFUNCTION()
 	bool GetIsOverLap();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSleeping();
+
+	UFUNCTION()
+	void SetIsSleeping(bool b);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetIsSleeping(bool b);
 
 	UFUNCTION()
 	void SetTextWidgetVisible(bool b);
@@ -148,36 +152,6 @@ public:
 	void DropObject(AActor* ship);
 
 	void Attack() const;
-
-	UFUNCTION()
-	unsigned int GetPlayerHP();
-
-	UFUNCTION()
-	void SetPlayerHP(unsigned int hp);
-	
-	UFUNCTION()
-	void IncreaseHP(int plusHP);
-
-	UFUNCTION()
-	void DecreaseHP(unsigned int minusHP);
-
-	UFUNCTION()
-	unsigned int GetPlayerMaxHP();
-
-	UFUNCTION()
-	void SetPlayerMaxHP(unsigned int hp);
-	
-	UFUNCTION()
-	void IncreaseMaxHP(int plusHP);
-
-	UFUNCTION()
-	void DecreaseMaxHP(int minusHP);
-
-	UFUNCTION()
-	void PlayerDead();
-
-	UFUNCTION()
-	FRotator GetMeshRotation();
 
 	void SetEnemyInAttackRange(AEnemy* Enemy);
 };
