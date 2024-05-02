@@ -14,9 +14,7 @@
 ACannonPawn::ACannonPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-
+	
 	M_ShooterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShooterMesh"));
 	M_ShooterMesh->SetupAttachment(RootComponent);
 

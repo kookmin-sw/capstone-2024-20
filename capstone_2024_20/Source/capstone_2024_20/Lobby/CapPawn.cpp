@@ -20,8 +20,3 @@ void ACapPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ACapPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
