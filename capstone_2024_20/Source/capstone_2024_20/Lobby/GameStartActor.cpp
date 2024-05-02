@@ -31,8 +31,9 @@ void AGameStartActor::InteractionLongEnter()
 		TEXT("InteractionLongEnter"));
 	if(HasAuthority() == true)
 	{
-		ALobbyGameMode* GameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
-		GameMode->GameStart();
+		// ALobbyGameMode* GameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+		// GameMode->GameStart();
+		GetWorld()->ServerTravel(FString("/Game/Level/level_StageSelect"));
 	}
 }
 
