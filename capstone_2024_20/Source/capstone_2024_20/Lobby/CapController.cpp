@@ -34,7 +34,7 @@ void ACapController::OnRep_Pawn()
 
 void ACapController::RefreshMappingContext(APawn* InPawn) const
 {
-	ICapPawn* CapPawn = Cast<ICapPawn>(InPawn);
+	IMappingContextGetter* CapPawn = Cast<IMappingContextGetter>(InPawn);
 	if (CapPawn == nullptr)
 		return;
 

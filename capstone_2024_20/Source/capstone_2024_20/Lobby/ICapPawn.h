@@ -11,12 +11,12 @@ class UInputMappingContext;
  * 
  */
 UINTERFACE(MinimalAPI)
-class UCapPawn : public UInterface
+class UMappingContextGetter : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class CAPSTONE_2024_20_API ICapPawn
+class CAPSTONE_2024_20_API IMappingContextGetter
 {
 	GENERATED_BODY()
 
