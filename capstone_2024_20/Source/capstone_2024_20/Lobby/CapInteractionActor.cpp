@@ -17,13 +17,13 @@ void ACapInteractionActor::BeginPlay()
 void ACapInteractionActor::InteractionEnter()
 {
 	Super::InteractionEnter();
-	GetWorldTimerManager().SetTimer(EnterTimerHandle, this, ThisClass::InteractionLongEnter, LongInteractionThreshold);
+	GetWorldTimerManager().SetTimer(EnterTimerHandle, this, &ThisClass::InteractionLongEnter, LongInteractionThreshold);
 }
 
 void ACapInteractionActor::InteractionExit()
 {
-	GetWorldTimerManager().ClearTimer(EnterTimerHandle);
 	Super::InteractionExit();
+	GetWorldTimerManager().ClearTimer(EnterTimerHandle);
 }
 
 void ACapInteractionActor::InteractionLongEnter()
