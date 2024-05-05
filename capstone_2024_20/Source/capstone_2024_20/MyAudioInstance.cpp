@@ -5,10 +5,12 @@ UMyAudioInstance::UMyAudioInstance()
 {
 	ConstructorHelpers::FObjectFinder<USoundCue> SoundCueAsset(TEXT("/Script/Engine.SoundCue'/Game/Sounds/BGM/TitleSQ.TitleSQ'"));
 	ConstructorHelpers::FObjectFinder<USoundCue> SoundCueAsset2(TEXT("/Script/Engine.SoundCue'/Game/Sounds/BGM/LobbySQ.LobbySQ'"));
+	ConstructorHelpers::FObjectFinder<USoundCue> SoundCueAsset3(TEXT("/Script/Engine.SoundCue'/Game/Sounds/BGM/IngameSQ.IngameSQ'"));
 	if (SoundCueAsset.Succeeded())
 	{
 		MusicTracks.Add(SoundCueAsset.Object);
 		MusicTracks.Add(SoundCueAsset2.Object);
+		MusicTracks.Add(SoundCueAsset3.Object);
 	}
 }
 
