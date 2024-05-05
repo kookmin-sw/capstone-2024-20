@@ -5,6 +5,7 @@
 
 #include "CannonBall.h"
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -14,7 +15,11 @@ AMyCannon::AMyCannon()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	// Arrow 컴포넌트 생성 및 설정
+	static ConstructorHelpers::FObjectFinder<USoundCue> SoundCueFinder(TEXT("/Game/Sounds/Cannon/CannonSQ.CannonSQ"));
+	if (SoundCueFinder.Succeeded())
+	{
+		CannonSoundCue = SoundCueFinder.Object;
+	}
 }
 
 
@@ -64,14 +69,23 @@ void AMyCannon::MultiCastRPC_FireCannon_Implementation()
 		ACannonBall* ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
 		ball->SetDamage(1);
 	}
+	// FTimerHandle EffectTimerHandle;
+	// GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, this, &AMyCannon::TriggerEffects, 2.0f, false);
+	TriggerEffects();
+}
 
+void AMyCannon::TriggerEffects()
+{
 	if (FireEffect)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, GetCannonSpawnLocation(),
-												 GetCannonSpawnRotation());
+		if (CannonSoundCue)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
+		}
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, GetCannonSpawnLocation(), GetCannonSpawnRotation());
 	}
-	// 발사체에 추가적인 로직이 필요하면 여기에 작성
 }
+
 
 void AMyCannon::RotateCannon(FRotator newRot)
 {

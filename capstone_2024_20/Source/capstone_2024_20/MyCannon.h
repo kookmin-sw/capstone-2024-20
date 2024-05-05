@@ -6,6 +6,7 @@
 #include "MyObject.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
+#include "Sound/SoundCue.h"
 #include "MyCannon.generated.h"
 
 UCLASS()
@@ -16,10 +17,14 @@ class CAPSTONE_2024_20_API AMyCannon : public AMyObject
 public:	
 	// Sets default values for this actor's properties
 	AMyCannon();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
+	UPROPERTY(VisibleAnywhere, Category="Sound")
+	USoundCue* CannonSoundCue;
 private:
 	UPROPERTY(Replicated)
 	bool IsLoad = false;
@@ -41,6 +46,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Effects")
 	UParticleSystem* FireEffect;
 
+	void TriggerEffects();
 	
 	UFUNCTION()
 	FVector GetCannonSpawnLocation();

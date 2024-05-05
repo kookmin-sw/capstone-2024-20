@@ -91,7 +91,8 @@ void AMyPlayerController::BeginPlay()
 
 	CurrentControlMode = ControlMode::CHARACTER;
 
-	SetViewTarget(Ship->Camera_Character);
+	if(Ship)
+		SetViewTarget(Ship->Camera_Character);
 	
 	EnableCheats();
 }
@@ -526,9 +527,9 @@ void AMyPlayerController::PlayerSleep()
 	if(Bed)
 	{
 		Player->SetActorRotation(Bed->GetSleepRotation());
-		// Player->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
-		// Player->bUseControllerRotationYaw = true;
 
+		Bed->SleepSound();
+		
 		// 타이머 시작
 		GetWorld()->GetTimerManager().SetTimer(HealthTimerHandle, [this]()
 		{
@@ -540,9 +541,8 @@ void AMyPlayerController::PlayerSleep()
 
 void AMyPlayerController::PlayerAwake()
 {
-	// Player->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	// Player->bUseControllerRotationYaw = false;
-
+	Bed->AwakeSound();
+	
 	// 타이머 중지
 	GetWorld()->GetTimerManager().ClearTimer(HealthTimerHandle);
 }

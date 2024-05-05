@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "MyObject.h"
 #include "Components/ArrowComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 #include "MyBed.generated.h"
 
 
@@ -16,6 +18,14 @@ class CAPSTONE_2024_20_API AMyBed : public AMyObject
 {
 	GENERATED_BODY()
 
+	AMyBed();
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category="Sound")
+	USoundCue* SleepSoundCue;
+
+	UAudioComponent* SleepAudioComponent;
+	
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Bed;
@@ -35,4 +45,10 @@ public:
 	FVector GetAwakeLocation();
 	UFUNCTION()
 	FRotator GetAwakeRotation();
+
+	UFUNCTION()
+	void SleepSound();
+
+	UFUNCTION()
+	void AwakeSound();
 };
