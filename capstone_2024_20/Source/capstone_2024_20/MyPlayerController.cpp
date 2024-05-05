@@ -91,7 +91,8 @@ void AMyPlayerController::BeginPlay()
 
 	CurrentControlMode = ControlMode::CHARACTER;
 
-	SetViewTarget(Ship->Camera_Character);
+	if(Ship)
+		SetViewTarget(Ship->Camera_Character);
 	
 	EnableCheats();
 }
