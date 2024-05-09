@@ -402,9 +402,19 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 	}
 }
 
+// BindAction에 등록하기 위함
+// ReSharper disable once CppMemberFunctionMayBeConst
 void AMyPlayerController::Attack(const FInputActionInstance& Instance)
 {
-	Player->Attack();
+	ServerRPC_Attack();
+}
+
+void AMyPlayerController::ServerRPC_Attack_Implementation()
+{
+	if (HasAuthority())
+	{
+		Player->Attack();
+	}
 }
 
 void AMyPlayerController::ServerRPC_Shoot_Implementation(AMyCannon* CannonActor)

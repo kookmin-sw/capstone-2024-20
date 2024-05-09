@@ -64,6 +64,8 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	ElapsedTime += DeltaTime;
 	
+	SetMyCharacters();
+	
 	if (ClearTrigger->IsTriggered() && !bIsClear)
 	{
 		const auto ClearWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageClearPopUpWidget.StageClearPopUpWidget_C'");
@@ -119,6 +121,11 @@ void ASailingSystem::Tick(float DeltaTime)
 		SpawnEvent();
 		SpawnEventTimer = 0.0f;
 	}
+}
+
+void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -251,6 +258,8 @@ void ASailingSystem::SetMyShip()
 
 void ASailingSystem::SetMyCharacters()
 {
+	MyCharacters.Empty();
+	
 	TArray<AActor*> FoundMyCharacters;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCharacter::StaticClass(), FoundMyCharacters);
 	for (const auto FoundMyCharacter : FoundMyCharacters)

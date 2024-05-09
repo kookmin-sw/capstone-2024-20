@@ -279,6 +279,11 @@ void AMyCharacter::Attack() const
 
 void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
 {
+	MulticastRPC_SetEnemyInAttackRange(Enemy);
+}
+
+void AMyCharacter::MulticastRPC_SetEnemyInAttackRange_Implementation(AEnemy* Enemy)
+{
 	EnemyInAttackRange = Enemy;
 }
 

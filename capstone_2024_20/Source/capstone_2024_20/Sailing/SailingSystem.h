@@ -23,6 +23,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void OnEnemyDie(AEnemy* Enemy);
 	void OnEnemyShipDie(AEnemyShip* EnemyShip);
 
@@ -50,11 +52,13 @@ private:
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
 
+	UPROPERTY(Replicated)
 	TArray<AEnemy*> Enemies;
 
 	inline static float SpawnEventTimer = 0.0f;
 	TArray<AEvent*> Events;
 
+	UPROPERTY(Replicated)
 	TArray<AMyCharacter*> MyCharacters;
 
 	UPROPERTY()
