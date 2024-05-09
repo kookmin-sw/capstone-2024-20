@@ -21,8 +21,8 @@ void AEnemyShip::BeginPlay()
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
 {
 	const auto Direction = MyShip->GetActorLocation() - GetActorLocation();
-	const auto Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	SetActorRotation(Rotation);
+	const auto LookAtRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+	SetActorRotation(LookAtRotation);
 }
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip)

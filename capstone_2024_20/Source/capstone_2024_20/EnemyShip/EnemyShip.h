@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "capstone_2024_20/MyShip.h"
+#include "../01_Network/ReplicatedActor.h"
 #include "../Common/HP.h"
 #include "EnemyShip.generated.h"
 
@@ -10,7 +11,7 @@ class AEnemy;
 DECLARE_DELEGATE_OneParam(FEnemyShipDie, AEnemyShip*);
 
 UCLASS()
-class AEnemyShip : public AActor, public IHP
+class AEnemyShip : public AReplicatedActor, public IHP
 {
 	GENERATED_BODY()
 	
