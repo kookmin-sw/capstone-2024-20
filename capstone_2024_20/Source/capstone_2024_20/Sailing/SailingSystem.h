@@ -52,6 +52,7 @@ private:
 	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
 
+	UPROPERTY(Replicated)
 	TArray<AEnemy*> Enemies;
 
 	inline static float SpawnEventTimer = 0.0f;

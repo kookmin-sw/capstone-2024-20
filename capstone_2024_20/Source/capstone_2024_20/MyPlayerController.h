@@ -106,6 +106,9 @@ public:
 	void ServerRPC_Shoot(AMyCannon* CannonActor);
 
 	UFUNCTION(Server, Reliable)
+	void ServerRPC_Attack();
+
+	UFUNCTION(Server, Reliable)
 	void ServerRPC_RotateCannon(AMyCannon* CannonActor, FRotator newRot);
 
 	UFUNCTION(Server, Reliable)
