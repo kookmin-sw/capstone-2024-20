@@ -47,6 +47,11 @@ void ASailingSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	if (MyShip == nullptr)
 	{
 		return;
