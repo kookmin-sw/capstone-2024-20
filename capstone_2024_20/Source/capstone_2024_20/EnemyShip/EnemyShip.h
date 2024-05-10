@@ -30,8 +30,5 @@ public:
 	FEnemyShipDie EnemyShipDieDelegate;
 
 private:
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* StaticMesh;
-	
 	inline static float SpawnEnemyTimer = 0.0f;
 };
