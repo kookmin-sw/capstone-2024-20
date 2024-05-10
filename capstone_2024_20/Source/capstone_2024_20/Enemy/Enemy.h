@@ -24,7 +24,7 @@ public:
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
 	
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* StaticMesh;
+	USkeletalMeshComponent* SkeletalMesh;
 
 	FEnemyDie EnemyDieDelegate;
 };

@@ -19,7 +19,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* StaticMesh;
+	UParticleSystemComponent* Particle;
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* BoxComponent;

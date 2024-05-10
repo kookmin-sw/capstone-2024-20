@@ -1,17 +1,17 @@
 ﻿#include "Enemy.h"
 #include "../MyCharacter.h"
 
-AEnemy::AEnemy(): StaticMesh(nullptr)
+AEnemy::AEnemy(): SkeletalMesh(nullptr)
 {
 	// TODO@autumn - This is a temporary mesh, replace it with the actual mesh from data
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Game/GameObjects/TreasureBox/TreasureBox_Box.TreasureBox_Box'")));
-	RootComponent = StaticMesh;
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	SkeletalMesh->SetSkeletalMesh(LoadObject<USkeletalMesh>(nullptr, TEXT("/Script/Engine.SkeletalMesh'/Game/GameObjects/Enemy/Base.Base'")));
+	RootComponent = SkeletalMesh;
 
 	// 적이 해적을 향해 이동 시 물리적 충돌을 발생시키지 않도록 하기 위함
-	StaticMesh->SetSimulatePhysics(false);
-	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	SkeletalMesh->SetSimulatePhysics(false);
+	SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SkeletalMesh->SetCollisionProfileName(TEXT("NoCollision"));
 
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	SetMaxHP(2);
