@@ -1,11 +1,13 @@
 ﻿#include "Event.h"
 
-AEvent::AEvent(): StaticMesh(nullptr), BoxComponent(nullptr)
+#include "Particles/ParticleSystemComponent.h"
+
+AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
 {
 	// TODO@autumn - This is a temporary mesh, replace it with the actual mesh from data
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Game/GameObjects/Wood/wood_mesh.wood_mesh'")));
-	RootComponent = StaticMesh;
+	Particle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSystem"));
+	Particle->SetTemplate(LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Fire/P_Fire_Big.P_Fire_Big'")));
+	RootComponent = Particle;
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComponent->SetupAttachment(RootComponent);
