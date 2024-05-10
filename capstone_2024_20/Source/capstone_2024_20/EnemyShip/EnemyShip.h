@@ -7,6 +7,7 @@
 
 class AMyShip;
 class AEnemy;
+class AEnemyShip;
 
 DECLARE_DELEGATE_OneParam(FEnemyShipDie, AEnemyShip*);
 
