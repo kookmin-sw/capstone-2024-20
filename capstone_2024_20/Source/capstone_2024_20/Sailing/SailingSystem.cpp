@@ -26,7 +26,7 @@ void ASailingSystem::BeginPlay()
 	
 	GameOverTrigger = NewObject<UTrigger>();
 	GameOverTrigger->Initialize("T_0002", this);
-
+	
 	CreateMap();
 
 	// Todo@autumn - This is a temporary solution, replace it with data.
@@ -85,15 +85,6 @@ void ASailingSystem::Tick(float DeltaTime)
 		// Todo@autumn do something
 	}
 
-	SpawnEnemyShipTimer += DeltaTime;
-
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (SpawnEnemyShipTimer >= 5.0f)
-	{
-		SpawnEnemyShip();
-		SpawnEnemyShipTimer = 0.0f;
-	}
-
 	for (const auto EnemyShip : EnemyShips)
 	{
 		EnemyShip->LookAtMyShip(MyShip);
@@ -142,14 +133,14 @@ void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 	EarnCurrency(100);
 }
 
-
 void ASailingSystem::CreateMap()
 {
 	Map = NewObject<UMap>();
 	Map->Initialize();
 	Map->CellularAutomata();
 
-	CreateObstacles();
+	// ! 기술 설명 등 필요한 경우에 사용할 수 있도록, 제거하지 않고 주석 처리하여 남겨둔다.
+	// CreateObstacles();
 }
 
 void ASailingSystem::CreateObstacles() const
@@ -159,22 +150,6 @@ void ASailingSystem::CreateObstacles() const
 		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
 		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
 	}
-}
-
-void ASailingSystem::SpawnEnemyShip()
-{
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	auto RandomX = FMath::RandRange(-20000.0f, 20000.0f);
-	auto RandomY = FMath::RandRange(-20000.0f, 20000.0f);
-
-	RandomX = RandomX < 0 ? RandomX - 10000.0f : RandomX + 10000.0f;
-	RandomY = RandomY < 0 ? RandomY - 10000.0f : RandomY + 10000.0f;
-	
-	const auto RandomLocation = FVector(RandomX, RandomY, 0.0f);
-	AEnemyShip* SpawnedEnemyShip = GetWorld()->SpawnActor<AEnemyShip>(AEnemyShip::StaticClass(), FTransform(RandomLocation));
-	EnemyShips.Add(SpawnedEnemyShip);
-	
-	SpawnedEnemyShip->EnemyShipDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyShipDie);
 }
 
 void ASailingSystem::SpawnEvent()
