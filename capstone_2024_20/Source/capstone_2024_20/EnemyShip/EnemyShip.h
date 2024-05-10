@@ -20,10 +20,10 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Die() override;
 	void LookAtMyShip(const AMyShip* MyShip);
-	void MoveToMyShip(const AMyShip* MyShip);
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
 
 	FEnemyShipDie EnemyShipDieDelegate;
+
 private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* StaticMesh;

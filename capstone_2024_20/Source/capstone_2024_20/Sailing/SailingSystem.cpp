@@ -88,7 +88,6 @@ void ASailingSystem::Tick(float DeltaTime)
 	for (const auto EnemyShip : EnemyShips)
 	{
 		EnemyShip->LookAtMyShip(MyShip);
-		EnemyShip->MoveToMyShip(MyShip);
 
 		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
 		{
