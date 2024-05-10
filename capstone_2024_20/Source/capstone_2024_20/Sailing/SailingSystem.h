@@ -43,6 +43,7 @@ public:
 	float GetElapsedTime() const;
 	void SetMyShip();
 	void SetMyCharacters();
+	void SetEnemyShips();
 
 private:
 	UPROPERTY()

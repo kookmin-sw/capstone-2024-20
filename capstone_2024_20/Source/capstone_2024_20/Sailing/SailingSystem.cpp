@@ -241,3 +241,17 @@ void ASailingSystem::SetMyCharacters()
 		MyCharacters.Add(Cast<AMyCharacter>(FoundMyCharacter));
 	}
 }
+
+void ASailingSystem::SetEnemyShips()
+{
+	EnemyShips.Empty();
+
+	TArray<AActor*> FoundEnemyShips;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyShip::StaticClass(), FoundEnemyShips);
+	for (const auto FoundEnemyShip : FoundEnemyShips)
+	{
+		EnemyShips.Add(Cast<AEnemyShip>(FoundEnemyShip));
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("EnemyShips Num: %d"), EnemyShips.Num());
+}
