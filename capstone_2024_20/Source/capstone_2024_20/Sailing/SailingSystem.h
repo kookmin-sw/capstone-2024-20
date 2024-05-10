@@ -31,7 +31,6 @@ public:
 	void CreateMap();
 	void CreateObstacles() const;
 	
-	void SpawnEnemyShip();
 	void SpawnEvent();
 
 	void CalculateEnemyInAttackRange();
@@ -49,7 +48,6 @@ private:
 	UPROPERTY()
 	UMap* Map;
 	
-	inline static float SpawnEnemyShipTimer = 0.0f;
 	TArray<AEnemyShip*> EnemyShips;
 
 	UPROPERTY(Replicated)

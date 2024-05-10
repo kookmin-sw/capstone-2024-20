@@ -25,23 +25,6 @@ void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
 	SetActorRotation(LookAtRotation);
 }
 
-void AEnemyShip::MoveToMyShip(const AMyShip* MyShip)
-{
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	const auto Direction = MyShipLocation - GetActorLocation();
-
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (Direction.Size() < 11000.0f)
-	{
-		return;
-	}
-	
-	const auto NormalizedDirection = Direction.GetSafeNormal();
-	constexpr auto Speed = 2500.0f; // Todo@autumn - This is a temporary solution, replace it with data.
-	const auto NewLocation = GetActorLocation() + NormalizedDirection * Speed * GetWorld()->DeltaTimeSeconds;
-	SetActorLocation(NewLocation);
-}
-
 AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 {
 	SpawnEnemyTimer += DeltaTime;
