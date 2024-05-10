@@ -1,6 +1,8 @@
 ﻿#include "EnemyShip.h"
 #include "../MyShip.h"
 #include "../Enemy/Enemy.h"
+#include "Particles/ParticleSystem.h"
+#include "capstone_2024_20/Object/EnemyShipCannonBall.h"
 
 AEnemyShip::AEnemyShip()
 {
@@ -11,6 +13,10 @@ AEnemyShip::AEnemyShip()
 void AEnemyShip::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ProjectileSpawnPoint = FindComponentByClass<UArrowComponent>();
+	ProjectileClass = AEnemyShipCannonBall::StaticClass();
+	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 }
 
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
@@ -40,7 +46,7 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	{
 		return nullptr;
 	}
-	
+
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
@@ -55,9 +61,29 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	return SpawnedEnemy;
 }
 
+void AEnemyShip::FireCannon(const float DeltaTime)
+{
+	FireCannonTimer += DeltaTime;
+
+	if (FireCannonTimer < 10.0f) // Todo@autumn - This is a temporary solution, replace it with data.
+	{
+		return;
+	}
+	
+	MultiCastRPC_FireCannon();
+
+	FireCannonTimer = 0.0f;
+}
+
+void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
+{
+	const auto SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
+	const auto SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
+	AEnemyShipCannonBall* EnemyShipCannonBall = GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
+}
+
 void AEnemyShip::Die()
 {
 	IHP::Die();
 	EnemyShipDieDelegate.Execute(this);
 }
-
