@@ -21,6 +21,10 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Die() override;
 	void LookAtMyShip(const AMyShip* MyShip);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiCastRPC_LookAtMyShip(const AMyShip* MyShip);
+	
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
 
 	FEnemyShipDie EnemyShipDieDelegate;

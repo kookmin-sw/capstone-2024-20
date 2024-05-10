@@ -20,6 +20,11 @@ void AEnemyShip::BeginPlay()
 
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
 {
+	MultiCastRPC_LookAtMyShip(MyShip);
+}
+
+void AEnemyShip::MultiCastRPC_LookAtMyShip_Implementation(const AMyShip* MyShip)
+{
 	const auto Direction = MyShip->GetActorLocation() - GetActorLocation();
 	const auto LookAtRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 	SetActorRotation(LookAtRotation);

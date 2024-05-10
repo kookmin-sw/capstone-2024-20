@@ -40,6 +40,7 @@ void ASailingSystem::BeginPlay()
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -252,6 +253,4 @@ void ASailingSystem::SetEnemyShips()
 	{
 		EnemyShips.Add(Cast<AEnemyShip>(FoundEnemyShip));
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("EnemyShips Num: %d"), EnemyShips.Num());
 }
