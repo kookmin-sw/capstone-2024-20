@@ -36,7 +36,7 @@ void AEnemy::Die()
 void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 {
 	const auto MyCharacterLocation = MyCharacter->GetActorLocation();
-	if (const auto Direction = MyCharacterLocation - GetActorLocation(); Direction.Size() < 100.0f) // Todo@autumn - This is a temporary solution, replace it with data.
+	if (const auto Direction = MyCharacterLocation - GetActorLocation(); Direction.Size() < DistanceToMyCharacter) // Todo@autumn - This is a temporary solution, replace it with data.
 	{
 		return;
 	}
@@ -53,4 +53,5 @@ void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * GetWorld()->GetDeltaSeconds();
 
 	SetActorLocation(NewLocation);
+	SetActorRotation(DirectionToNextPoint.Rotation());
 }

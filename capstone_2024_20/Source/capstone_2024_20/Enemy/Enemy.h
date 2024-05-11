@@ -34,4 +34,5 @@ public:
 
 private:
 	const float MoveSpeed = 100.0f;
+	const float DistanceToMyCharacter = 200.0f;
 };
