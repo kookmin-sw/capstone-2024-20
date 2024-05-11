@@ -38,14 +38,15 @@ void AEnemyShipCannonBall::Tick(float DeltaTime)
 void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (const AMyShip* MyShip = Cast<AMyShip>(OtherActor); MyShip == nullptr)
+	AMyShip* MyShip = Cast<AMyShip>(OtherActor);
+	if(MyShip == nullptr)
 	{
 		return;
 	}
 	
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
 	
-	// MyShip->Damage(1); // Todo@autumn - This is a temporary solution, replace it with data.
+	MyShip->Damage(1); // Todo@autumn - This is a temporary solution, replace it with data.
 
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	

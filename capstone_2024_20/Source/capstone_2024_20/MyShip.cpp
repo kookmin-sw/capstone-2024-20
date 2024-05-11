@@ -26,7 +26,10 @@ AMyShip::AMyShip()
 void AMyShip::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Todo@autumn replace with data table
+	SetMaxHP(2);
+	SetCurrentHP(2);
 }
 
 // Called every frame
