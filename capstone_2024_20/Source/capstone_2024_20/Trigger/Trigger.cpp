@@ -1,5 +1,6 @@
 ﻿#include "Trigger.h"
 
+#include "capstone_2024_20/MyShip.h"
 #include "capstone_2024_20/Sailing/SailingSystem.h"
 
 UTrigger::UTrigger(): IsTriggered([]() { return false; }), SailingSystem(nullptr)
@@ -34,7 +35,10 @@ void UTrigger::Initialize(const FString& Id, ASailingSystem* InSailingSystem)
 	else if (Id == "T_0002")
 	{
 		// Todo@autumn - This is a temporary solution, replace it with data.
-		IsTriggered = [](){return false;};
+		IsTriggered = [this]()
+		{
+			return SailingSystem->GetMyShip()->GetCurrentHP() <= 0;	
+		};
 	}
 	else
 	{

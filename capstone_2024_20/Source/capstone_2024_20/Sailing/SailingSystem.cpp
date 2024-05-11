@@ -58,7 +58,7 @@ void ASailingSystem::Tick(float DeltaTime)
 		return;
 	}
 
-	if (bIsClear)
+	if (bIsClear || bIsGameOver)
 	{
 		return;
 	}
@@ -83,7 +83,16 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	if (GameOverTrigger->IsTriggered())
 	{
-		// Todo@autumn do something
+		const auto GameOverWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageFailPopUpWidget.StageFailPopUpWidget_C'");
+		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,GameOverWidgetRef); StagePopUpWidgetClass != nullptr)
+		{
+			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
+			{
+				PopUpWidget->AddToViewport();
+			}
+		}
+		
+		bIsGameOver = true;
 	}
 
 	for (const auto EnemyShip : EnemyShips)
@@ -219,6 +228,11 @@ void ASailingSystem::UpgradeMyShip() const
 float ASailingSystem::GetElapsedTime() const
 {
 	return ElapsedTime;
+}
+
+AMyShip* ASailingSystem::GetMyShip() const
+{
+	return MyShip;
 }
 
 void ASailingSystem::SetMyShip()
