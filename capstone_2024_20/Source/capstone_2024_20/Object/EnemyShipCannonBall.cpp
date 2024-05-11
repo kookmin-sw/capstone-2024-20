@@ -1,5 +1,7 @@
 ﻿#include "EnemyShipCannonBall.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+#include "../MyShip.h"
 
 AEnemyShipCannonBall::AEnemyShipCannonBall(): StaticMesh(nullptr)
 {
@@ -18,6 +20,8 @@ AEnemyShipCannonBall::AEnemyShipCannonBall(): StaticMesh(nullptr)
 	ProjectileMovement->bShouldBounce = false;
 
 	StaticMesh->OnComponentHit.AddDynamic(this, &AEnemyShipCannonBall::OnHit);
+
+	WaterSplashEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/FXVarietyPack/Particles/P_ky_waterBallHit.P_ky_waterBallHit'"));
 }
 
 void AEnemyShipCannonBall::BeginPlay()
@@ -34,9 +38,25 @@ void AEnemyShipCannonBall::Tick(float DeltaTime)
 void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (WaterSplashEffect)
+	if (const AMyShip* MyShip = Cast<AMyShip>(OtherActor); MyShip == nullptr)
 	{
-		const FVector Scale(3.0f, 3.0f, 3.0f);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator(0.0f), Scale);
+		return;
+	}
+	
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
+	
+	// MyShip->Damage(1); // Todo@autumn - This is a temporary solution, replace it with data.
+
+	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyWithDelay, DestroyDelayTime, false);
+}
+
+void AEnemyShipCannonBall::DestroyWithDelay()
+{
+	if (HasAuthority())
+	{
+		Destroy();
 	}
 }

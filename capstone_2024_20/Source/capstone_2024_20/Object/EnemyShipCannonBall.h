@@ -20,6 +20,8 @@ protected:
 private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	void DestroyWithDelay();
 	
 	UPROPERTY()
 	UStaticMeshComponent* StaticMesh;
@@ -29,4 +31,7 @@ private:
 	
 	UPROPERTY()
 	UParticleSystem* WaterSplashEffect;
+
+	const float DestroyDelayTime = 1.0f;
+	const FVector WaterSplashEffectScale = FVector(3.0f, 3.0f, 3.0f);
 };
