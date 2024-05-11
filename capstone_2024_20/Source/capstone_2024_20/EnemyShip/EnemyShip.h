@@ -4,6 +4,7 @@
 #include "../01_Network/ReplicatedActor.h"
 #include "../Common/HP.h"
 #include "Components/ArrowComponent.h"
+#include "Sound/SoundCue.h"
 #include "EnemyShip.generated.h"
 
 class AMyShip;
@@ -46,4 +47,7 @@ private:
 
 	UPROPERTY()
 	UParticleSystem* FireEffect;
+
+	UPROPERTY()
+	USoundCue* CannonSoundCue;
 };

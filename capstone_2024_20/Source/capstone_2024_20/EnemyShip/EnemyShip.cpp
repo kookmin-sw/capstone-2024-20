@@ -3,6 +3,7 @@
 #include "../Enemy/Enemy.h"
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyShip::AEnemyShip()
 {
@@ -17,6 +18,7 @@ void AEnemyShip::BeginPlay()
 	ProjectileSpawnPoint = FindComponentByClass<UArrowComponent>();
 	ProjectileClass = AEnemyShipCannonBall::StaticClass();
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
+	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
 }
 
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
@@ -80,6 +82,9 @@ void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 	const auto SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
 	const auto SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
 	AEnemyShipCannonBall* EnemyShipCannonBall = GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
+
+	UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);
 }
 
 void AEnemyShip::Die()
