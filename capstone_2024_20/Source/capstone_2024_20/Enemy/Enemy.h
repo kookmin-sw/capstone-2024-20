@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "NavigationInvokerComponent.h"
 #include "GameFramework/Actor.h"
-#include "../01_Network/ReplicatedActor.h"
+#include "../01_Network/ReplicatedCharacter.h"
 #include "../Common/HP.h"
 #include "Enemy.generated.h"
 
@@ -13,7 +13,7 @@ class AEnemy;
 DECLARE_DELEGATE_OneParam(FEnemyDie, AEnemy*);
 
 UCLASS()
-class CAPSTONE_2024_20_API AEnemy : public AReplicatedActor, public IHP
+class CAPSTONE_2024_20_API AEnemy : public AReplicatedCharacter, public IHP
 {
 	GENERATED_BODY()
 
