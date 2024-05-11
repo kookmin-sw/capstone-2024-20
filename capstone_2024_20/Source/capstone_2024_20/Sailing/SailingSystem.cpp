@@ -40,6 +40,7 @@ void ASailingSystem::BeginPlay()
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -57,7 +58,7 @@ void ASailingSystem::Tick(float DeltaTime)
 		return;
 	}
 
-	if (bIsClear)
+	if (bIsClear || bIsGameOver)
 	{
 		return;
 	}
@@ -82,12 +83,22 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	if (GameOverTrigger->IsTriggered())
 	{
-		// Todo@autumn do something
+		const auto GameOverWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageFailPopUpWidget.StageFailPopUpWidget_C'");
+		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,GameOverWidgetRef); StagePopUpWidgetClass != nullptr)
+		{
+			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
+			{
+				PopUpWidget->AddToViewport();
+			}
+		}
+		
+		bIsGameOver = true;
 	}
 
 	for (const auto EnemyShip : EnemyShips)
 	{
 		EnemyShip->LookAtMyShip(MyShip);
+		EnemyShip->FireCannon(DeltaTime);
 
 		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
 		{
@@ -219,6 +230,11 @@ float ASailingSystem::GetElapsedTime() const
 	return ElapsedTime;
 }
 
+AMyShip* ASailingSystem::GetMyShip() const
+{
+	return MyShip;
+}
+
 void ASailingSystem::SetMyShip()
 {
 	// Todo@autumn - This is a temporary solution, replace it.
@@ -239,5 +255,17 @@ void ASailingSystem::SetMyCharacters()
 	for (const auto FoundMyCharacter : FoundMyCharacters)
 	{
 		MyCharacters.Add(Cast<AMyCharacter>(FoundMyCharacter));
+	}
+}
+
+void ASailingSystem::SetEnemyShips()
+{
+	EnemyShips.Empty();
+
+	TArray<AActor*> FoundEnemyShips;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyShip::StaticClass(), FoundEnemyShips);
+	for (const auto FoundEnemyShip : FoundEnemyShips)
+	{
+		EnemyShips.Add(Cast<AEnemyShip>(FoundEnemyShip));
 	}
 }

@@ -1,14 +1,12 @@
 ﻿#include "EnemyShip.h"
 #include "../MyShip.h"
 #include "../Enemy/Enemy.h"
+#include "Particles/ParticleSystem.h"
+#include "capstone_2024_20/Object/EnemyShipCannonBall.h"
+#include "Kismet/GameplayStatics.h"
 
-AEnemyShip::AEnemyShip(): StaticMesh(nullptr)
+AEnemyShip::AEnemyShip()
 {
-	// TODO@autumn - This is a temporary mesh, replace it with the actual mesh from data
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMesh->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Game/GameObjects/FlatShip/Ship_Ship.Ship_Ship'")));
-	RootComponent = StaticMesh;
-
 	SetMaxHP(2);
 	SetCurrentHP(2);
 }
@@ -16,9 +14,19 @@ AEnemyShip::AEnemyShip(): StaticMesh(nullptr)
 void AEnemyShip::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ProjectileSpawnPoint = FindComponentByClass<UArrowComponent>();
+	ProjectileClass = AEnemyShipCannonBall::StaticClass();
+	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
+	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
 }
 
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
+{
+	MultiCastRPC_LookAtMyShip(MyShip);
+}
+
+void AEnemyShip::MultiCastRPC_LookAtMyShip_Implementation(const AMyShip* MyShip)
 {
 	const auto Direction = MyShip->GetActorLocation() - GetActorLocation();
 	const auto LookAtRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
@@ -40,7 +48,7 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	{
 		return nullptr;
 	}
-	
+
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
@@ -55,9 +63,32 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	return SpawnedEnemy;
 }
 
+void AEnemyShip::FireCannon(const float DeltaTime)
+{
+	FireCannonTimer += DeltaTime;
+
+	if (FireCannonTimer < 10.0f) // Todo@autumn - This is a temporary solution, replace it with data.
+	{
+		return;
+	}
+	
+	MultiCastRPC_FireCannon();
+
+	FireCannonTimer = 0.0f;
+}
+
+void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
+{
+	const auto SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
+	const auto SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
+	AEnemyShipCannonBall* EnemyShipCannonBall = GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
+
+	UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);
+}
+
 void AEnemyShip::Die()
 {
 	IHP::Die();
 	EnemyShipDieDelegate.Execute(this);
 }
-

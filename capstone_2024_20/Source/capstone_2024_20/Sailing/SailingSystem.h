@@ -41,8 +41,11 @@ public:
 	void UpgradeMyShip() const;
 
 	float GetElapsedTime() const;
+
+	AMyShip* GetMyShip() const;
 	void SetMyShip();
 	void SetMyCharacters();
+	void SetEnemyShips();
 
 private:
 	UPROPERTY()
@@ -71,5 +74,6 @@ private:
 	int32 Currency = 0;
 
 	bool bIsClear = false;
+	bool bIsGameOver = false;
 	float ElapsedTime = 0;
 };

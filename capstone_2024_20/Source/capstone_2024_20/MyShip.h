@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Common/HP.h"
 #include "MyShip.generated.h"
 
 UCLASS()
-class CAPSTONE_2024_20_API AMyShip : public APawn
+class CAPSTONE_2024_20_API AMyShip : public APawn, public IHP
 {
 	GENERATED_BODY()
 
