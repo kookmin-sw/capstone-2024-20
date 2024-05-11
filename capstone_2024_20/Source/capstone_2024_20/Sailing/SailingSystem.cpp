@@ -119,7 +119,7 @@ void ASailingSystem::Tick(float DeltaTime)
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	if (SpawnEventTimer >= 10.0f)
 	{
-		SpawnEvent();
+		// SpawnEvent();
 		SpawnEventTimer = 0.0f;
 	}
 }

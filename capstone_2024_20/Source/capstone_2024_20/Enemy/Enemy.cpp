@@ -1,5 +1,7 @@
 ﻿#include "Enemy.h"
 #include "../MyCharacter.h"
+#include "NavigationSystem.h"
+#include "NavigationPath.h"
 
 AEnemy::AEnemy(): SkeletalMesh(nullptr)
 {
@@ -12,6 +14,8 @@ AEnemy::AEnemy(): SkeletalMesh(nullptr)
 	SkeletalMesh->SetSimulatePhysics(false);
 	SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SkeletalMesh->SetCollisionProfileName(TEXT("NoCollision"));
+
+	NavInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavInvoker"));
 
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	SetMaxHP(2);
@@ -32,15 +36,21 @@ void AEnemy::Die()
 void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 {
 	const auto MyCharacterLocation = MyCharacter->GetActorLocation();
-	const auto Direction = MyCharacterLocation - GetActorLocation();
-
-	if (Direction.Size() < 100.0f) // Todo@autumn - This is a temporary solution, replace it with data.
+	if (const auto Direction = MyCharacterLocation - GetActorLocation(); Direction.Size() < 100.0f) // Todo@autumn - This is a temporary solution, replace it with data.
 	{
 		return;
 	}
 
-	const auto NormalizedDirection = Direction.GetSafeNormal();
-	constexpr auto Speed = 100.0f; // Todo@autumn - This is a temporary solution, replace it with data.
-	const auto NewLocation = GetActorLocation() + NormalizedDirection * Speed * GetWorld()->DeltaTimeSeconds;
+	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	const auto Path = NavSys->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), MyCharacterLocation);
+	if (!Path->IsValid () || Path->PathPoints.Num() < 2)
+	{
+		return;
+	}
+
+	const FVector NextPoint = Path->PathPoints[1];
+	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
+	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * GetWorld()->GetDeltaSeconds();
+
 	SetActorLocation(NewLocation);
 }
