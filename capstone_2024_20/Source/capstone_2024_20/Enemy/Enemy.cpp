@@ -17,6 +17,9 @@ AEnemy::AEnemy(): SkeletalMesh(nullptr)
 
 	NavInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavInvoker"));
 
+	SkeletalMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	SkeletalMesh->SetAnimInstanceClass(LoadObject<UClass>(nullptr, TEXT("/Script/Engine.AnimBlueprint'/Game/GameObjects/Enemy/ABP_Enemy.ABP_Enemy_C'")));
+	
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	SetMaxHP(2);
 	SetCurrentHP(2);
