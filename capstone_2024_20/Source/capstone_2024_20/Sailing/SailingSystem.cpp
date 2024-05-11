@@ -109,8 +109,17 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	for (const auto Enemy : Enemies)
 	{
-		// Todo@autumn - This is a temporary solution
-		Enemy->MoveToMyCharacter(MyCharacters[0]);
+		const AMyCharacter* NearestMyCharacter = MyCharacters[0];
+
+		for (const auto MyCharacter : MyCharacters)
+		{
+			if (const auto Distance = FVector::Dist(Enemy->GetActorLocation(), MyCharacter->GetActorLocation()); Distance < FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()))
+			{
+				NearestMyCharacter = MyCharacter;
+			}
+		}
+		
+		Enemy->MoveToMyCharacter(NearestMyCharacter);
 	}
 
 	CalculateEnemyInAttackRange();
