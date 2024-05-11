@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "NavigationInvokerComponent.h"
 #include "GameFramework/Actor.h"
 #include "../01_Network/ReplicatedActor.h"
 #include "../Common/HP.h"
@@ -26,5 +27,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* SkeletalMesh;
 
+	UPROPERTY()
+	UNavigationInvokerComponent* NavInvoker;
+
 	FEnemyDie EnemyDieDelegate;
+
+private:
+	const float MoveSpeed = 100.0f;
+	const float DistanceToMyCharacter = 200.0f;
 };
