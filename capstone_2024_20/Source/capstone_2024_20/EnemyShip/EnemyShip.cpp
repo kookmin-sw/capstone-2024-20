@@ -4,6 +4,7 @@
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 AEnemyShip::AEnemyShip()
 {
@@ -63,6 +64,11 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	return SpawnedEnemy;
 }
 
+bool AEnemyShip::CanSpawnEnemy() const
+{
+	return bCamSpawnEnemy;
+}
+
 void AEnemyShip::FireCannon(const float DeltaTime)
 {
 	FireCannonTimer += DeltaTime;
@@ -81,7 +87,7 @@ void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 {
 	const auto SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
 	const auto SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
-	AEnemyShipCannonBall* EnemyShipCannonBall = GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
+	GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
 
 	UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);

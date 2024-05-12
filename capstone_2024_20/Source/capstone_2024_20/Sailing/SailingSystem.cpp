@@ -100,10 +100,13 @@ void ASailingSystem::Tick(float DeltaTime)
 		EnemyShip->LookAtMyShip(MyShip);
 		EnemyShip->FireCannon(DeltaTime);
 
-		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
+		if (EnemyShip->CanSpawnEnemy())
 		{
-			Enemies.Add(SpawnedEnemy);
-			SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
+			if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
+			{
+				Enemies.Add(SpawnedEnemy);
+				SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
+			}
 		}
 	}
 
