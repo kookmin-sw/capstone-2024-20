@@ -9,6 +9,14 @@
 /**
  * 
  */
+UENUM()
+enum ECharacterType
+{
+	Character1,
+	Character2,
+	Character3,
+};
+
 UCLASS()
 class CAPSTONE_2024_20_API UCharacterTypeFactory : public UObject
 {
