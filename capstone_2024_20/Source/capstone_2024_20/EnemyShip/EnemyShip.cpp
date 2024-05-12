@@ -66,7 +66,12 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 
 bool AEnemyShip::CanSpawnEnemy() const
 {
-	return bCamSpawnEnemy;
+	return bCanSpawnEnemy;
+}
+
+bool AEnemyShip::CanFireCannon() const
+{
+	return bCanFireCannon;
 }
 
 void AEnemyShip::FireCannon(const float DeltaTime)
