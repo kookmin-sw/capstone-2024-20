@@ -81,7 +81,7 @@ void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 {
 	const auto SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
 	const auto SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
-	AEnemyShipCannonBall* EnemyShipCannonBall = GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
+	GetWorld()->SpawnActor<AEnemyShipCannonBall>(ProjectileClass, SpawnLocation, SpawnRotation);
 
 	UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);
