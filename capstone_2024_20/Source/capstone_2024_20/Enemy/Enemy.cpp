@@ -60,13 +60,44 @@ void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 	SetActorRotation(DirectionToNextPoint.Rotation());
 }
 
-void AEnemy::Attack()
+void AEnemy::Attack(AMyCharacter* MyCharacter)
 {
-	MultiCastRPC_Attack();
+	ServerRPC_Attack(MyCharacter);
 }
 
-void AEnemy::MultiCastRPC_Attack_Implementation()
+void AEnemy::ServerRPC_Attack_Implementation(AMyCharacter* MyCharacter)
+{
+	MyCharacter->Damage(1); // Todo@autumn - This is a temporary value, replace it with data.
+	CurrentAttackCooldown = AttackCooldown;
+	MultiCastRPC_Attack(MyCharacter);
+}
+
+void AEnemy::MultiCastRPC_Attack_Implementation(AMyCharacter* MyCharacter)
 {
 	UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	AnimInstance->bIsAttacking = true;
+}
+
+void AEnemy::ReduceCurrentAttackCooldown(float DeltaTime)
+{
+	if (CurrentAttackCooldown > 0)
+	{
+		CurrentAttackCooldown -= DeltaTime;
+	}
+}
+
+float AEnemy::GetDistanceToMyCharacter() const
+{
+	return DistanceToMyCharacter;
+}
+
+bool AEnemy::CanMove() const
+{
+	const UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
+	return !AnimInstance->bIsAttacking;
+}
+
+bool AEnemy::CanAttack() const
+{
+	return CurrentAttackCooldown <= 0;
 }

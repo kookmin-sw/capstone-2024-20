@@ -112,17 +112,22 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	for (const auto Enemy : Enemies)
 	{
-		const AMyCharacter* NearestMyCharacter = MyCharacters[0];
+		AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy);
 
-		for (const auto MyCharacter : MyCharacters)
+		if (Enemy->CanMove())
 		{
-			if (const auto Distance = FVector::Dist(Enemy->GetActorLocation(), MyCharacter->GetActorLocation()); Distance < FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()))
-			{
-				NearestMyCharacter = MyCharacter;
-			}
+			Enemy->MoveToMyCharacter(NearestMyCharacter);
 		}
-		
-		Enemy->MoveToMyCharacter(NearestMyCharacter);
+
+		if (Enemy->CanAttack())
+		{
+			if (const float Distance = FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()); Distance <= Enemy->GetDistanceToMyCharacter())
+			{
+				Enemy->Attack(NearestMyCharacter);
+			}	
+		}
+
+		Enemy->ReduceCurrentAttackCooldown(DeltaTime);
 	}
 
 	CalculateEnemyInAttackRange();
@@ -133,12 +138,6 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		// SpawnEvent();
 		SpawnEventTimer = 0.0f;
-
-		// Debug@autumn
-		for (const auto Enemy : Enemies)
-		{
-			Enemy->Attack();
-		}
 	}
 }
 
@@ -286,4 +285,19 @@ void ASailingSystem::SetEnemyShips()
 	{
 		EnemyShips.Add(Cast<AEnemyShip>(FoundEnemyShip));
 	}
+}
+
+AMyCharacter* ASailingSystem::FindNearestMyCharacter(const AEnemy* Enemy) const
+{
+	AMyCharacter* NearestMyCharacter = MyCharacters[0];
+
+	for (const auto MyCharacter : MyCharacters)
+	{
+		if (const auto Distance = FVector::Dist(Enemy->GetActorLocation(), MyCharacter->GetActorLocation()); Distance < FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()))
+		{
+			NearestMyCharacter = MyCharacter;
+		}
+	}
+
+	return NearestMyCharacter;
 }

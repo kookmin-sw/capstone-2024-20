@@ -23,10 +23,19 @@ public:
 	virtual void Die() override;
 	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
-	void Attack();
+	void Attack(AMyCharacter* MyCharacter);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Attack(AMyCharacter* MyCharacter);
+	
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiCastRPC_Attack();
+	void MultiCastRPC_Attack(AMyCharacter* MyCharacter);
+
+	void ReduceCurrentAttackCooldown(float DeltaTime);
+
+	float GetDistanceToMyCharacter() const;
+	bool CanMove() const;
+	bool CanAttack() const;
 	
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* SkeletalMesh;
@@ -39,4 +48,6 @@ public:
 private:
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;
+	const float AttackCooldown = 5.0f;
+	float CurrentAttackCooldown = 0.0f;
 };

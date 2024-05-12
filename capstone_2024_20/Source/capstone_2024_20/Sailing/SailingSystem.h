@@ -48,11 +48,13 @@ public:
 	void SetEnemyShips();
 
 private:
+	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
+	
 	UPROPERTY()
 	UMap* Map;
 	
 	TArray<AEnemyShip*> EnemyShips;
-
+	
 	UPROPERTY(Replicated)
 	TArray<AEnemy*> Enemies;
 
