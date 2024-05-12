@@ -27,8 +27,13 @@ public:
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
 
 	bool CanSpawnEnemy() const;
+	bool CanFireCannon() const;
 
-	bool bCamSpawnEnemy = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCanSpawnEnemy = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCanFireCannon = true;
 
 	FEnemyShipDie EnemyShipDieDelegate;
 
@@ -44,8 +49,7 @@ private:
 
 	UPROPERTY()
 	UArrowComponent* ProjectileSpawnPoint;
-
-	// 발사체의 클래스를 설정하기 위한 프로퍼티
+	
 	TSubclassOf<class AEnemyShipCannonBall> ProjectileClass;
 
 	UPROPERTY()

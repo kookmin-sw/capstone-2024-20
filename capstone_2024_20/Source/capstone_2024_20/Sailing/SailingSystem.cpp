@@ -98,7 +98,11 @@ void ASailingSystem::Tick(float DeltaTime)
 	for (const auto EnemyShip : EnemyShips)
 	{
 		EnemyShip->LookAtMyShip(MyShip);
-		EnemyShip->FireCannon(DeltaTime);
+
+		if (EnemyShip->CanFireCannon())
+		{
+			EnemyShip->FireCannon(DeltaTime);
+		}
 
 		if (EnemyShip->CanSpawnEnemy())
 		{
