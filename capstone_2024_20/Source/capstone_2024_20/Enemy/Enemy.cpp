@@ -1,4 +1,5 @@
 ﻿#include "Enemy.h"
+#include "EnemyAnimInstance.h"
 #include "../MyCharacter.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
@@ -19,7 +20,7 @@ AEnemy::AEnemy(): SkeletalMesh(nullptr)
 
 	SkeletalMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	SkeletalMesh->SetAnimInstanceClass(LoadObject<UClass>(nullptr, TEXT("/Script/Engine.AnimBlueprint'/Game/GameObjects/Enemy/ABP_Enemy.ABP_Enemy_C'")));
-	
+
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	SetMaxHP(2);
 	SetCurrentHP(2);
@@ -57,4 +58,15 @@ void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 
 	SetActorLocation(NewLocation);
 	SetActorRotation(DirectionToNextPoint.Rotation());
+}
+
+void AEnemy::Attack()
+{
+	MultiCastRPC_Attack();
+}
+
+void AEnemy::MultiCastRPC_Attack_Implementation()
+{
+	UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
+	AnimInstance->bIsAttacking = true;
 }
