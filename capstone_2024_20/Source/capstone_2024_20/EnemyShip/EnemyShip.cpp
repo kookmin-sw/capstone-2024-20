@@ -4,6 +4,7 @@
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 AEnemyShip::AEnemyShip()
 {
@@ -61,6 +62,11 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	SpawnEnemyTimer = 0.0f;
 
 	return SpawnedEnemy;
+}
+
+bool AEnemyShip::CanSpawnEnemy() const
+{
+	return bCamSpawnEnemy;
 }
 
 void AEnemyShip::FireCannon(const float DeltaTime)

@@ -4,7 +4,6 @@
 #include "../01_Network/ReplicatedActor.h"
 #include "../Common/HP.h"
 #include "Components/ArrowComponent.h"
-#include "Sound/SoundCue.h"
 #include "EnemyShip.generated.h"
 
 class AMyShip;
@@ -22,10 +21,14 @@ public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
 	virtual void Die() override;
+	
 	void LookAtMyShip(const AMyShip* MyShip);
 	void FireCannon(const float DeltaTime);
-	
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
+
+	bool CanSpawnEnemy() const;
+
+	bool bCamSpawnEnemy = false;
 
 	FEnemyShipDie EnemyShipDieDelegate;
 
