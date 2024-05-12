@@ -34,6 +34,7 @@ public:
 	void ReduceCurrentAttackCooldown(float DeltaTime);
 
 	float GetDistanceToMyCharacter() const;
+	bool CanMove() const;
 	bool CanAttack() const;
 	
 	UPROPERTY(EditAnywhere)

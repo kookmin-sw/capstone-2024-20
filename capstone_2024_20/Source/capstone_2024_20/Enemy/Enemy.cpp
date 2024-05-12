@@ -91,6 +91,12 @@ float AEnemy::GetDistanceToMyCharacter() const
 	return DistanceToMyCharacter;
 }
 
+bool AEnemy::CanMove() const
+{
+	const UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
+	return !AnimInstance->bIsAttacking;
+}
+
 bool AEnemy::CanAttack() const
 {
 	return CurrentAttackCooldown <= 0;

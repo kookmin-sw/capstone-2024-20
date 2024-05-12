@@ -113,8 +113,11 @@ void ASailingSystem::Tick(float DeltaTime)
 	for (const auto Enemy : Enemies)
 	{
 		AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy);
-		
-		Enemy->MoveToMyCharacter(NearestMyCharacter);
+
+		if (Enemy->CanMove())
+		{
+			Enemy->MoveToMyCharacter(NearestMyCharacter);
+		}
 
 		if (Enemy->CanAttack())
 		{
