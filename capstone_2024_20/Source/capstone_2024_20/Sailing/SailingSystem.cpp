@@ -130,6 +130,12 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		// SpawnEvent();
 		SpawnEventTimer = 0.0f;
+
+		// Debug@autumn
+		for (const auto Enemy : Enemies)
+		{
+			Enemy->Attack();
+		}
 	}
 }
 

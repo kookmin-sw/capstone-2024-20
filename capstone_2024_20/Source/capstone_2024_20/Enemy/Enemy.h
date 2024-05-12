@@ -23,6 +23,10 @@ public:
 	virtual void Die() override;
 	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
+	void Attack();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiCastRPC_Attack();
 	
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* SkeletalMesh;
