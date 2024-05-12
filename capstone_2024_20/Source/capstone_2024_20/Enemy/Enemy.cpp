@@ -60,12 +60,23 @@ void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 	SetActorRotation(DirectionToNextPoint.Rotation());
 }
 
-void AEnemy::Attack()
+void AEnemy::Attack(AMyCharacter* MyCharacter)
 {
-	MultiCastRPC_Attack();
+	ServerRPC_Attack(MyCharacter);
 }
 
-void AEnemy::MultiCastRPC_Attack_Implementation()
+float AEnemy::GetDistanceToMyCharacter() const
+{
+	return DistanceToMyCharacter;
+}
+
+void AEnemy::ServerRPC_Attack_Implementation(AMyCharacter* MyCharacter)
+{
+	MyCharacter->Damage(1); // Todo@autumn - This is a temporary value, replace it with data.
+	MultiCastRPC_Attack(MyCharacter);
+}
+
+void AEnemy::MultiCastRPC_Attack_Implementation(AMyCharacter* MyCharacter)
 {
 	UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	AnimInstance->bIsAttacking = true;
