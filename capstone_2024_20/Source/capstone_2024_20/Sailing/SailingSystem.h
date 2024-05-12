@@ -48,6 +48,8 @@ public:
 	void SetEnemyShips();
 
 private:
+	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
+	
 	UPROPERTY()
 	UMap* Map;
 	
