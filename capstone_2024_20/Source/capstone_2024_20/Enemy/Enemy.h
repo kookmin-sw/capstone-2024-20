@@ -31,7 +31,10 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_Attack(AMyCharacter* MyCharacter);
 
+	void ReduceCurrentAttackCooldown(float DeltaTime);
+
 	float GetDistanceToMyCharacter() const;
+	bool CanAttack() const;
 	
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* SkeletalMesh;
@@ -44,4 +47,6 @@ public:
 private:
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;
+	const float AttackCooldown = 5.0f;
+	float CurrentAttackCooldown = 0.0f;
 };

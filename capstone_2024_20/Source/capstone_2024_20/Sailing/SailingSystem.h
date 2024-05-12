@@ -54,7 +54,7 @@ private:
 	UMap* Map;
 	
 	TArray<AEnemyShip*> EnemyShips;
-
+	
 	UPROPERTY(Replicated)
 	TArray<AEnemy*> Enemies;
 
