@@ -89,7 +89,7 @@ void AMirrorActor::InteractionEnter()
 
 void AMirrorActor::SetCharacterType(int32 CharacterType)
 {
-	int32 CharacterTypeClamp = FMath::Clamp(CharacterType, 0, 3);
+	int32 CharacterTypeClamp = FMath::Clamp(CharacterType, 0, 2);
 	const ECharacterType NewEnumValue = static_cast<ECharacterType>(CharacterTypeClamp);
 
 	UMyAudioInstance* MyAudioInstance = GetGameInstance<UMyAudioInstance>();
@@ -104,7 +104,7 @@ void AMirrorActor::SetCharacterType(int32 CharacterType)
 		CharacterChangerWidgetComponent->CharacterChangeWidget->PrevButton->SetVisibility(ESlateVisibility::Visible);
 	}
 
-	if(CharacterTypeClamp >= 3)
+	if(CharacterTypeClamp >= 2)
 	{
 		CharacterChangerWidgetComponent->CharacterChangeWidget->NextButton->SetVisibility(ESlateVisibility::Hidden);
 	}
