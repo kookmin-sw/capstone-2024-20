@@ -38,6 +38,7 @@ void AEnemyShipCannonBall::Tick(float DeltaTime)
 void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+
 	AMyShip* MyShip = Cast<AMyShip>(OtherActor);
 	if(MyShip == nullptr)
 	{
@@ -47,9 +48,9 @@ void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* Othe
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
 	
 	MyShip->Damage(1); // Todo@autumn - This is a temporary solution, replace it with data.
-
-	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
+	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyWithDelay, DestroyDelayTime, false);
 }
