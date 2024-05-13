@@ -1,5 +1,7 @@
 #include "MyCharacter.h"
 
+#include "CharacterChangerComponent.h"
+#include "MyAudioInstance.h"
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -24,7 +26,8 @@ AMyCharacter::AMyCharacter()
 	NamePlateWidget = CreateDefaultSubobject<UNamePlateWidgetComponent>(TEXT("NICKNAMEWIDGET"));
 	NamePlateWidget->SetupAttachment(RootComponent);
 	
-	
+	CharacterChangerComponent = CreateDefaultSubobject<UCharacterChangerComponent>(TEXT("CharacterChanger"));
+	CharacterChangerComponent->SetIsReplicated(true);
 	
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
 	if(UI_HUD.Succeeded())
@@ -74,6 +77,8 @@ void AMyCharacter::BeginPlay()
 	FTimerHandle timer;
 	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
 
+
+	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
 }
 
 

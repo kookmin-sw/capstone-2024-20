@@ -9,7 +9,7 @@
 #include "MyCharacter.generated.h"
 
 
-
+class UCharacterChangerComponent;
 class USpringArmComponent;
 class AEnemy;
 
@@ -56,6 +56,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<AActor> BP_CannonBallClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UCharacterChangerComponent* CharacterChangerComponent;
 	
 protected:
 	

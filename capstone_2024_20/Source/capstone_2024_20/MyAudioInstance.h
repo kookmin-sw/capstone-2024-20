@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterType.h"
 #include "Engine/GameInstance.h"
 #include "Sound/SoundCue.h"
 #include "Components/AudioComponent.h"
 #include "MyAudioInstance.generated.h"
-
 /**
  * 
  */
@@ -36,5 +36,10 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite)
 	UAudioComponent* MusicComponent;
-	
+
+private:
+	ECharacterType CharacterType;
+public:
+	ECharacterType GetCharacterType() const;
+	void SetCharacterType(ECharacterType Type);
 };
