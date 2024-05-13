@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CapCharacter.generated.h"
 
+class UCharacterChangerComponent;
 class ACapInteractionActor;
 class UInputAction;
 class UInputMappingContext;
@@ -27,6 +28,13 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* InteractAction;
+
+	UPROPERTY(EditAnywhere)
+	UCharacterChangerComponent* CharacterChangerComponent;
+
+	UPROPERTY()
+	bool bIsMovement = true;
+	
 public:
 	ACapCharacter();
 	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
@@ -47,6 +55,12 @@ public:
 
 	ACapInteractionActor* CapInteractionActor;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
+	void SetIsMovement(bool bNewValue);
+	FORCEINLINE bool GetIsMovement() const {return bIsMovement;};
 private:
 	void InitMovement();
+
+	void Test1();
+	void Test2();
 };
