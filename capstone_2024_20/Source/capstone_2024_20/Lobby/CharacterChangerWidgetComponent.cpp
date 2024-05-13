@@ -3,6 +3,8 @@
 
 #include "CharacterChangerWidgetComponent.h"
 
+#include "CharacterChangeWidget.h"
+
 
 UCharacterChangerWidgetComponent::UCharacterChangerWidgetComponent()
 {
@@ -21,6 +23,7 @@ UCharacterChangerWidgetComponent::UCharacterChangerWidgetComponent()
 void UCharacterChangerWidgetComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	CharacterChangeWidget = Cast<UCharacterChangeWidget>(GetWidget());
 }
 
 void UCharacterChangerWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType,

@@ -5,10 +5,12 @@
 
 #include "CapCharacter.h"
 #include "CharacterChangerWidgetComponent.h"
+#include "CharacterChangeWidget.h"
 #include "EngineUtils.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "capstone_2024_20/MyAudioInstance.h"
+#include "Components/Button.h"
 
 AMirrorActor::AMirrorActor()
 {
@@ -86,6 +88,24 @@ void AMirrorActor::SetCharacterType(int32 CharacterType)
 
 	UMyAudioInstance* MyAudioInstance = GetGameInstance<UMyAudioInstance>();
 	MyAudioInstance->SetCharacterType(NewEnumValue);
+
+	if(CharacterTypeClamp <= 0)
+	{
+		CharacterChangerWidgetComponent->CharacterChangeWidget->PrevButton->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		CharacterChangerWidgetComponent->CharacterChangeWidget->PrevButton->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if(CharacterTypeClamp >= 3)
+	{
+		CharacterChangerWidgetComponent->CharacterChangeWidget->NextButton->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		CharacterChangerWidgetComponent->CharacterChangeWidget->NextButton->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void AMirrorActor::Next()

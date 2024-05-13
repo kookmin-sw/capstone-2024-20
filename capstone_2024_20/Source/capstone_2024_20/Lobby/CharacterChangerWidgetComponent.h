@@ -5,6 +5,8 @@
 #include "CharacterChangerWidgetComponent.generated.h"
 
 
+class UCharacterChangeWidget;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CAPSTONE_2024_20_API UCharacterChangerWidgetComponent : public UWidgetComponent
 {
@@ -13,6 +15,8 @@ class CAPSTONE_2024_20_API UCharacterChangerWidgetComponent : public UWidgetComp
 public:
 	UCharacterChangerWidgetComponent();
 
+	UPROPERTY()
+	UCharacterChangeWidget* CharacterChangeWidget;
 protected:
 	virtual void BeginPlay() override;
 
