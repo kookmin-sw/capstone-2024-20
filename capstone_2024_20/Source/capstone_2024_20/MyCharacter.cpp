@@ -292,6 +292,11 @@ void AMyCharacter::MulticastRPC_SetEnemyInAttackRange_Implementation(AEnemy* Ene
 	EnemyInAttackRange = Enemy;
 }
 
+float AMyCharacter::GetHPPercent()
+{
+	return (float)GetCurrentHP() / (float)GetMaxHP();
+}
+
 
 
 

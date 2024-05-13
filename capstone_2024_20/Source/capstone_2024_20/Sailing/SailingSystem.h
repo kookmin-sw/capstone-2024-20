@@ -38,6 +38,9 @@ public:
 	void EarnCurrency(int32 Amount);
 	void UseCurrency(int32 Amount);
 
+	UFUNCTION(BlueprintPure)
+	int GetCurrency();
+
 	void UpgradeMyShip() const;
 
 	float GetElapsedTime() const;

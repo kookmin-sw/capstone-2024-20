@@ -160,4 +160,8 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_SetEnemyInAttackRange(AEnemy* Enemy);
+
+	UFUNCTION(BlueprintPure)
+	float GetHPPercent();
+	
 };

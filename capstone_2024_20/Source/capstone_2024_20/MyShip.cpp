@@ -28,8 +28,8 @@ void AMyShip::BeginPlay()
 	Super::BeginPlay();
 
 	// Todo@autumn replace with data table
-	SetMaxHP(2);
-	SetCurrentHP(2);
+	SetMaxHP(5);
+	SetCurrentHP(5);
 }
 
 // Called every frame
@@ -68,6 +68,14 @@ void AMyShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AMyShip::MulticastRPC_SetShipLocation_Implementation(FVector newLoc)
 {
 	AddActorWorldOffset(newLoc, true);
+}
+
+
+
+float AMyShip::GetHPPercent()
+{
+
+	return (float)GetCurrentHP() / (float)GetMaxHP();
 }
 
 

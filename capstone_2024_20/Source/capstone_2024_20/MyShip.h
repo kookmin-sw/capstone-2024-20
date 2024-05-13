@@ -46,6 +46,8 @@ public:
 	UPROPERTY(Replicated)
 	float MoveSpeed = 600.0f; // Todo@autumn replace with data table
 
+	
+	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Character;
 
@@ -56,4 +58,7 @@ public:
 	AActor* Camera_Telescope;
 
 	
+	
+	UFUNCTION(BlueprintPure)
+	float GetHPPercent();
 };
