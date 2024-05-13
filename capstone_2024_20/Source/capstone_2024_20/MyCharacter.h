@@ -17,7 +17,8 @@ enum class UserState : uint8
 	NONE,
 	CARRYING,
 	DRAGGING,
-	SLEEPING
+	SLEEPING,
+	DEAD
 };
 
 UCLASS()
@@ -72,6 +73,8 @@ protected:
 		int32 OtherBodyIndex);
 	
 private:
+	virtual void Die() override;
+	
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
 
@@ -87,7 +90,8 @@ public:
 	};
 	
 	UserState CurrentPlayerState = UserState::NONE;
-	
+
+	UserState GetCurrentPlayerState() const;
 	void SetPlayerState(UserState NewPlayerState);
 	
 	UserState GetUserStateNone();
