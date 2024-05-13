@@ -117,6 +117,12 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 }
 
+void AMyCharacter::Die()
+{
+	IHP::Die();
+	SetPlayerState(UserState::DEAD);
+}
+
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -126,7 +132,7 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMyCharacter::SetNamePlate()
 {
-	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
+	NamePlateWidget->SetName(GetCurrentPlayerState()->GetPlayerName());
 }
 
 bool AMyCharacter::GetIsOverLap()
@@ -172,6 +178,11 @@ FString AMyCharacter::GetCurrentHitObjectName()
 void AMyCharacter::SetCurrentCarryObject(AActor* obj)
 {
 	CurrentCarryObject = obj;
+}
+
+UserState AMyCharacter::GetCurrentPlayerState() const
+{
+	return CurrentPlayerState;
 }
 
 void AMyCharacter::SetPlayerState(UserState NewPlayerState)
