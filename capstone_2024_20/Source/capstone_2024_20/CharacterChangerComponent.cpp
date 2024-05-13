@@ -3,7 +3,6 @@
 #include "CapCharacterSkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 
-
 UCharacterChangerComponent::UCharacterChangerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -28,12 +27,20 @@ void UCharacterChangerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UCharacterChangerComponent::Change(ECharacterType Type)
+void UCharacterChangerComponent::Multicast_Change_Implementation(ECharacterType Type)
 {
-	UCapCharacterSkeletalMeshComponent* SkeletalMeshComponent = UCharacterTypeFactory::GetCharacter(Type);
+	const UCapCharacterSkeletalMeshComponent* SkeletalMeshComponent = UCharacterTypeFactory::GetCharacter(Type);
 
-	if(SkeletalMeshComponent)
+	if (SkeletalMeshComponent)
 	{
 		OwnerCharacter->GetMesh()->SetSkeletalMeshAsset(SkeletalMeshComponent->GetSkeletalMeshAsset());
+	}
+}
+
+void UCharacterChangerComponent::Change_Implementation(ECharacterType Type)
+{
+	if(GetOwner()->HasAuthority())
+	{
+		Multicast_Change(Type);
 	}
 }

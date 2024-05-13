@@ -26,5 +26,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(Server, Reliable)
 	void Change(ECharacterType Type);
+
+private:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Change(ECharacterType Type);
 };
