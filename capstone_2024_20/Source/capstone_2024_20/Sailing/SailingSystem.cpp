@@ -265,6 +265,15 @@ float ASailingSystem::GetElapsedTime() const
 	return ElapsedTime;
 }
 
+bool ASailingSystem::IsReachedDestination() const
+{
+	const FVector DestinationLocation = Destination->GetActorLocation();
+	const FVector MyShipLocation = MyShip->GetActorLocation();
+	const double Distance = FVector::Dist(DestinationLocation, MyShipLocation);
+
+	return Distance < DistanceToDestination;
+}
+
 AMyShip* ASailingSystem::GetMyShip() const
 {
 	return MyShip;

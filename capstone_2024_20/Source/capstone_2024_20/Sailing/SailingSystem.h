@@ -45,6 +45,7 @@ public:
 	void UpgradeMyShip() const;
 
 	float GetElapsedTime() const;
+	bool IsReachedDestination() const;
 
 	AMyShip* GetMyShip() const;
 	void SetMyShip();
@@ -81,6 +82,8 @@ private:
 	UPROPERTY()
 	ADestination* Destination;
 
+	const float DistanceToDestination = 6000.0f;
+	
 	int32 Currency = 0;
 
 	bool bIsClear = false;
