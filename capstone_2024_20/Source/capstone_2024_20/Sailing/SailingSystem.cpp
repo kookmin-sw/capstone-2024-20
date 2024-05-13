@@ -95,6 +95,19 @@ void ASailingSystem::Tick(float DeltaTime)
 		bIsGameOver = true;
 	}
 
+	for (const auto MyCharacter : MyCharacters)
+	{
+		if (MyCharacter->GetCurrentPlayerState() == UserState::DEAD)
+		{
+			MyCharacter->ReduceReviveCooldown(DeltaTime);
+
+			if (MyCharacter->CanRevive())
+			{
+				MyCharacter->Revive();
+			}
+		}
+	}
+
 	for (const auto EnemyShip : EnemyShips)
 	{
 		EnemyShip->LookAtMyShip(MyShip);

@@ -74,7 +74,10 @@ protected:
 	
 private:
 	virtual void Die() override;
-	
+
+	const float ReviveCooldown = 10.0f;
+	float CurrentReviveCooldown = 0.0f;
+
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
 
@@ -147,5 +150,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent();
-	
+
+	virtual void Revive() override;
+
+	void ReduceReviveCooldown(float DeltaTime);
+	bool CanRevive() const;
 };
