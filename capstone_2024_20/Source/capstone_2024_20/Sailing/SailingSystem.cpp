@@ -11,8 +11,10 @@
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
 #include "../Object/UpgradeObject.h"
+#include "../Object/Destination.h"
 
-ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
+ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
+                                  Destination(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -41,6 +43,7 @@ void ASailingSystem::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -262,6 +265,15 @@ float ASailingSystem::GetElapsedTime() const
 	return ElapsedTime;
 }
 
+bool ASailingSystem::IsReachedDestination() const
+{
+	const FVector DestinationLocation = Destination->GetActorLocation();
+	const FVector MyShipLocation = MyShip->GetActorLocation();
+	const double Distance = FVector::Dist(DestinationLocation, MyShipLocation);
+
+	return Distance < DistanceToDestination;
+}
+
 AMyShip* ASailingSystem::GetMyShip() const
 {
 	return MyShip;
@@ -299,6 +311,16 @@ void ASailingSystem::SetEnemyShips()
 	for (const auto FoundEnemyShip : FoundEnemyShips)
 	{
 		EnemyShips.Add(Cast<AEnemyShip>(FoundEnemyShip));
+	}
+}
+
+void ASailingSystem::SetDestination()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADestination::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0)
+	{
+		Destination = Cast<ADestination>(FoundActors[0]);
 	}
 }
 

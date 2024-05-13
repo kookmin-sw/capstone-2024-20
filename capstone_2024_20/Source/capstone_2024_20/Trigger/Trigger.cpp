@@ -29,7 +29,7 @@ void UTrigger::Initialize(const FString& Id, ASailingSystem* InSailingSystem)
 		// Todo@autumn - This is a temporary solution, replace it with data.
 		IsTriggered = [this]()
 		{
-			return SailingSystem->GetElapsedTime() >= 60.0f * 10.0f;
+			return SailingSystem->IsReachedDestination();
 		};
 	}
 	else if (Id == "T_0002")

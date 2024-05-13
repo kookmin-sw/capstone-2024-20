@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "SailingSystem.generated.h"
 
+class ADestination;
 class AMyShip;
 class AEnemyShip;
 class AEnemy;
@@ -44,11 +45,13 @@ public:
 	void UpgradeMyShip() const;
 
 	float GetElapsedTime() const;
+	bool IsReachedDestination() const;
 
 	AMyShip* GetMyShip() const;
 	void SetMyShip();
 	void SetMyCharacters();
 	void SetEnemyShips();
+	void SetDestination();
 
 private:
 	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
@@ -76,6 +79,11 @@ private:
 	UPROPERTY()
 	AMyShip* MyShip;
 
+	UPROPERTY()
+	ADestination* Destination;
+
+	const float DistanceToDestination = 6000.0f;
+	
 	int32 Currency = 0;
 
 	bool bIsClear = false;
