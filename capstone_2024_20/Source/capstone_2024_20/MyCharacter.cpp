@@ -121,6 +121,27 @@ void AMyCharacter::Die()
 {
 	IHP::Die();
 	SetPlayerState(UserState::DEAD);
+	CurrentReviveCooldown = ReviveCooldown;
+}
+
+void AMyCharacter::Revive()
+{
+	IHP::Revive();
+	SetPlayerState(UserState::NONE);
+}
+
+// ReSharper disable once CppParameterMayBeConst
+void AMyCharacter::ReduceReviveCooldown(float DeltaTime)
+{
+	if (CurrentReviveCooldown > 0.0f)
+	{
+		CurrentReviveCooldown -= DeltaTime;
+	}
+}
+
+bool AMyCharacter::CanRevive() const
+{
+	return CurrentReviveCooldown <= 0.0f;
 }
 
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
