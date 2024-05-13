@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "Common/HP.h"
 #include "MyCharacter.generated.h"
-
 
 class UCharacterChangerComponent;
 class USpringArmComponent;
@@ -28,20 +26,14 @@ class CAPSTONE_2024_20_API AMyCharacter : public ACharacter, public IHP
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AMyCharacter();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
-public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	class UWidgetComponent* TextWidget;
 
@@ -61,9 +53,7 @@ public:
 	UCharacterChangerComponent* CharacterChangerComponent;
 	
 protected:
-	
 	bool bIsOverlap = false;
-
 
 	AMyObject* CurrentHitObject;
 	FString CurrentHitObjectName;
@@ -81,20 +71,11 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 	
-
-
-	
 private:
-
-
-	
-	
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
 
-	
 public:
-	
 	UPROPERTY(Replicated)
 	bool bIsSleeping = false;
 	TArray<FString> ObjectList = {
@@ -104,7 +85,6 @@ public:
 		TEXT("Telescope"),
 		TEXT("Bed")
 	};
-	
 	
 	UserState CurrentPlayerState = UserState::NONE;
 	
