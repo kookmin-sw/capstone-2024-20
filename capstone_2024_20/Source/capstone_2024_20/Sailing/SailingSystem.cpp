@@ -121,18 +121,19 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	for (const auto Enemy : Enemies)
 	{
-		AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy);
-
-		if (Enemy->CanMove())
+		if (AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy); NearestMyCharacter != nullptr)
 		{
-			Enemy->MoveToMyCharacter(NearestMyCharacter);
-		}
-
-		if (Enemy->CanAttack())
-		{
-			if (const float Distance = FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()); Distance <= Enemy->GetDistanceToMyCharacter())
+			if (Enemy->CanMove())
 			{
-				Enemy->Attack(NearestMyCharacter);
+				Enemy->MoveToMyCharacter(NearestMyCharacter);
+			}
+
+			if (Enemy->CanAttack())
+			{
+				if (const float Distance = FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()); Distance <= Enemy->GetDistanceToMyCharacter())
+				{
+					Enemy->Attack(NearestMyCharacter);
+				}	
 			}	
 		}
 
@@ -241,11 +242,10 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 	Currency -= Amount;
 }
 
-int ASailingSystem::GetCurrency()
+int ASailingSystem::GetCurrency() const
 {
 	return Currency;
 }
-
 
 void ASailingSystem::UpgradeMyShip() const
 {
@@ -302,15 +302,29 @@ void ASailingSystem::SetEnemyShips()
 	}
 }
 
+// nullable
 AMyCharacter* ASailingSystem::FindNearestMyCharacter(const AEnemy* Enemy) const
 {
-	AMyCharacter* NearestMyCharacter = MyCharacters[0];
+	AMyCharacter* NearestMyCharacter = nullptr;
 
 	for (const auto MyCharacter : MyCharacters)
 	{
-		if (const auto Distance = FVector::Dist(Enemy->GetActorLocation(), MyCharacter->GetActorLocation()); Distance < FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()))
+		if (MyCharacter->GetCurrentPlayerState() == UserState::DEAD)
+		{
+			continue;
+		}
+
+		if (NearestMyCharacter == nullptr)
 		{
 			NearestMyCharacter = MyCharacter;
+		}
+		else
+		{
+			if (const auto Distance = FVector::Dist(Enemy->GetActorLocation(), MyCharacter->GetActorLocation());
+				Distance < FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()))
+			{
+				NearestMyCharacter = MyCharacter;
+			}
 		}
 	}
 

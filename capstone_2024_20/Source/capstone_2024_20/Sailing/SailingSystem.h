@@ -39,7 +39,7 @@ public:
 	void UseCurrency(int32 Amount);
 
 	UFUNCTION(BlueprintPure)
-	int GetCurrency();
+	int GetCurrency() const;
 
 	void UpgradeMyShip() const;
 

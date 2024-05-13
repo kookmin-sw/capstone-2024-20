@@ -1,19 +1,16 @@
 #include "MyCharacter.h"
-
 #include "CharacterChangerComponent.h"
 #include "MyAudioInstance.h"
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/PlayerState.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-
 class AStaticMeshActor;
-// Sets default values
+
 AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -59,11 +56,8 @@ AMyCharacter::AMyCharacter()
 
 	SetMaxHP(10);
 	SetCurrentHP(10);
-
-	
 }
 
-// Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -81,21 +75,13 @@ void AMyCharacter::BeginPlay()
 	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
 }
 
-
-
-
-
-// Called every frame
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-//충돌 처리
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
 	if(CurrentPlayerState != UserState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
@@ -115,7 +101,6 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		CurrentHitObject = Cast<AMyObject>(OtherActor);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, CurrentHitObject->GetName());
 	}
-		
 }
 
 void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -132,6 +117,11 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 }
 
+void AMyCharacter::Die()
+{
+	IHP::Die();
+	SetPlayerState(UserState::DEAD);
+}
 
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -140,13 +130,10 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMyCharacter, bIsSleeping);
 }
 
-
-
 void AMyCharacter::SetNamePlate()
 {
 	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
 }
-
 
 bool AMyCharacter::GetIsOverLap()
 {
@@ -161,15 +148,12 @@ bool AMyCharacter::GetIsSleeping()
 void AMyCharacter::SetIsSleeping(bool b)
 {
 	bIsSleeping = b;
-
-	//SetActorRotation(MyRotation);
 }
 
 void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(bool b)
 {
 	bIsSleeping = b;
 }
-
 
 void AMyCharacter::SetTextWidgetVisible(bool b)
 {
@@ -181,12 +165,10 @@ bool AMyCharacter::GetTextWidgetVisible()
 	return TextWidget->IsVisible();
 }
 
-
 AMyObject* AMyCharacter::GetCurrentHitObject()
 {
 	return CurrentHitObject;
 }
-
 
 FString AMyCharacter::GetCurrentHitObjectName()
 {
@@ -196,6 +178,11 @@ FString AMyCharacter::GetCurrentHitObjectName()
 void AMyCharacter::SetCurrentCarryObject(AActor* obj)
 {
 	CurrentCarryObject = obj;
+}
+
+UserState AMyCharacter::GetCurrentPlayerState() const
+{
+	return CurrentPlayerState;
 }
 
 void AMyCharacter::SetPlayerState(UserState NewPlayerState)
@@ -222,7 +209,6 @@ UserState AMyCharacter::GetUserStateSleeping()
 {
 	return UserState::SLEEPING;
 }
-
 
 void AMyCharacter::DestroyCannonBall()
 {
@@ -280,8 +266,6 @@ void AMyCharacter::Attack() const
 	}
 }
 
-
-
 void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
 {
 	MulticastRPC_SetEnemyInAttackRange(Enemy);
@@ -296,13 +280,3 @@ float AMyCharacter::GetHPPercent()
 {
 	return (float)GetCurrentHP() / (float)GetMaxHP();
 }
-
-
-
-
-
-
-
-
-
-
