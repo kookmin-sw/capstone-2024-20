@@ -1,6 +1,8 @@
 ﻿#include "EnemyShip.h"
 #include "../MyShip.h"
 #include "../Enemy/Enemy.h"
+#include "NavigationSystem.h"
+#include "NavigationPath.h"
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,6 +22,29 @@ void AEnemyShip::BeginPlay()
 	ProjectileClass = AEnemyShipCannonBall::StaticClass();
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
+}
+
+void AEnemyShip::MoveToMyShip(const AMyShip* MyShip)
+{
+	const auto MyShipLocation = MyShip->GetActorLocation();
+	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() < DistanceToMyShip)
+	{
+		return;
+	}
+
+	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	const auto Path = NavSys->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), MyShipLocation);
+	if (!Path->IsValid () || Path->PathPoints.Num() < 2)
+	{
+		return;
+	}
+
+	const FVector NextPoint = Path->PathPoints[1];
+	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
+	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * GetWorld()->GetDeltaSeconds();
+
+	SetActorLocation(NewLocation);
+	SetActorRotation(DirectionToNextPoint.Rotation());
 }
 
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)

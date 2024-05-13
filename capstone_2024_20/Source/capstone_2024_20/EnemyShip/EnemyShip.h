@@ -21,7 +21,8 @@ public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
 	virtual void Die() override;
-	
+
+	void MoveToMyShip(const AMyShip* MyShip);
 	void LookAtMyShip(const AMyShip* MyShip);
 	void FireCannon(const float DeltaTime);
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
@@ -46,6 +47,9 @@ private:
 	
 	inline static float SpawnEnemyTimer = 0.0f;
 	inline static float FireCannonTimer = 0.0f;
+
+	inline static float DistanceToMyShip = 7000.0f;
+	inline static float MoveSpeed = 400.0f;
 
 	UPROPERTY()
 	UArrowComponent* ProjectileSpawnPoint;
