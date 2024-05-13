@@ -8,6 +8,7 @@
 #include "Components/AudioComponent.h"
 #include "MyAudioInstance.generated.h"
 
+enum ECharacterType : int;
 /**
  * 
  */
@@ -36,5 +37,7 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite)
 	UAudioComponent* MusicComponent;
-	
+
+private:
+	ECharacterType CharacterType;
 };
