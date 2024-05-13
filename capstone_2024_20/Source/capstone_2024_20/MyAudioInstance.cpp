@@ -47,6 +47,11 @@ void UMyAudioInstance::PlayMusic(int32 Index)
 	}
 }
 
+ECharacterType UMyAudioInstance::GetCharacterType() const
+{
+	return CharacterType;
+}
+
 void UMyAudioInstance::SetCharacterType(ECharacterType Type)
 {
 	CharacterType = Type;
