@@ -1,12 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyPlayerController.h"
-
 #include "CannonControlStrategy.h"
 #include "CharacterControlStrategy.h"
 #include "ShipControlStrategy.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 class AStaticMeshActor;
@@ -39,16 +34,9 @@ AMyPlayerController::AMyPlayerController()
 	AttackAction = AC_Attack.Object;
 	DefaultMappingContext = IMC_Default_Mapping.Object;
 	CannonMappingContext = IMC_Shoot_Mapping.Object;
-
-	// test
-
+	
 	CurrentStrategy = new CharacterControlStrategy();
-
-
 }
-
-
-
 
 void AMyPlayerController::BeginPlay()
 {
@@ -67,7 +55,6 @@ void AMyPlayerController::BeginPlay()
 	if (FoundShips.Num() > 0)
 	{
 		Ship = Cast<AMyShip>(FoundShips[0]);
-		
 	}
 
 	// 매핑 컨텐스트 할당
@@ -97,9 +84,6 @@ void AMyPlayerController::BeginPlay()
 	EnableCheats();
 }
 
-
-
-
 void AMyPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -120,7 +104,6 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 					flag = false;
 					SetViewTarget(Ship->Camera_Character);
 				}
-				
 			}
 		}
 	}
@@ -137,11 +120,8 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 		{
 			PressDuration = 0.0f;
 		}
-		
 	}
-	
 }
-
 
 void AMyPlayerController::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -164,11 +144,7 @@ void AMyPlayerController::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
 	Player = Cast<AMyCharacter>(InPawn);
-
-	//Player->NamePlateWidget->SetName(Player->GetPlayerState()->GetPlayerName());
-	
 }
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
@@ -183,9 +159,6 @@ void AMyPlayerController::Move(const FInputActionInstance& Instance)
 		CurrentStrategy->Move(Instance, ControlledActor,this, GetWorld()->GetDeltaSeconds());
 	}
 }
-
-
-
 
 void AMyPlayerController::Interaction_Pressed()
 {
@@ -223,9 +196,7 @@ void AMyPlayerController::Interaction_Trigger()
 			}
 		}
 	}
-		
 }
-
 
 void AMyPlayerController::Interaction_Released()
 {
@@ -268,12 +239,8 @@ void AMyPlayerController::DraggingRotate(const FInputActionInstance& Instance)
 	{
 		FRotator NewRotation = CurrentHitObject->TargetRotation + FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
 		ServerRPC_RotateDraggingObject(CurrentHitObject, NewRotation);
-		
-		//Player->GetCurrentHitObject()->AddActorLocalRotation(NewRotation);
 	}
 }
-
-
 
 void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 {
@@ -303,17 +270,13 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 			
 			case ControlMode::BED:
 				SetViewTargetWithBlend(Bed->Camera_Bed, BlendTime);
-			
-
 		}
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
 		{
 			bIsCameraTransitioning = false;
 		}, BlendTime, false);
-		
 	}
-	
 }
 
 //모드 변환
@@ -356,8 +319,6 @@ void AMyPlayerController::ViewChange()
 				Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 				ServerRPC_DestroyCarryCannonBall(Player);      
 			}
-
-			
 		}
 		else if (Player->GetCurrentHitObjectName().Equals(TEXT("CannonBallBox")))
 		{
@@ -370,7 +331,6 @@ void AMyPlayerController::ViewChange()
 				Player->SetPlayerState(Player->GetUserStateCarrying());
 			}
 		}
-
 		else if(Player->GetCurrentHitObjectName().Equals(TEXT("Telescope")))
 		{
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
@@ -379,7 +339,6 @@ void AMyPlayerController::ViewChange()
 				
 			}
 		}
-
 		else if(Player->GetCurrentHitObjectName().Equals(TEXT("Bed")))
 		{
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
@@ -413,9 +372,6 @@ void AMyPlayerController::ViewChange()
 	}
 }
 
-
-
-
 void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 {
 	if (Player->GetCurrentPlayerState() == UserState::DEAD)
@@ -428,7 +384,6 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 	{
 		ServerRPC_Shoot(Cannon);
 		ServerRPC_UseCannonBall(Cannon);
-		//Cannon->SetIsLoad(false);
 	}
 }
 
@@ -518,13 +473,11 @@ void AMyPlayerController::ServerRPC_DropObject_Implementation(AMyObject* obj, AA
 {
 	if(HasAuthority())
 	{
-		
 		obj->SetIsDragging(false);
 		obj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		obj->AttachToActor(ship, FAttachmentTransformRules::KeepWorldTransform);
 
 		obj->MulticastRPC_TurnOnCollision();
-
 	}
 }
 
@@ -532,9 +485,7 @@ void AMyPlayerController::ServerRPC_RotateDraggingObject_Implementation(AMyObjec
 {
 	if(HasAuthority())
 	{
-		//user->GetCurrentHitObject()->TargetRotation = newRotation;
 		obj->TargetRotation = newRotation;
-		
 	}
 }
 
@@ -580,7 +531,6 @@ void AMyPlayerController::PlayerSleep()
 		{
 			Player->Heal(1);
 		}, 1.0f, true);
-		
 	}
 }
 
@@ -591,8 +541,6 @@ void AMyPlayerController::PlayerAwake()
 	// 타이머 중지
 	GetWorld()->GetTimerManager().ClearTimer(HealthTimerHandle);
 }
-
-
 
 void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* user, bool b, AMyBed* bed)
 {
@@ -605,11 +553,3 @@ void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* use
 		user->bUseControllerRotationYaw = false;
 	}
 }
-
-
-
-
-
-
-
-
