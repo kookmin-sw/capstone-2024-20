@@ -30,6 +30,9 @@ class CAPSTONE_2024_20_API AMirrorActor : public ACapInteractionActor
 
 	UPROPERTY()
 	ACapCharacter* CapCharacter;
+
+	UPROPERTY()
+	AActor* OriginalTarget;
 	
 public:
 	AMirrorActor();

@@ -55,6 +55,8 @@ void AMirrorActor::InteractionLongEnter()
 	CharacterChangerWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
 	SubCameraActor->SetActorLocation(CameraComponent->GetComponentLocation());
 	SubCameraActor->SetActorRotation(CameraComponent->GetComponentRotation());
+
+	OriginalTarget = GetWorld()->GetFirstPlayerController()->GetViewTarget();
 	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(SubCameraActor, 0.3f);
 	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
@@ -67,7 +69,7 @@ void AMirrorActor::InteractionLongEnter()
 												  this, &ThisClass::Prev);
 		PlayerController->InputComponent->BindKey(EKeys::D, IE_Pressed,
 												  this, &ThisClass::Next);
-		PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Pressed,
+		PlayerController->InputComponent->BindKey(EKeys::R, IE_Pressed,
 												  this, &ThisClass::Exit);
 	}
 }
@@ -112,4 +114,7 @@ void AMirrorActor::Exit()
 {
 	CharacterChangerWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
 	CapCharacter->SetIsMovement(true);
+	
+	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(OriginalTarget, 0.3f);
+	
 }
