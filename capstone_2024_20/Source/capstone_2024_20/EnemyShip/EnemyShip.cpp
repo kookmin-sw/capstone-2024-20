@@ -12,6 +12,8 @@ AEnemyShip::AEnemyShip()
 {
 	SetMaxHP(2);
 	SetCurrentHP(2);
+
+	AActor::SetReplicateMovement(true);
 }
 
 void AEnemyShip::BeginPlay()
@@ -22,6 +24,18 @@ void AEnemyShip::BeginPlay()
 	ProjectileClass = AEnemyShipCannonBall::StaticClass();
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
+}
+
+// ReSharper disable once CppParameterMayBeConst
+void AEnemyShip::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (HasAuthority())
+	{
+		Location = GetActorLocation();
+		Rotation = GetActorRotation();
+	}
 }
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)

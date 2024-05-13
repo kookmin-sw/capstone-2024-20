@@ -21,6 +21,7 @@ class AEnemyShip : public AReplicatedActor, public IHP
 public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void Die() override;
 
 	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
