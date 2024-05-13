@@ -6,6 +6,7 @@
 #include "CapInteractionActor.h"
 #include "MirrorActor.generated.h"
 
+class UCharacterChangerWidgetComponent;
 class UCameraComponent;
 class UArrowComponent;
 
@@ -22,7 +23,9 @@ class CAPSTONE_2024_20_API AMirrorActor : public ACapInteractionActor
 
 	UPROPERTY(EditAnywhere)
 	ACameraActor* SubCameraActor;
-	
+
+	UPROPERTY(EditAnywhere)
+	UCharacterChangerWidgetComponent* CharacterChangerWidgetComponent;
 public:
 	AMirrorActor();
 
@@ -36,4 +39,11 @@ public:
 
 	virtual void InteractionLongEnter() override;
 	virtual void InteractionEnter() override;
+
+
+private:
+	void SetCharacterType(int32 CharacterType);
+	void Next();
+	void Prev();
+	void Exit();
 };
