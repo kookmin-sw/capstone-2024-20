@@ -28,4 +28,5 @@ public:
 	void Damage(const int32 DamageAmount);
 
 	virtual void Die();
+	virtual void Revive();
 };
