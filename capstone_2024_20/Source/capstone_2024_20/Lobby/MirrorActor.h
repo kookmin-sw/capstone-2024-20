@@ -28,6 +28,9 @@ class CAPSTONE_2024_20_API AMirrorActor : public ACapInteractionActor
 	UPROPERTY(EditAnywhere)
 	UCharacterChangerWidgetComponent* CharacterChangerWidgetComponent;
 
+	UPROPERTY(EditAnywhere)
+	UArrowComponent* CharacterPositionArrow;
+	
 	UPROPERTY()
 	ACapCharacter* CapCharacter;
 
@@ -54,4 +57,6 @@ private:
 	void Next();
 	void Prev();
 	void Exit();
+
+	void ChangeCharacterLocationAndRotation();
 };

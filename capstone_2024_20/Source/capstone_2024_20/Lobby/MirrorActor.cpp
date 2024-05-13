@@ -10,6 +10,7 @@
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "capstone_2024_20/MyAudioInstance.h"
+#include "Components/ArrowComponent.h"
 #include "Components/Button.h"
 
 AMirrorActor::AMirrorActor()
@@ -22,6 +23,9 @@ AMirrorActor::AMirrorActor()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(RootComponent);
 
+	CharacterPositionArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterPositionArrow"));
+	CharacterPositionArrow->SetupAttachment(RootComponent);
+	
 	CharacterChangerWidgetComponent = CreateDefaultSubobject<UCharacterChangerWidgetComponent>(
 		TEXT("CharacterChangerWidgetComponent"));
 	CharacterChangerWidgetComponent->SetupAttachment(RootComponent);
@@ -62,10 +66,12 @@ void AMirrorActor::InteractionLongEnter()
 	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(SubCameraActor, 0.3f);
 	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	
 	if (PlayerController)
 	{
 		CapCharacter = Cast<ACapCharacter>(PlayerController->GetCharacter());
 		CapCharacter->SetIsMovement(false);
+		ChangeCharacterLocationAndRotation();
 		
 		PlayerController->InputComponent->BindKey(EKeys::A, IE_Pressed,
 												  this, &ThisClass::Prev);
@@ -137,4 +143,12 @@ void AMirrorActor::Exit()
 	
 	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(OriginalTarget, 0.3f);
 	
+}
+
+void AMirrorActor::ChangeCharacterLocationAndRotation()
+{
+	FVector Location = CapCharacter->GetActorLocation();
+	Location.X = CharacterPositionArrow->GetComponentLocation().X;
+	Location.Y = CharacterPositionArrow->GetComponentLocation().Y;
+	CapCharacter->SetActorLocationAndRotation(Location, CharacterPositionArrow->GetComponentRotation());
 }
