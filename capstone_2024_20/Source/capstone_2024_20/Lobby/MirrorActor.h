@@ -6,6 +6,7 @@
 #include "CapInteractionActor.h"
 #include "MirrorActor.generated.h"
 
+class ACapCharacter;
 class UCharacterChangerWidgetComponent;
 class UCameraComponent;
 class UArrowComponent;
@@ -26,6 +27,10 @@ class CAPSTONE_2024_20_API AMirrorActor : public ACapInteractionActor
 
 	UPROPERTY(EditAnywhere)
 	UCharacterChangerWidgetComponent* CharacterChangerWidgetComponent;
+
+	UPROPERTY()
+	ACapCharacter* CapCharacter;
+	
 public:
 	AMirrorActor();
 
