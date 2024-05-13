@@ -11,6 +11,7 @@
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterTypeDelegate, ECharacterType);
 UCLASS()
 class CAPSTONE_2024_20_API UMyAudioInstance : public UGameInstance
 {
@@ -42,4 +43,6 @@ private:
 public:
 	ECharacterType GetCharacterType() const;
 	void SetCharacterType(ECharacterType Type);
+
+	FCharacterTypeDelegate OnChangeCharacterTypeDelegate;
 };
