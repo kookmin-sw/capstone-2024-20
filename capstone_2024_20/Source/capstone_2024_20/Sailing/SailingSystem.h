@@ -45,6 +45,7 @@ public:
 	void UpgradeMyShip() const;
 
 	float GetElapsedTime() const;
+	bool IsAllMyCharactersDead() const;
 	bool IsReachedDestination() const;
 
 	AMyShip* GetMyShip() const;

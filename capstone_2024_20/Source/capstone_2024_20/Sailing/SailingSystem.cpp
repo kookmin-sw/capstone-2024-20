@@ -278,6 +278,22 @@ float ASailingSystem::GetElapsedTime() const
 	return ElapsedTime;
 }
 
+bool ASailingSystem::IsAllMyCharactersDead() const
+{
+	bool bIsAllMyCharactersDead = true;
+
+	for (const auto MyCharacter : MyCharacters)
+	{
+		if (MyCharacter->GetCurrentPlayerState() != UserState::DEAD)
+		{
+			bIsAllMyCharactersDead = false;
+			break;
+		}
+	}
+	
+	return bIsAllMyCharactersDead;
+}
+
 bool ASailingSystem::IsReachedDestination() const
 {
 	const FVector DestinationLocation = Destination->GetActorLocation();

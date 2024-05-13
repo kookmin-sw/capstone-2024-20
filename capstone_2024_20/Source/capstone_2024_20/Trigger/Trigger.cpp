@@ -37,7 +37,7 @@ void UTrigger::Initialize(const FString& Id, ASailingSystem* InSailingSystem)
 		// Todo@autumn - This is a temporary solution, replace it with data.
 		IsTriggered = [this]()
 		{
-			return SailingSystem->GetMyShip()->GetCurrentHP() <= 0;	
+			return SailingSystem->GetMyShip()->GetCurrentHP() <= 0 || SailingSystem->IsAllMyCharactersDead();	
 		};
 	}
 	else
