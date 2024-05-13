@@ -99,6 +99,11 @@ void ASailingSystem::Tick(float DeltaTime)
 	{
 		EnemyShip->LookAtMyShip(MyShip);
 
+		if (EnemyShip->CanMove(MyShip))
+		{
+			EnemyShip->MoveToMyShip(MyShip, DeltaTime);
+		}
+
 		if (EnemyShip->CanFireCannon())
 		{
 			EnemyShip->FireCannon(DeltaTime);
