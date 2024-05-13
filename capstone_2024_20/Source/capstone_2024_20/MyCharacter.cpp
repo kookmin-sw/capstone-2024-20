@@ -132,7 +132,7 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMyCharacter::SetNamePlate()
 {
-	NamePlateWidget->SetName(GetCurrentPlayerState()->GetPlayerName());
+	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
 }
 
 bool AMyCharacter::GetIsOverLap()
