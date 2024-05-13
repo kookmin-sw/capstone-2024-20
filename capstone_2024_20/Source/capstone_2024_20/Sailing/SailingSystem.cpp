@@ -242,11 +242,10 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 	Currency -= Amount;
 }
 
-int ASailingSystem::GetCurrency()
+int ASailingSystem::GetCurrency() const
 {
 	return Currency;
 }
-
 
 void ASailingSystem::UpgradeMyShip() const
 {
