@@ -262,6 +262,22 @@ float ASailingSystem::GetElapsedTime() const
 	return ElapsedTime;
 }
 
+bool ASailingSystem::IsAllMyCharactersDead() const
+{
+	bool bIsAllMyCharactersDead = true;
+
+	for (const auto MyCharacter : MyCharacters)
+	{
+		if (MyCharacter->GetCurrentPlayerState() != UserState::DEAD)
+		{
+			bIsAllMyCharactersDead = false;
+			break;
+		}
+	}
+	
+	return bIsAllMyCharactersDead;
+}
+
 AMyShip* ASailingSystem::GetMyShip() const
 {
 	return MyShip;
