@@ -33,6 +33,7 @@ void UCharacterChangerComponent::Multicast_Change_Implementation(ECharacterType 
 
 	if (SkeletalMeshComponent)
 	{
+		OwnerCharacter->GetMesh()->SetAnimInstanceClass(SkeletalMeshComponent->AnimClass);
 		OwnerCharacter->GetMesh()->SetSkeletalMeshAsset(SkeletalMeshComponent->GetSkeletalMeshAsset());
 	}
 }

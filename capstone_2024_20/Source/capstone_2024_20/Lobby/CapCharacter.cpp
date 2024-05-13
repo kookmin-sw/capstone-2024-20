@@ -6,7 +6,10 @@
 #include "CapInteractionActor.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "EnhancedPlayerInput.h"
 #include "Camera/CameraComponent.h"
+#include "capstone_2024_20/CharacterChangerComponent.h"
+#include "capstone_2024_20/MyAudioInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -18,16 +21,27 @@ ACapCharacter::ACapCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	CharacterChangerComponent = CreateDefaultSubobject<UCharacterChangerComponent>(TEXT("CharacterChangerComponent"));
+	CharacterChangerComponent->SetIsReplicated(true);
 	InitMovement();
 }
 
 void ACapCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(IsLocallyControlled())
+	{
+		GetGameInstance<UMyAudioInstance>()->OnChangeCharacterTypeDelegate.AddUObject(
+			CharacterChangerComponent, &UCharacterChangerComponent::Change);
+	}
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)
 {
+	if(bIsMovement == false)
+		return;
+	
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller == nullptr)
@@ -67,6 +81,9 @@ void ACapCharacter::Tick(float DeltaTime)
 void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	PlayerInputComponent->BindKey(EKeys::G, IE_Pressed, this, &ThisClass::Test1);
+	PlayerInputComponent->BindKey(EKeys::H, IE_Pressed, this, &ThisClass::Test2);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -88,6 +105,11 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
 	}
 }
 
+void ACapCharacter::SetIsMovement(const bool bNewValue)
+{
+	bIsMovement = bNewValue;
+}
+
 void ACapCharacter::InitMovement()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -95,4 +117,16 @@ void ACapCharacter::InitMovement()
 	GetCharacterMovement()->MaxWalkSpeed = 800.f;
 	GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Exponential;
 	GetCharacterMovement()->MaxAcceleration = 1400.0f;
+}
+
+void ACapCharacter::Test1()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("TEST1"));
+	CharacterChangerComponent->Change(ECharacterType::Character1);
+}
+
+void ACapCharacter::Test2()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("TEST2"));
+	CharacterChangerComponent->Change(ECharacterType::Character2);
 }

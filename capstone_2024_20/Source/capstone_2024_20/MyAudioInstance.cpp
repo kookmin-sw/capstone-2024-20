@@ -55,4 +55,6 @@ ECharacterType UMyAudioInstance::GetCharacterType() const
 void UMyAudioInstance::SetCharacterType(ECharacterType Type)
 {
 	CharacterType = Type;
+	
+	OnChangeCharacterTypeDelegate.Broadcast(Type);
 }

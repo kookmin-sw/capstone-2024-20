@@ -15,6 +15,10 @@ UCapCharacterSkeletalMeshComponent* UCharacterTypeFactory::GetCharacter(ECharact
 	{
 		return LoadSkeletalMeshComponent(FCharacterTypePath::Character2);
 	}
+	if (Type == ECharacterType::Character3)
+	{
+		return LoadSkeletalMeshComponent(FCharacterTypePath::Character3);
+	}
 
 	return nullptr;
 }
