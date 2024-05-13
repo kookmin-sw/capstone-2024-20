@@ -28,6 +28,7 @@ public:
 	void FireCannon(const float DeltaTime);
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
 
+	bool CanMove(const AMyShip* MyShip) const;
 	bool CanSpawnEnemy() const;
 	bool CanFireCannon() const;
 
@@ -51,6 +52,9 @@ private:
 
 	inline static float DistanceToMyShip = 7000.0f;
 	inline static float MoveSpeed = 400.0f;
+
+	const float FindPathCooldown = 3.0f;
+	float CurrentFindPathCooldown = 0.0f;
 
 	UPROPERTY()
 	UArrowComponent* ProjectileSpawnPoint;

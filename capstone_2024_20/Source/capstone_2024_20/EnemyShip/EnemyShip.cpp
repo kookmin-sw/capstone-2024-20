@@ -28,10 +28,6 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 {
 	const auto MyShipLocation = MyShip->GetActorLocation();
 	const auto MyLocation = GetActorLocation();
-	if (const auto Direction = MyShipLocation - MyLocation; Direction.Size() < DistanceToMyShip)
-	{
-		return;
-	}
 
 	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	const UNavigationPath* PathToMyShip = NavSys->FindPathToLocationSynchronously(GetWorld(), MyLocation, MyShipLocation);
@@ -43,9 +39,8 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 	const FVector NextPoint = PathToMyShip->PathPoints[1];
 	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
 	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * DeltaTime;
-
+	
 	SetActorLocation(NewLocation);
-	SetActorRotation(DirectionToNextPoint.Rotation());
 }
 
 void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
@@ -88,6 +83,13 @@ AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
 	SpawnEnemyTimer = 0.0f;
 
 	return SpawnedEnemy;
+}
+
+bool AEnemyShip::CanMove(const AMyShip* MyShip) const
+{
+	const auto MyShipLocation = MyShip->GetActorLocation();
+	const auto Direction = MyShipLocation - GetActorLocation();
+	return Direction.Size() > DistanceToMyShip;
 }
 
 bool AEnemyShip::CanSpawnEnemy() const
