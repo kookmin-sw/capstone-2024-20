@@ -97,7 +97,7 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	for (const auto EnemyShip : EnemyShips)
 	{
-		EnemyShip->MoveToMyShip(MyShip);
+		EnemyShip->MoveToMyShip(MyShip, DeltaTime);
 
 		if (EnemyShip->CanFireCannon())
 		{

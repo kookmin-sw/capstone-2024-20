@@ -24,24 +24,25 @@ void AEnemyShip::BeginPlay()
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
 }
 
-void AEnemyShip::MoveToMyShip(const AMyShip* MyShip)
+void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 {
 	const auto MyShipLocation = MyShip->GetActorLocation();
-	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() < DistanceToMyShip)
+	const auto MyLocation = GetActorLocation();
+	if (const auto Direction = MyShipLocation - MyLocation; Direction.Size() < DistanceToMyShip)
 	{
 		return;
 	}
 
 	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	const auto Path = NavSys->FindPathToLocationSynchronously(GetWorld(), GetActorLocation(), MyShipLocation);
-	if (!Path->IsValid () || Path->PathPoints.Num() < 2)
+	const UNavigationPath* PathToMyShip = NavSys->FindPathToLocationSynchronously(GetWorld(), MyLocation, MyShipLocation);
+	if (!PathToMyShip || PathToMyShip->PathPoints.Num() == 0)
 	{
 		return;
 	}
-
-	const FVector NextPoint = Path->PathPoints[1];
+	
+	const FVector NextPoint = PathToMyShip->PathPoints[1];
 	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
-	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * GetWorld()->GetDeltaSeconds();
+	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * DeltaTime;
 
 	SetActorLocation(NewLocation);
 	SetActorRotation(DirectionToNextPoint.Rotation());

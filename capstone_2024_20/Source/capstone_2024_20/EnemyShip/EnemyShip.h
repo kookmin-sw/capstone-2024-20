@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "EnemyShip.generated.h"
 
+class UNavigationPath;
 class AMyShip;
 class AEnemy;
 class AEnemyShip;
@@ -22,7 +23,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Die() override;
 
-	void MoveToMyShip(const AMyShip* MyShip);
+	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
 	void LookAtMyShip(const AMyShip* MyShip);
 	void FireCannon(const float DeltaTime);
 	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
