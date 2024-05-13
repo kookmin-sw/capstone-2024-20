@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "SailingSystem.generated.h"
 
+class ADestination;
 class AMyShip;
 class AEnemyShip;
 class AEnemy;
@@ -49,6 +50,7 @@ public:
 	void SetMyShip();
 	void SetMyCharacters();
 	void SetEnemyShips();
+	void SetDestination();
 
 private:
 	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
@@ -75,6 +77,9 @@ private:
 
 	UPROPERTY()
 	AMyShip* MyShip;
+
+	UPROPERTY()
+	ADestination* Destination;
 
 	int32 Currency = 0;
 
