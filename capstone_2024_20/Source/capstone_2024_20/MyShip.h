@@ -55,5 +55,6 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Telescope;
 
-	
+	UFUNCTION(BlueprintPure)
+	float GetHPPercent();
 };

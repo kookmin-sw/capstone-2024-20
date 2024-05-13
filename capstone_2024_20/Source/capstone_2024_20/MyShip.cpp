@@ -70,5 +70,10 @@ void AMyShip::MulticastRPC_SetShipLocation_Implementation(FVector newLoc)
 	AddActorWorldOffset(newLoc, true);
 }
 
+float AMyShip::GetHPPercent()
+{
+	return (float)GetCurrentHP() / (float)GetMaxHP();
+}
+
 
 
