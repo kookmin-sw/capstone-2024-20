@@ -173,6 +173,11 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	if (CurrentStrategy != nullptr && CurrentControlMode != ControlMode::TELESCOPE && CurrentControlMode != ControlMode::BED)
 	{
 		CurrentStrategy->Move(Instance, ControlledActor,this, GetWorld()->GetDeltaSeconds());
@@ -184,6 +189,11 @@ void AMyPlayerController::Move(const FInputActionInstance& Instance)
 
 void AMyPlayerController::Interaction_Pressed()
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	if(Player->GetIsOverLap())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction start"));
@@ -195,6 +205,11 @@ void AMyPlayerController::Interaction_Pressed()
 
 void AMyPlayerController::Interaction_Trigger()
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	if (Player->GetIsOverLap())
 	{
 		if (PressDuration >= 3.0f) // 3초 넘게 누르면 DRAGGING 상태로 전환
@@ -214,6 +229,11 @@ void AMyPlayerController::Interaction_Trigger()
 
 void AMyPlayerController::Interaction_Released()
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	bIsPressingKey = false;
 	if (Player->GetIsOverLap() && CurrentHitObject)
 	{
@@ -239,6 +259,11 @@ void AMyPlayerController::Interaction_Released()
 
 void AMyPlayerController::DraggingRotate(const FInputActionInstance& Instance)
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	if(Player->CurrentPlayerState==Player->GetUserStateDragging())
 	{
 		FRotator NewRotation = CurrentHitObject->TargetRotation + FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
@@ -393,6 +418,11 @@ void AMyPlayerController::ViewChange()
 
 void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	//대포알이 장전됐을때만 발사 가능
 	if (IsLocalController() && Cannon->GetIsLoad())
 	{
@@ -406,6 +436,11 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AMyPlayerController::Attack(const FInputActionInstance& Instance)
 {
+	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	{
+		return;
+	}
+	
 	ServerRPC_Attack();
 }
 
