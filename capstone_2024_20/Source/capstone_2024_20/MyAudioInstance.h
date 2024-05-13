@@ -40,4 +40,6 @@ public:
 
 private:
 	ECharacterType CharacterType;
+public:
+	void SetCharacterType(ECharacterType Type);
 };

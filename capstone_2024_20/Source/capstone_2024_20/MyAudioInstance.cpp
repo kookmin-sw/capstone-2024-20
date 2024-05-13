@@ -46,3 +46,8 @@ void UMyAudioInstance::PlayMusic(int32 Index)
 		MusicComponent = UGameplayStatics::SpawnSound2D(this, MusicTracks[Index], 1.0f, 1.0f, 0.0f, nullptr, true);
 	}
 }
+
+void UMyAudioInstance::SetCharacterType(ECharacterType Type)
+{
+	CharacterType = Type;
+}
