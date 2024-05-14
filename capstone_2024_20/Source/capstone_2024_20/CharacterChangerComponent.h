@@ -16,6 +16,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	ACharacter* OwnerCharacter;
 
+	UPROPERTY(ReplicatedUsing = OnRep_CharacterType)
+	TEnumAsByte<ECharacterType> CharacterType;
+
 public:
 	UCharacterChangerComponent();
 
@@ -32,4 +35,12 @@ public:
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Change(ECharacterType Type);
+
+	UFUNCTION()
+	void OnRep_CharacterType();
+
+	UFUNCTION()
+	void ChangeCharacter(ECharacterType Type);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
