@@ -176,4 +176,6 @@ public:
 	
 	void ReduceReviveCooldown(float DeltaTime);
 	bool CanRevive() const;
+
+	bool IsAttacking() const;
 };
