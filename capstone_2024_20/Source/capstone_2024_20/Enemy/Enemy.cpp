@@ -67,7 +67,6 @@ void AEnemy::Attack(AMyCharacter* MyCharacter)
 
 void AEnemy::ServerRPC_Attack_Implementation(AMyCharacter* MyCharacter)
 {
-	//MyCharacter->Damage(1); // Todo@autumn - This is a temporary value, replace it with data.
 	CurrentAttackCooldown = AttackCooldown;
 	MultiCastRPC_Attack(MyCharacter);
 }
