@@ -15,6 +15,10 @@ AUpgradeObject::AUpgradeObject(): SkeletalMesh(nullptr), BoxComponent(nullptr)
 	BoxComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	BoxComponent->SetGenerateOverlapEvents(true);
 
+	// Add component tags
+	BoxComponent->ComponentTags.Add(TEXT("Object"));
+	BoxComponent->ComponentTags.Add(TEXT("Upgrade"));
+	
 	CanBeOperated = true;
 }
 

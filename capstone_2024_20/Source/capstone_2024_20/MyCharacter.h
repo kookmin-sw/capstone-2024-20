@@ -104,7 +104,9 @@ public:
 		TEXT("SteelWheel"), 
 		TEXT("CannonBallBox"), 
 		TEXT("Telescope"),
-		TEXT("Bed")
+		TEXT("Bed"),
+		TEXT("Upgrade"),
+		TEXT("FireEvent")
 	};
 	
 	UserState CurrentPlayerState = UserState::NONE;
