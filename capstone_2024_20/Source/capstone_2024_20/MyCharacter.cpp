@@ -1,6 +1,7 @@
 #include "MyCharacter.h"
 #include "CharacterChangerComponent.h"
 #include "MyAudioInstance.h"
+#include "MyIngameHUD.h"
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -51,7 +52,7 @@ AMyCharacter::AMyCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -60,9 +61,8 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	check(GEngine != nullptr);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using FPSCharacter."));
+	
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
@@ -174,12 +174,30 @@ void AMyCharacter::Die()
 {
 	SetPlayerState(UserState::DEAD);
 	CurrentReviveCooldown = ReviveCooldown;
+	Multicast_Die();
+}
+
+void AMyCharacter::Multicast_Die_Implementation() const
+{
+	if (IsLocallyControlled())
+	{
+		MyInGameHUD->SetPopupDeadVisibility(true);
+	}
 }
 
 void AMyCharacter::Revive()
 {
 	CurrentHP = MaxHP;
 	SetPlayerState(UserState::NONE);
+	Multicast_Revive();
+}
+
+void AMyCharacter::Multicast_Revive_Implementation() const
+{
+	if (IsLocallyControlled())
+	{
+		MyInGameHUD->SetPopupDeadVisibility(false);
+	}
 }
 
 // ReSharper disable once CppParameterMayBeConst

@@ -7,6 +7,7 @@
 #include "Common/HP.h"
 #include "MyCharacter.generated.h"
 
+class AMyIngameHUD;
 class UCharacterChangerComponent;
 class USpringArmComponent;
 class AEnemy;
@@ -81,6 +82,9 @@ private:
 	int32 CurrentHP = 0;
 	// [end] IHP interface
 
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD;
+	
 	const float ReviveCooldown = 10.0f;
 	float CurrentReviveCooldown = 0.0f;
 	
@@ -102,8 +106,14 @@ public:
 	virtual void Damage(const int32 DamageAmount) override;
 	virtual void Die() override;
 	// [end] IHP interface
-
+	
 	void Revive();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Die() const;
+
+	UFUNCTION (NetMulticast, Reliable)
+	void Multicast_Revive() const;
 	
 	UPROPERTY(Replicated)
 	bool bIsSleeping = false;
