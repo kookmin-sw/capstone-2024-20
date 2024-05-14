@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,10 +5,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MyIngameHUD.generated.h"
 
-/**
- * 
- */
 UCLASS()
+// ReSharper disable once IdentifierTypo
 class CAPSTONE_2024_20_API AMyIngameHUD : public AHUD
 {
 	GENERATED_BODY()
@@ -19,8 +15,10 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	// ReSharper disable once IdentifierTypo
 	TSubclassOf<UUserWidget> IngameWidgetClass;
 
 private:
-	UUserWidget *IngameWidget;
+	UPROPERTY()
+	UUserWidget *InGameWidget;
 };
