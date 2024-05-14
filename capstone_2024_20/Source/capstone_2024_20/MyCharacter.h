@@ -7,6 +7,7 @@
 #include "Common/HP.h"
 #include "MyCharacter.generated.h"
 
+// ReSharper disable once IdentifierTypo
 class AMyIngameHUD;
 class UCharacterChangerComponent;
 class USpringArmComponent;
@@ -57,9 +58,15 @@ public:
 protected:
 	bool bIsOverlap = false;
 
+	UPROPERTY()
 	AMyObject* CurrentHitObject;
+	
 	FString CurrentHitObjectName;
+
+	UPROPERTY()
 	AActor* SpawnedCannonBall;
+
+	UPROPERTY()
 	AActor* CurrentCarryObject;
 	
 	UFUNCTION()
@@ -86,6 +93,8 @@ private:
 	AMyIngameHUD* MyInGameHUD;
 	
 	const float ReviveCooldown = 10.0f;
+
+	UPROPERTY(Replicated)
 	float CurrentReviveCooldown = 0.0f;
 	
 	const float AttackCooldown = 5.0f;
@@ -132,17 +141,17 @@ public:
 
 	UserState GetCurrentPlayerState() const;
 	void SetPlayerState(UserState NewPlayerState);
-	
-	UserState GetUserStateNone();
-	UserState GetUserStateCarrying();
-	UserState GetUserStateDragging();
-	UserState GetUserStateSleeping();
+
+	static UserState GetUserStateNone();
+	static UserState GetUserStateCarrying();
+	static UserState GetUserStateDragging();
+	static UserState GetUserStateSleeping();
 
 	UFUNCTION()
-	void SetNamePlate();
+	void SetNamePlate() const;
 	
 	UFUNCTION()
-	bool GetIsOverLap();
+	bool GetIsOverLap() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsSleeping();
@@ -154,19 +163,19 @@ public:
 	void ServerRPC_SetIsSleeping(bool b);
 
 	UFUNCTION()
-	void SetTextWidgetVisible(bool b);
+	void SetTextWidgetVisible(bool b) const;
 
 	UFUNCTION()
-	bool GetTextWidgetVisible();
+	bool GetTextWidgetVisible() const;
 
 	UFUNCTION()
-	AMyObject* GetCurrentHitObject();
+	AMyObject* GetCurrentHitObject() const;
 
 	UFUNCTION()
 	FString GetCurrentHitObjectName();
 
 	UFUNCTION()
-	void SetCurrentCarryObject(AActor* obj);
+	void SetCurrentCarryObject(AActor* OBJ);
 
 	UFUNCTION()
 	void DestroyCannonBall();
@@ -175,7 +184,7 @@ public:
 	void DragObject();
 
 	UFUNCTION()
-	void DropObject(AActor* ship);
+	void DropObject(AActor* Ship) const;
 
 	void Attack();
 
@@ -191,9 +200,13 @@ public:
 	void MulticastRPC_SetEnemyInAttackRange(AEnemy* Enemy);
 
 	UFUNCTION(BlueprintPure)
-	float GetHPPercent();
+	float GetHPPercent() const;
 	
 	void ReduceReviveCooldown(float DeltaTime);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_ReduceReviveCooldown();
+	
 	bool CanRevive() const;
 
 	bool IsAttacking() const;
