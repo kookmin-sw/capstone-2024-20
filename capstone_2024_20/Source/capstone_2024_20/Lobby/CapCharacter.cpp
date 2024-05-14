@@ -30,7 +30,7 @@ void ACapCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(IsLocallyControlled())
+	if (IsLocallyControlled())
 	{
 		GetGameInstance<UMyAudioInstance>()->OnChangeCharacterTypeDelegate.AddUObject(
 			CharacterChangerComponent, &UCharacterChangerComponent::Change);
@@ -39,9 +39,9 @@ void ACapCharacter::BeginPlay()
 
 void ACapCharacter::Move(const FInputActionValue& Value)
 {
-	if(bIsMovement == false)
+	if (bIsMovement == false)
 		return;
-	
+
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller == nullptr)
@@ -52,14 +52,14 @@ void ACapCharacter::Move(const FInputActionValue& Value)
 
 	const FVector RightVector = FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y);
 	const FVector ForwardVector = FRotationMatrix(Yaw).GetUnitAxis(EAxis::X);
-	
+
 	AddMovementInput(RightVector, MovementVector.X);
 	AddMovementInput(ForwardVector, MovementVector.Y);
 }
 
 void ACapCharacter::Interact()
 {
-	if(CapInteractionActor)
+	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionEnter();
 	}
@@ -67,7 +67,7 @@ void ACapCharacter::Interact()
 
 void ACapCharacter::InteractCancel()
 {
-	if(CapInteractionActor)
+	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionExit();
 	}
@@ -81,7 +81,7 @@ void ACapCharacter::Tick(float DeltaTime)
 void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
+
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
@@ -91,12 +91,13 @@ void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 }
 
 void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp,
-	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+                              bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse,
+                              const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
 	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(Other);
-	if(ActorOhter)
+	if (ActorOhter)
 	{
 		CapInteractionActor = ActorOhter;
 	}
@@ -105,6 +106,21 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
 void ACapCharacter::SetIsMovement(const bool bNewValue)
 {
 	bIsMovement = bNewValue;
+}
+
+void ACapCharacter::ServerRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
+{
+	SetActorLocationAndRotation(NewLocation, NewRotation);
+	MulticastRPC_SetLocationAndRotation(NewLocation, NewRotation);
+}
+
+void ACapCharacter::MulticastRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
+{
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 50000.0f, 0.0f);
+	FVector Direction = NewRotation.Vector().GetSafeNormal();
+	AddMovementInput(Direction, 1.0f);
+	SetActorLocationAndRotation(NewLocation, NewRotation);
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 }
 
 void ACapCharacter::InitMovement()

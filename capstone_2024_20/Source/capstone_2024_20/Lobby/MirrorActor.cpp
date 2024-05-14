@@ -150,5 +150,5 @@ void AMirrorActor::ChangeCharacterLocationAndRotation()
 	FVector Location = CapCharacter->GetActorLocation();
 	Location.X = CharacterPositionArrow->GetComponentLocation().X;
 	Location.Y = CharacterPositionArrow->GetComponentLocation().Y;
-	CapCharacter->SetActorLocationAndRotation(Location, CharacterPositionArrow->GetComponentRotation());
+	CapCharacter->ServerRPC_SetLocationAndRotation(Location, CharacterPositionArrow->GetComponentRotation());
 }
