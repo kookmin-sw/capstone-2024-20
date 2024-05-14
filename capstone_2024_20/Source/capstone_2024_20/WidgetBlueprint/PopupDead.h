@@ -13,5 +13,4 @@ class CAPSTONE_2024_20_API UPopupDead : public UUserWidget
 
 public:
 	void SetTextByReviveCooldown(float ReviveCooldown) const;
-
 };
