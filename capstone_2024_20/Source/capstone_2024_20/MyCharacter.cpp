@@ -16,6 +16,7 @@ AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	
 	TextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
 	TextWidget->SetupAttachment(GetMesh());
 	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
@@ -220,6 +221,7 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMyCharacter, bIsSleeping);
+	DOREPLIFETIME(AMyCharacter, CurrentAttackCooldown);
 }
 
 void AMyCharacter::SetNamePlate()
