@@ -22,3 +22,8 @@ void AMyIngameHUD::SetPopupDeadVisibility(const bool bIsVisible) const
 		PopupDead->RemoveFromParent();
 	}
 }
+
+void AMyIngameHUD::SetPopupDeadTextByReviveCooldown(const float ReviveCooldown) const
+{
+	PopupDead->SetTextByReviveCooldown(ReviveCooldown);
+}

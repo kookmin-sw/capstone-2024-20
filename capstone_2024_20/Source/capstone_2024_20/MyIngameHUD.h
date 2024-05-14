@@ -14,7 +14,11 @@ class CAPSTONE_2024_20_API AMyIngameHUD : public AHUD
 	GENERATED_BODY()
 public:
 	virtual void BeginPlay() override;
+
+	// [begin] PopupDead
 	void SetPopupDeadVisibility(bool bIsVisible) const;
+	void SetPopupDeadTextByReviveCooldown(float ReviveCooldown) const;
+	// [end] PopupDead
 
 protected:
 	// ! Set on blueprint
