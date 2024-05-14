@@ -145,6 +145,12 @@ bool AMyCharacter::CanRevive() const
 	return CurrentReviveCooldown <= 0.0f;
 }
 
+bool AMyCharacter::IsAttacking() const
+{
+	const UPirateAnimInstance* AnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+	return AnimInstance->bIsAttacking;
+}
+
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
