@@ -20,7 +20,16 @@ class CAPSTONE_2024_20_API AEnemy : public AReplicatedCharacter, public IHP
 public:
 	AEnemy();
 	virtual void BeginPlay() override;
+
+	// [begin] IHP interface
+	virtual int32 GetMaxHP() const override;
+	virtual int32 GetCurrentHP() const override;
+	virtual void SetMaxHP(const int32 NewMaxHP) override;
+	virtual void SetCurrentHP(const int32 NewCurrentHP) override;
+	virtual void Heal(const int32 HealAmount) override;
+	virtual void Damage(const int32 DamageAmount) override;
 	virtual void Die() override;
+	// [end] IHP interface
 	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
 	void Attack(AMyCharacter* MyCharacter);
@@ -46,6 +55,11 @@ public:
 	FEnemyDie EnemyDieDelegate;
 
 private:
+	// [begin] IHP interface
+	int32 MaxHP = 0;
+	int32 CurrentHP = 0;
+	// [end] IHP interface
+	
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;
 	const float AttackCooldown = 5.0f;

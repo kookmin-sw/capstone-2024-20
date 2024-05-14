@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,25 +11,28 @@ class CAPSTONE_2024_20_API AMyShip : public APawn, public IHP
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	AMyShip();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-private:
+	// [begin] IHP interface
+	virtual int32 GetMaxHP() const override;
+	virtual int32 GetCurrentHP() const override;
+	virtual void SetMaxHP(const int32 NewMaxHP) override;
+	virtual void SetCurrentHP(const int32 NewCurrentHP) override;
+	virtual void Heal(const int32 HealAmount) override;
+	virtual void Damage(const int32 DamageAmount) override;
+	virtual void Die() override;
+	// [end] IHP interface
 	
-public:
 	UPROPERTY(Category=Character, VisibleAnywhere)
-    	UStaticMeshComponent* M_MeshComponent;
+    UStaticMeshComponent* M_MeshComponent;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_SetShipLocation(FVector newLoc);
 
@@ -45,8 +46,6 @@ public:
 
 	UPROPERTY(Replicated)
 	float MoveSpeed = 600.0f; // Todo@autumn replace with data table
-
-	
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Character;
@@ -57,8 +56,12 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Telescope;
 
-	
-	
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent();
+
+private:
+	// [begin] IHP interface
+	int32 MaxHP = 0;
+	int32 CurrentHP = 0;
+	// [end] IHP interface
 };

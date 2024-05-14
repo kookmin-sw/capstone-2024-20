@@ -10,9 +10,6 @@
 
 AEnemyShip::AEnemyShip()
 {
-	SetMaxHP(2);
-	SetCurrentHP(2);
-
 	AActor::SetReplicateMovement(true);
 }
 
@@ -24,6 +21,9 @@ void AEnemyShip::BeginPlay()
 	ProjectileClass = AEnemyShipCannonBall::StaticClass();
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
+
+	SetMaxHP(2);
+	SetCurrentHP(2);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -36,6 +36,63 @@ void AEnemyShip::Tick(float DeltaTime)
 		Location = GetActorLocation();
 		Rotation = GetActorRotation();
 	}
+}
+
+int32 AEnemyShip::GetMaxHP() const
+{
+	return MaxHP;
+}
+
+int32 AEnemyShip::GetCurrentHP() const
+{
+	return CurrentHP;
+}
+
+void AEnemyShip::SetMaxHP(const int32 NewMaxHP)
+{
+	if (NewMaxHP < 0)
+	{
+		MaxHP = 0;
+		return;
+	}
+	
+	MaxHP = NewMaxHP;
+}
+
+void AEnemyShip::SetCurrentHP(const int32 NewCurrentHP)
+{
+	if (NewCurrentHP < 0)
+	{
+		CurrentHP = 0;
+		return;
+	}
+	
+	CurrentHP = NewCurrentHP;
+}
+
+void AEnemyShip::Heal(const int32 HealAmount)
+{
+	CurrentHP = FMath::Clamp(CurrentHP + HealAmount, 0, MaxHP);
+}
+
+void AEnemyShip::Damage(const int32 DamageAmount)
+{
+	if (CurrentHP == 0)
+	{
+		return;
+	}
+	
+	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, MaxHP);
+
+	if (CurrentHP == 0)
+	{
+		Die();
+	}
+}
+
+void AEnemyShip::Die()
+{
+	EnemyShipDieDelegate.Execute(this);
 }
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
@@ -141,10 +198,4 @@ void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 
 	UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);
-}
-
-void AEnemyShip::Die()
-{
-	IHP::Die();
-	EnemyShipDieDelegate.Execute(this);
 }

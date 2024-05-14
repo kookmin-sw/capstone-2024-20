@@ -73,7 +73,10 @@ protected:
 		int32 OtherBodyIndex);
 	
 private:
-	virtual void Die() override;
+	// [begin] IHP interface
+	int32 MaxHP = 0;
+	int32 CurrentHP = 0;
+	// [end] IHP interface
 
 	const float ReviveCooldown = 10.0f;
 	float CurrentReviveCooldown = 0.0f;
@@ -82,6 +85,18 @@ private:
 	AEnemy* EnemyInAttackRange = nullptr;
 
 public:
+	// [begin] IHP interface
+	virtual int32 GetMaxHP() const override;
+	virtual int32 GetCurrentHP() const override;
+	virtual void SetMaxHP(const int32 NewMaxHP) override;
+	virtual void SetCurrentHP(const int32 NewCurrentHP) override;
+	virtual void Heal(const int32 HealAmount) override;
+	virtual void Damage(const int32 DamageAmount) override;
+	virtual void Die() override;
+	// [end] IHP interface
+
+	void Revive();
+	
 	UPROPERTY(Replicated)
 	bool bIsSleeping = false;
 	TArray<FString> ObjectList = {
@@ -150,9 +165,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent();
-
-	virtual void Revive() override;
-
+	
 	void ReduceReviveCooldown(float DeltaTime);
 	bool CanRevive() const;
 };
