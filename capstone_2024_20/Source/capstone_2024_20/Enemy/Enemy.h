@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "NavigationInvokerComponent.h"
-#include "GameFramework/Actor.h"
 #include "../01_Network/ReplicatedCharacter.h"
 #include "../Common/HP.h"
 #include "Enemy.generated.h"

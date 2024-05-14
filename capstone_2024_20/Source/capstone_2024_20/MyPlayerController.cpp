@@ -149,7 +149,7 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
 	{
 		return;
 	}
@@ -162,7 +162,7 @@ void AMyPlayerController::Move(const FInputActionInstance& Instance)
 
 void AMyPlayerController::Interaction_Pressed()
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
 	{
 		return;
 	}
@@ -178,7 +178,7 @@ void AMyPlayerController::Interaction_Pressed()
 
 void AMyPlayerController::Interaction_Trigger()
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
 	{
 		return;
 	}
@@ -200,7 +200,7 @@ void AMyPlayerController::Interaction_Trigger()
 
 void AMyPlayerController::Interaction_Released()
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
 	{
 		return;
 	}
@@ -230,7 +230,7 @@ void AMyPlayerController::Interaction_Released()
 
 void AMyPlayerController::DraggingRotate(const FInputActionInstance& Instance)
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
 	{
 		return;
 	}
@@ -374,7 +374,7 @@ void AMyPlayerController::ViewChange()
 
 void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
 	{
 		return;
 	}
@@ -391,7 +391,12 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AMyPlayerController::Attack(const FInputActionInstance& Instance)
 {
-	if (Player->GetCurrentPlayerState() == UserState::DEAD)
+	if (Player->GetCurrentPlayerState() == UserState::DEAD || Player->IsAttacking())
+	{
+		return;
+	}
+
+	if (!Player->CanAttack())
 	{
 		return;
 	}

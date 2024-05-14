@@ -80,6 +80,11 @@ private:
 
 	const float ReviveCooldown = 10.0f;
 	float CurrentReviveCooldown = 0.0f;
+	
+	const float AttackCooldown = 5.0f;
+
+	UPROPERTY(Replicated)
+	float CurrentAttackCooldown = 0.0f;
 
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
@@ -158,7 +163,13 @@ public:
 	UFUNCTION()
 	void DropObject(AActor* ship);
 
-	void Attack() const;
+	void Attack();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Attack();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Attack() const;
 	
 	void SetEnemyInAttackRange(AEnemy* Enemy);
 
@@ -170,4 +181,8 @@ public:
 	
 	void ReduceReviveCooldown(float DeltaTime);
 	bool CanRevive() const;
+
+	bool IsAttacking() const;
+	void ReduceAttackCooldown(float DeltaTime);
+	bool CanAttack() const;
 };
