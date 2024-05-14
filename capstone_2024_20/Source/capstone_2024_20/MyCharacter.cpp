@@ -222,6 +222,9 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(AMyCharacter, bIsSleeping);
 	DOREPLIFETIME(AMyCharacter, CurrentAttackCooldown);
+	DOREPLIFETIME(AMyCharacter, MaxHP);
+	DOREPLIFETIME(AMyCharacter, CurrentHP);
+	DOREPLIFETIME(AMyCharacter, CurrentPlayerState);
 }
 
 void AMyCharacter::SetNamePlate()

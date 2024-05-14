@@ -74,7 +74,10 @@ protected:
 	
 private:
 	// [begin] IHP interface
+	UPROPERTY(Replicated)
 	int32 MaxHP = 0;
+	
+	UPROPERTY(Replicated)
 	int32 CurrentHP = 0;
 	// [end] IHP interface
 
@@ -113,7 +116,8 @@ public:
 		TEXT("Upgrade"),
 		TEXT("FireEvent")
 	};
-	
+
+	UPROPERTY(Replicated)
 	UserState CurrentPlayerState = UserState::NONE;
 
 	UserState GetCurrentPlayerState() const;
