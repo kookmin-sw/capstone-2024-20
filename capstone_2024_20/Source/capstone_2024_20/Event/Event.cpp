@@ -16,6 +16,9 @@ AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
 	BoxComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	BoxComponent->SetGenerateOverlapEvents(true);
 
+	BoxComponent->ComponentTags.Add(TEXT("Object"));
+	BoxComponent->ComponentTags.Add(TEXT("FireEvent"));
+
 	CanBeOperated = true;
 }
 
