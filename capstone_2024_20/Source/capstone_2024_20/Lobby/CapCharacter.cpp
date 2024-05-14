@@ -82,9 +82,6 @@ void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
-	PlayerInputComponent->BindKey(EKeys::G, IE_Pressed, this, &ThisClass::Test1);
-	PlayerInputComponent->BindKey(EKeys::H, IE_Pressed, this, &ThisClass::Test2);
-
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
@@ -117,16 +114,4 @@ void ACapCharacter::InitMovement()
 	GetCharacterMovement()->MaxWalkSpeed = 800.f;
 	GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Exponential;
 	GetCharacterMovement()->MaxAcceleration = 1400.0f;
-}
-
-void ACapCharacter::Test1()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("TEST1"));
-	CharacterChangerComponent->Change(ECharacterType::Character1);
-}
-
-void ACapCharacter::Test2()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("TEST2"));
-	CharacterChangerComponent->Change(ECharacterType::Character2);
 }

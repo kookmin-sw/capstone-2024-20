@@ -60,7 +60,4 @@ public:
 	FORCEINLINE bool GetIsMovement() const {return bIsMovement;};
 private:
 	void InitMovement();
-
-	void Test1();
-	void Test2();
 };
