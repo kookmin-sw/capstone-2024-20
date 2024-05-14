@@ -58,9 +58,11 @@ public:
 
 	void SetIsMovement(bool bNewValue);
 	FORCEINLINE bool GetIsMovement() const {return bIsMovement;};
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
 private:
 	void InitMovement();
-
-	void Test1();
-	void Test2();
 };

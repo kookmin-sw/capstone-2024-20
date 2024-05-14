@@ -12,6 +12,7 @@
 #include "capstone_2024_20/MyAudioInstance.h"
 #include "Components/ArrowComponent.h"
 #include "Components/Button.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AMirrorActor::AMirrorActor()
 {
@@ -143,6 +144,7 @@ void AMirrorActor::Exit()
 	
 	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(OriginalTarget, 0.3f);
 	
+	CapCharacter->GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 }
 
 void AMirrorActor::ChangeCharacterLocationAndRotation()
@@ -150,5 +152,5 @@ void AMirrorActor::ChangeCharacterLocationAndRotation()
 	FVector Location = CapCharacter->GetActorLocation();
 	Location.X = CharacterPositionArrow->GetComponentLocation().X;
 	Location.Y = CharacterPositionArrow->GetComponentLocation().Y;
-	CapCharacter->SetActorLocationAndRotation(Location, CharacterPositionArrow->GetComponentRotation());
+	CapCharacter->ServerRPC_SetLocationAndRotation(Location, CharacterPositionArrow->GetComponentRotation());
 }

@@ -30,7 +30,7 @@ void ACapCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(IsLocallyControlled())
+	if (IsLocallyControlled())
 	{
 		GetGameInstance<UMyAudioInstance>()->OnChangeCharacterTypeDelegate.AddUObject(
 			CharacterChangerComponent, &UCharacterChangerComponent::Change);
@@ -39,9 +39,9 @@ void ACapCharacter::BeginPlay()
 
 void ACapCharacter::Move(const FInputActionValue& Value)
 {
-	if(bIsMovement == false)
+	if (bIsMovement == false)
 		return;
-	
+
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller == nullptr)
@@ -52,14 +52,14 @@ void ACapCharacter::Move(const FInputActionValue& Value)
 
 	const FVector RightVector = FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y);
 	const FVector ForwardVector = FRotationMatrix(Yaw).GetUnitAxis(EAxis::X);
-	
+
 	AddMovementInput(RightVector, MovementVector.X);
 	AddMovementInput(ForwardVector, MovementVector.Y);
 }
 
 void ACapCharacter::Interact()
 {
-	if(CapInteractionActor)
+	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionEnter();
 	}
@@ -67,7 +67,7 @@ void ACapCharacter::Interact()
 
 void ACapCharacter::InteractCancel()
 {
-	if(CapInteractionActor)
+	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionExit();
 	}
@@ -81,9 +81,6 @@ void ACapCharacter::Tick(float DeltaTime)
 void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-	PlayerInputComponent->BindKey(EKeys::G, IE_Pressed, this, &ThisClass::Test1);
-	PlayerInputComponent->BindKey(EKeys::H, IE_Pressed, this, &ThisClass::Test2);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -94,12 +91,13 @@ void ACapCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 }
 
 void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp,
-	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+                              bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse,
+                              const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
 	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(Other);
-	if(ActorOhter)
+	if (ActorOhter)
 	{
 		CapInteractionActor = ActorOhter;
 	}
@@ -110,6 +108,26 @@ void ACapCharacter::SetIsMovement(const bool bNewValue)
 	bIsMovement = bNewValue;
 }
 
+void ACapCharacter::ServerRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
+{
+	for(int i=0;i<10;i++)
+	{
+		SetActorLocationAndRotation(NewLocation, NewRotation);
+	}
+	ClientRPC_SetLocationAndRotation(NewLocation, NewRotation);
+}
+
+void ACapCharacter::ClientRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("ClientRPC"));
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 50000.0f, 0.0f);
+	FVector Direction = NewRotation.Vector().GetSafeNormal();
+	for (int i = 0; i < 5; i++)
+	{
+		AddMovementInput(Direction, 1.0f);
+	}
+}
+
 void ACapCharacter::InitMovement()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -117,16 +135,4 @@ void ACapCharacter::InitMovement()
 	GetCharacterMovement()->MaxWalkSpeed = 800.f;
 	GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Exponential;
 	GetCharacterMovement()->MaxAcceleration = 1400.0f;
-}
-
-void ACapCharacter::Test1()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("TEST1"));
-	CharacterChangerComponent->Change(ECharacterType::Character1);
-}
-
-void ACapCharacter::Test2()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("TEST2"));
-	CharacterChangerComponent->Change(ECharacterType::Character2);
 }
