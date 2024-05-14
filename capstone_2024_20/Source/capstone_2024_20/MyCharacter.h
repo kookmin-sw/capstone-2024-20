@@ -159,6 +159,12 @@ public:
 	void DropObject(AActor* ship);
 
 	void Attack() const;
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Attack() const;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Attack() const;
 	
 	void SetEnemyInAttackRange(AEnemy* Enemy);
 

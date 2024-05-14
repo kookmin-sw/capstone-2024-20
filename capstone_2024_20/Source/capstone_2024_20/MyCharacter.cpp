@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Pirate/PirateAnimInstance.h"
 
 class AStaticMeshActor;
 
@@ -330,11 +331,24 @@ void AMyCharacter::DropObject(AActor* ship)
 
 void AMyCharacter::Attack() const
 {
+	ServerRPC_Attack();
+}
+
+void AMyCharacter::ServerRPC_Attack_Implementation() const
+{
 	if (EnemyInAttackRange != nullptr)
 	{
 		// Todo@autumn - Need to change the damage value
 		EnemyInAttackRange->Damage(1);
 	}
+	
+	MulticastRPC_Attack();
+}
+
+void AMyCharacter::MulticastRPC_Attack_Implementation() const
+{
+	UPirateAnimInstance* AnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->bIsAttacking = true;
 }
 
 void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
