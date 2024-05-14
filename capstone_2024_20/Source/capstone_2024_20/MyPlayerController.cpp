@@ -395,6 +395,11 @@ void AMyPlayerController::Attack(const FInputActionInstance& Instance)
 	{
 		return;
 	}
+
+	if (!Player->CanAttack())
+	{
+		return;
+	}
 	
 	ServerRPC_Attack();
 }
