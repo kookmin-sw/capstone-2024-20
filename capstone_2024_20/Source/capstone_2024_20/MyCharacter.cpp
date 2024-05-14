@@ -201,6 +201,20 @@ bool AMyCharacter::IsAttacking() const
 	return AnimInstance->bIsAttacking;
 }
 
+// ReSharper disable once CppParameterMayBeConst
+void AMyCharacter::ReduceAttackCooldown(float DeltaTime)
+{
+	if (CurrentAttackCooldown > 0.0f)
+	{
+		CurrentAttackCooldown -= DeltaTime;
+	}
+}
+
+bool AMyCharacter::CanAttack() const
+{
+	return CurrentAttackCooldown <= 0.0f;
+}
+
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -335,19 +349,20 @@ void AMyCharacter::DropObject(AActor* ship)
 	}
 }
 
-void AMyCharacter::Attack() const
+void AMyCharacter::Attack()
 {
 	ServerRPC_Attack();
 }
 
-void AMyCharacter::ServerRPC_Attack_Implementation() const
+void AMyCharacter::ServerRPC_Attack_Implementation()
 {
 	if (EnemyInAttackRange != nullptr)
 	{
 		// Todo@autumn - Need to change the damage value
 		EnemyInAttackRange->Damage(1);
 	}
-	
+
+	CurrentAttackCooldown = AttackCooldown;
 	MulticastRPC_Attack();
 }
 

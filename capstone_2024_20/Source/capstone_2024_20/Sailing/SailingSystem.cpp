@@ -109,6 +109,8 @@ void ASailingSystem::Tick(float DeltaTime)
 				MyCharacter->Revive();
 			}
 		}
+		
+		MyCharacter->ReduceAttackCooldown(DeltaTime);
 	}
 
 	for (const auto EnemyShip : EnemyShips)
