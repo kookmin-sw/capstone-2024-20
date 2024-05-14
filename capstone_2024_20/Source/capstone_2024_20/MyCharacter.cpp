@@ -53,9 +53,6 @@ AMyCharacter::AMyCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
-
-	SetMaxHP(10);
-	SetCurrentHP(10);
 }
 
 void AMyCharacter::BeginPlay()
@@ -70,9 +67,11 @@ void AMyCharacter::BeginPlay()
 
 	FTimerHandle timer;
 	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
-
-
+	
 	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
+
+	SetMaxHP(10);
+	SetCurrentHP(10);
 }
 
 void AMyCharacter::Tick(float DeltaTime)
@@ -117,16 +116,67 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 }
 
+int32 AMyCharacter::GetMaxHP() const
+{
+	return MaxHP;
+}
+
+int32 AMyCharacter::GetCurrentHP() const
+{
+	return CurrentHP;
+}
+
+void AMyCharacter::SetMaxHP(const int32 NewMaxHP)
+{
+	if (NewMaxHP < 0)
+	{
+		MaxHP = 0;
+		return;
+	}
+	
+	MaxHP = NewMaxHP;
+}
+
+void AMyCharacter::SetCurrentHP(const int32 NewCurrentHP)
+{
+	if (NewCurrentHP < 0)
+	{
+		CurrentHP = 0;
+		return;
+	}
+	
+	CurrentHP = NewCurrentHP;
+}
+
+void AMyCharacter::Heal(const int32 HealAmount)
+{
+	CurrentHP = FMath::Clamp(CurrentHP + HealAmount, 0, MaxHP);
+}
+
+void AMyCharacter::Damage(const int32 DamageAmount)
+{
+	if (CurrentHP == 0)
+	{
+		return;
+	}
+	
+	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, MaxHP);
+
+	if (CurrentHP == 0)
+	{
+		Die();
+	}
+}
+
 void AMyCharacter::Die()
 {
-	IHP::Die();
 	SetPlayerState(UserState::DEAD);
 	CurrentReviveCooldown = ReviveCooldown;
 }
 
 void AMyCharacter::Revive()
 {
-	IHP::Revive();
+	CurrentHP = MaxHP;
 	SetPlayerState(UserState::NONE);
 }
 

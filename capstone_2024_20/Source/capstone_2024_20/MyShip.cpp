@@ -1,28 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyShip.h"
 
 #include "GameFramework/PawnMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
-// Sets default values
 AMyShip::AMyShip()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	M_MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = M_MeshComponent;
-
-
-	// static ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
-	//
-	// M_MeshComponent->SetStaticMesh(Mesh.Object);
-	// M_MeshComponent->SetRelativeLocation(FVector(-40.0f,-80.0f,0.0f));
-	// M_MeshComponent->SetRelativeScale3D(FVector(8.0f, 18.5f, 1.0f));
 }
 
-// Called when the game starts or when spawned
 void AMyShip::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,13 +19,12 @@ void AMyShip::BeginPlay()
 	SetCurrentHP(5);
 }
 
-// Called every frame
+// ReSharper disable once CppParameterMayBeConst
 void AMyShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	SetActorRotation(TargetRotation);
-
 }
 
 void AMyShip::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -58,11 +44,66 @@ float AMyShip::GetMoveSpeed() const
 	return MoveSpeed;
 }
 
-
-// Called to bind functionality to input
 void AMyShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+int32 AMyShip::GetMaxHP() const
+{
+	return MaxHP;
+}
+
+int32 AMyShip::GetCurrentHP() const
+{
+	return CurrentHP;
+}
+
+void AMyShip::SetMaxHP(const int32 NewMaxHP)
+{
+	if (NewMaxHP < 0)
+	{
+		MaxHP = 0;
+		return;
+	}
+	
+	MaxHP = NewMaxHP;
+}
+
+void AMyShip::SetCurrentHP(const int32 NewCurrentHP)
+{
+	if (NewCurrentHP < 0)
+	{
+		CurrentHP = 0;
+		return;
+	}
+	
+	CurrentHP = NewCurrentHP;
+}
+
+void AMyShip::Heal(const int32 HealAmount)
+{
+	CurrentHP = FMath::Clamp(CurrentHP + HealAmount, 0, MaxHP);
+}
+
+void AMyShip::Damage(const int32 DamageAmount)
+{
+	if (CurrentHP == 0)
+	{
+		return;
+	}
+	
+	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, MaxHP);
+
+	if (CurrentHP == 0)
+	{
+		Die();
+	}
+}
+
+void AMyShip::Die()
+{
+	// do nothing
 }
 
 void AMyShip::MulticastRPC_SetShipLocation_Implementation(FVector newLoc)
@@ -70,13 +111,8 @@ void AMyShip::MulticastRPC_SetShipLocation_Implementation(FVector newLoc)
 	AddActorWorldOffset(newLoc, true);
 }
 
-
-
 float AMyShip::GetHPPercent()
 {
 
 	return (float)GetCurrentHP() / (float)GetMaxHP();
 }
-
-
-

@@ -22,7 +22,16 @@ public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	// [begin] IHP interface
+	virtual int32 GetMaxHP() const override;
+	virtual int32 GetCurrentHP() const override;
+	virtual void SetMaxHP(const int32 NewMaxHP) override;
+	virtual void SetCurrentHP(const int32 NewCurrentHP) override;
+	virtual void Heal(const int32 HealAmount) override;
+	virtual void Damage(const int32 DamageAmount) override;
 	virtual void Die() override;
+	// [end] IHP interface
 
 	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
 	void LookAtMyShip(const AMyShip* MyShip);
@@ -47,6 +56,11 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_FireCannon();
+	
+	// [begin] IHP interface
+	int32 MaxHP = 0;
+	int32 CurrentHP = 0;
+	// [end] IHP interface
 	
 	inline static float SpawnEnemyTimer = 0.0f;
 	inline static float FireCannonTimer = 0.0f;
