@@ -4,12 +4,6 @@ void AMyIngameHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IngameWidgetClass)
-	{
-		InGameWidget = CreateWidget<UUserWidget>(GetWorld(), IngameWidgetClass);
-		if (InGameWidget)
-		{
-			InGameWidget->AddToViewport();
-		}
-	}
+	InGameWidget = CreateWidget<UUserWidget>(GetWorld(), IngameWidgetClass);
+	InGameWidget->AddToViewport();
 }
