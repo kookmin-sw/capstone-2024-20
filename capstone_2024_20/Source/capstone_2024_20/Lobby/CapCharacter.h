@@ -61,8 +61,8 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
 private:
 	void InitMovement();
 };

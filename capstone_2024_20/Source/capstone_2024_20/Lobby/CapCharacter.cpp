@@ -110,17 +110,22 @@ void ACapCharacter::SetIsMovement(const bool bNewValue)
 
 void ACapCharacter::ServerRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
 {
-	SetActorLocationAndRotation(NewLocation, NewRotation);
-	MulticastRPC_SetLocationAndRotation(NewLocation, NewRotation);
+	for(int i=0;i<10;i++)
+	{
+		SetActorLocationAndRotation(NewLocation, NewRotation);
+	}
+	ClientRPC_SetLocationAndRotation(NewLocation, NewRotation);
 }
 
-void ACapCharacter::MulticastRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
+void ACapCharacter::ClientRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("ClientRPC"));
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 50000.0f, 0.0f);
 	FVector Direction = NewRotation.Vector().GetSafeNormal();
-	AddMovementInput(Direction, 1.0f);
-	SetActorLocationAndRotation(NewLocation, NewRotation);
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	for (int i = 0; i < 5; i++)
+	{
+		AddMovementInput(Direction, 1.0f);
+	}
 }
 
 void ACapCharacter::InitMovement()
