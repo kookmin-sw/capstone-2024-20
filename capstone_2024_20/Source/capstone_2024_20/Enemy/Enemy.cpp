@@ -117,13 +117,13 @@ void AEnemy::Attack(AMyCharacter* MyCharacter)
 
 void AEnemy::ServerRPC_Attack_Implementation(AMyCharacter* MyCharacter)
 {
+	MyCharacter->Damage(1);
 	CurrentAttackCooldown = AttackCooldown;
 	MultiCastRPC_Attack(MyCharacter);
 }
 
 void AEnemy::MultiCastRPC_Attack_Implementation(AMyCharacter* MyCharacter)
 {
-	MyCharacter->Damage(1);
 	UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	AnimInstance->bIsAttacking = true;
 }

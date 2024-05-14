@@ -1,20 +1,29 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyIngameHUD.h"
-
-
+#include "WidgetBlueprint/PopupDead.h"
 
 void AMyIngameHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IngameWidgetClass)
+	InGameWidget = CreateWidget<UUserWidget>(GetWorld(), IngameWidgetClass);
+	InGameWidget->AddToViewport();
+
+	PopupDead = CreateWidget<UPopupDead>(GetWorld(), PopupDeadClass);
+}
+
+void AMyIngameHUD::SetPopupDeadVisibility(const bool bIsVisible) const
+{
+	if (bIsVisible)
 	{
-		IngameWidget = CreateWidget<UUserWidget>(GetWorld(), IngameWidgetClass);
-		if (IngameWidget)
-		{
-			IngameWidget->AddToViewport();
-		}
+		PopupDead->AddToViewport();
 	}
+	else
+	{
+		PopupDead->RemoveFromParent();
+	}
+}
+
+void AMyIngameHUD::SetPopupDeadTextByReviveCooldown(const float ReviveCooldown) const
+{
+	PopupDead->SetTextByReviveCooldown(ReviveCooldown);
 }

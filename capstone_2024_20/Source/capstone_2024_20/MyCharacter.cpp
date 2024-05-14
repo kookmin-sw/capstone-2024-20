@@ -1,6 +1,7 @@
 #include "MyCharacter.h"
 #include "CharacterChangerComponent.h"
 #include "MyAudioInstance.h"
+#include "MyIngameHUD.h"
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -31,7 +32,6 @@ AMyCharacter::AMyCharacter()
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
 	if(UI_HUD.Succeeded())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("UMG Success"));
 		TextWidget->SetWidgetClass(UI_HUD.Class);
 		TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
 		TextWidget->SetVisibility(false);
@@ -51,7 +51,7 @@ AMyCharacter::AMyCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -60,9 +60,8 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	check(GEngine != nullptr);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using FPSCharacter."));
+	
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
@@ -76,6 +75,7 @@ void AMyCharacter::BeginPlay()
 	SetCurrentHP(10);
 }
 
+// ReSharper disable once CppParameterMayBeConst
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -174,21 +174,52 @@ void AMyCharacter::Die()
 {
 	SetPlayerState(UserState::DEAD);
 	CurrentReviveCooldown = ReviveCooldown;
+	Multicast_Die();
+}
+
+void AMyCharacter::Multicast_Die_Implementation() const
+{
+	if (IsLocallyControlled())
+	{
+		MyInGameHUD->SetPopupDeadVisibility(true);
+	}
 }
 
 void AMyCharacter::Revive()
 {
 	CurrentHP = MaxHP;
 	SetPlayerState(UserState::NONE);
+	Multicast_Revive();
+}
+
+void AMyCharacter::Multicast_Revive_Implementation() const
+{
+	if (IsLocallyControlled())
+	{
+		MyInGameHUD->SetPopupDeadVisibility(false);
+	}
 }
 
 // ReSharper disable once CppParameterMayBeConst
 void AMyCharacter::ReduceReviveCooldown(float DeltaTime)
 {
-	if (CurrentReviveCooldown > 0.0f)
+	if (CurrentReviveCooldown <= 0.0f)
 	{
-		CurrentReviveCooldown -= DeltaTime;
+		return;
 	}
+	
+	CurrentReviveCooldown -= DeltaTime;
+	Multicast_ReduceReviveCooldown();
+}
+
+void AMyCharacter::Multicast_ReduceReviveCooldown_Implementation()
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	
+	MyInGameHUD->SetPopupDeadTextByReviveCooldown(CurrentReviveCooldown);
 }
 
 bool AMyCharacter::CanRevive() const
@@ -225,14 +256,15 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMyCharacter, MaxHP);
 	DOREPLIFETIME(AMyCharacter, CurrentHP);
 	DOREPLIFETIME(AMyCharacter, CurrentPlayerState);
+	DOREPLIFETIME(AMyCharacter, CurrentReviveCooldown);
 }
 
-void AMyCharacter::SetNamePlate()
+void AMyCharacter::SetNamePlate() const
 {
 	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
 }
 
-bool AMyCharacter::GetIsOverLap()
+bool AMyCharacter::GetIsOverLap() const
 {
 	return bIsOverlap;
 }
@@ -242,27 +274,27 @@ bool AMyCharacter::GetIsSleeping()
 	return bIsSleeping;
 }
 
-void AMyCharacter::SetIsSleeping(bool b)
+void AMyCharacter::SetIsSleeping(const bool b)
 {
 	bIsSleeping = b;
 }
 
-void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(bool b)
+void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(const bool b)
 {
 	bIsSleeping = b;
 }
 
-void AMyCharacter::SetTextWidgetVisible(bool b)
+void AMyCharacter::SetTextWidgetVisible(const bool b) const
 {
 	TextWidget->SetVisibility(b);
 }
 
-bool AMyCharacter::GetTextWidgetVisible()
+bool AMyCharacter::GetTextWidgetVisible() const
 {
 	return TextWidget->IsVisible();
 }
 
-AMyObject* AMyCharacter::GetCurrentHitObject()
+AMyObject* AMyCharacter::GetCurrentHitObject() const
 {
 	return CurrentHitObject;
 }
@@ -272,9 +304,9 @@ FString AMyCharacter::GetCurrentHitObjectName()
 	return CurrentHitObjectName;
 }
 
-void AMyCharacter::SetCurrentCarryObject(AActor* obj)
+void AMyCharacter::SetCurrentCarryObject(AActor* OBJ)
 {
-	CurrentCarryObject = obj;
+	CurrentCarryObject = OBJ;
 }
 
 UserState AMyCharacter::GetCurrentPlayerState() const
@@ -282,7 +314,7 @@ UserState AMyCharacter::GetCurrentPlayerState() const
 	return CurrentPlayerState;
 }
 
-void AMyCharacter::SetPlayerState(UserState NewPlayerState)
+void AMyCharacter::SetPlayerState(const UserState NewPlayerState)
 {
 	CurrentPlayerState = NewPlayerState;
 }
@@ -336,10 +368,10 @@ void AMyCharacter::DragObject()
 	}
 }
 
-void AMyCharacter::DropObject(AActor* ship)
+void AMyCharacter::DropObject(AActor* Ship) const
 {
 	CurrentHitObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	CurrentHitObject->AttachToActor(ship, FAttachmentTransformRules::KeepWorldTransform);
+	CurrentHitObject->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
 
 	if (CurrentHitObject)
 	{
@@ -387,7 +419,7 @@ void AMyCharacter::MulticastRPC_SetEnemyInAttackRange_Implementation(AEnemy* Ene
 	EnemyInAttackRange = Enemy;
 }
 
-float AMyCharacter::GetHPPercent()
+float AMyCharacter::GetHPPercent() const
 {
-	return (float)GetCurrentHP() / (float)GetMaxHP();
+	return static_cast<float>(GetCurrentHP()) / static_cast<float>(GetMaxHP());
 }
