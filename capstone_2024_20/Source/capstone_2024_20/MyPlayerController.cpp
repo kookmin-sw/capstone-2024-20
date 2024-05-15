@@ -3,6 +3,7 @@
 #include "CharacterControlStrategy.h"
 #include "ShipControlStrategy.h"
 #include "Kismet/GameplayStatics.h"
+#include "InputMappingContext.h"
 
 class AStaticMeshActor;
 
@@ -41,7 +42,6 @@ AMyPlayerController::AMyPlayerController()
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	//플레이어 할당
 
 	if (!IsLocalController())
 	{
@@ -50,11 +50,9 @@ void AMyPlayerController::BeginPlay()
 
 	if (HasAuthority())
 	{
-		GEngine->AddOnScreenDebugMessage(
-			-1, 60.0f, FColor::Emerald, TEXT("HasAutority"));
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("HasAutority"));
 	}
 
-	//배 할당
 	TArray<AActor*> FoundShips;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyShip::StaticClass(), FoundShips);
 	if (FoundShips.Num() > 0)
@@ -62,7 +60,6 @@ void AMyPlayerController::BeginPlay()
 		Ship = Cast<AMyShip>(FoundShips[0]);
 	}
 
-	// 매핑 컨텐스트 할당
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (Subsystem != nullptr)
 	{
@@ -74,7 +71,9 @@ void AMyPlayerController::BeginPlay()
 	{
 		ControlledActor = Player;
 		if (Player->InputComponent)
+		{
 			SetupPlayerInputComponent(Player->InputComponent);
+		}
 	}
 	else
 	{
@@ -84,7 +83,9 @@ void AMyPlayerController::BeginPlay()
 	CurrentControlMode = ControlMode::CHARACTER;
 
 	if(Ship)
+	{
 		SetViewTarget(Ship->Camera_Character);
+	}
 	
 	EnableCheats();
 }
@@ -119,7 +120,6 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 		if(CurrentHitObject == Player->GetCurrentHitObject()) // 상호작용 시작 시 오브젝트와 일치하면 시간 증가
 		{
 			PressDuration += GetWorld()->DeltaTimeSeconds;
-			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Interaction - PressDuration: %f"), PressDuration));
 		}
 		else // 상호작용 시작 시 오브젝트와 일치하지 않으면 (이동했으면) 초기화 
 		{
@@ -174,7 +174,6 @@ void AMyPlayerController::Interaction_Pressed()
 	
 	if(Player->GetIsOverLap())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction start"));
 		bIsPressingKey = true;
 		PressDuration = 0.0f; // 타이머 리셋
 		CurrentHitObject = Player->GetCurrentHitObject(); // 맨 처음 상호작용 시도한 오브젝트 기록
@@ -197,7 +196,6 @@ void AMyPlayerController::Interaction_Trigger()
 			{
 				ServerRPC_DragObject(Player);
 				Player->SetPlayerState(Player->GetUserStateDragging());
-				GEngine->AddOnScreenDebugMessage(-1, 6.0f, FColor::Red, TEXT("Dragging 상태로 변경!"));
 			}
 		}
 	}
@@ -215,20 +213,17 @@ void AMyPlayerController::Interaction_Released()
 	{
 		if (PressDuration < 3.0f && !Player->GetCurrentHitObject()->GetIsDragging() && !bIsCameraTransitioning) // 3초 안됐으면 그냥 상호작용
 		{
-			UE_LOG(LogTemp, Log, TEXT("interaction"));
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction"));
 			Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 			ViewChange();
 			CurrentHitObject->Interact();
 		}
-	
 		else if(PressDuration >= 3.0f)
 		{
 			Player->SetPlayerState(Player->GetUserStateNone());
 			ServerRPC_DropObject(CurrentHitObject, Ship);
 			
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Interaction end"));
+		
 		CurrentHitObject = nullptr;
 	}
 }
@@ -242,7 +237,7 @@ void AMyPlayerController::DraggingRotate(const FInputActionInstance& Instance)
 	
 	if(Player->CurrentPlayerState==Player->GetUserStateDragging())
 	{
-		FRotator NewRotation = CurrentHitObject->TargetRotation + FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
+		const FRotator NewRotation = CurrentHitObject->TargetRotation + FRotator(0.0f, Instance.GetValue().Get<float>(),0.0f);
 		ServerRPC_RotateDraggingObject(CurrentHitObject, NewRotation);
 	}
 }
@@ -251,9 +246,9 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
 
-	float BlendTime = 0.5f;
 	if(!bIsCameraTransitioning)
 	{
+		constexpr float BlendTime = 0.5f;
 		bIsCameraTransitioning = true;
 		switch (CurrentControlMode)
 		{
@@ -284,7 +279,6 @@ void AMyPlayerController::SetControlMode(ControlMode NewControlMode)
 	}
 }
 
-//모드 변환
 void AMyPlayerController::ViewChange()
 {
 	switch (CurrentControlMode)
@@ -300,7 +294,6 @@ void AMyPlayerController::ViewChange()
 		}
 		else if (Player->GetCurrentHitObjectName().Equals(TEXT("Cannon")))
 		{
-			// if 캐릭터 스테이트가 carrying이라면
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				Subsystem->RemoveMappingContext(DefaultMappingContext);
@@ -313,10 +306,7 @@ void AMyPlayerController::ViewChange()
 			}
 			else if(Player->CurrentPlayerState == Player->GetUserStateCarrying())
 			{
-				//나중에 옮기는 오브젝트가 뭔지도 검사
 				//지금은 무조건 대포알로 간주
-
-				//대포 장전
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
 
 				ServerRPC_LoadCannonBall(Cannon);
@@ -330,9 +320,7 @@ void AMyPlayerController::ViewChange()
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				CannonBallBox = Cast<AMyCannonBallBox>(Player->GetCurrentHitObject());
-				// 현재 접근한 오브젝트가 "CannonBallBox"면 캐논볼 생성
 				ServerRPC_SpawnCarryCannonBall(Player, CannonBallBox);
-				//Player->SpawnCannonBall();
 				Player->SetPlayerState(Player->GetUserStateCarrying());
 			}
 		}
@@ -341,7 +329,6 @@ void AMyPlayerController::ViewChange()
 			if(Player->CurrentPlayerState == Player->GetUserStateNone())
 			{
 				SetControlMode(ControlMode::TELESCOPE);
-				
 			}
 		}
 		else if(Player->GetCurrentHitObjectName().Equals(TEXT("Bed")))
@@ -353,8 +340,6 @@ void AMyPlayerController::ViewChange()
 				SetControlMode(ControlMode::BED);
 				FTimerHandle SleepTimerHandle;
 				GetWorld()->GetTimerManager().SetTimer(SleepTimerHandle, this, &AMyPlayerController::PlayerSleep, GetWorld()->GetDeltaSeconds(), false);
-				
-				//PlayerSleep();
 			}
 		}
 		break;
@@ -384,7 +369,6 @@ void AMyPlayerController::Shoot(const FInputActionInstance& Instance)
 		return;
 	}
 	
-	//대포알이 장전됐을때만 발사 가능
 	if (IsLocalController() && Cannon->GetIsLoad())
 	{
 		ServerRPC_Shoot(Cannon);
@@ -422,7 +406,6 @@ void AMyPlayerController::ServerRPC_Shoot_Implementation(AMyCannon* CannonActor)
 	if (HasAuthority())
 	{
 		CannonActor->FireCannon();
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Shooting!"));
 	}
 }
 
@@ -446,9 +429,8 @@ void AMyPlayerController::ServerRPC_MoveShip_Rot_Implementation(float newYaw, fl
 {
 	if(HasAuthority())
 	{
-		FRotator newRot = FRotator(0.0f, newYaw*speed*GetWorld()->GetDeltaSeconds(), 0.0f) + Ship->GetActorRotation();
-		Ship->TargetRotation = newRot;
-		//Ship->MulticastRPC_SetShipRotation(newYaw, speed);
+		const FRotator NewRot = FRotator(0.0f, newYaw*speed*GetWorld()->GetDeltaSeconds(), 0.0f) + Ship->GetActorRotation();
+		Ship->TargetRotation = NewRot;
 	}
 }
 
@@ -536,7 +518,6 @@ void AMyPlayerController::PlayerSleep()
 
 		Bed->SleepSound();
 		
-		// 타이머 시작
 		GetWorld()->GetTimerManager().SetTimer(HealthTimerHandle, [this]()
 		{
 			Player->Heal(1);
@@ -548,7 +529,6 @@ void AMyPlayerController::PlayerAwake()
 {
 	Bed->AwakeSound();
 	
-	// 타이머 중지
 	GetWorld()->GetTimerManager().ClearTimer(HealthTimerHandle);
 }
 
