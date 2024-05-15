@@ -304,6 +304,7 @@ void AMyPlayerController::ViewChange()
 				CurrentStrategy = new CannonControlStrategy();
 				ControlledActor = Player->GetCurrentHitObject();
 				Cannon = Cast<AMyCannon>(Player->GetCurrentHitObject());
+				Cannon->VisibleWidget(true);
 				SetControlMode(ControlMode::CANNON);
 			}
 			else if(Player->CurrentPlayerState == Player->GetUserStateCarrying())
@@ -360,6 +361,7 @@ void AMyPlayerController::ViewChange()
 		
 	case ControlMode::SHIP:
 	case ControlMode::CANNON:
+		Cannon->VisibleWidget(false);
 	case ControlMode::TELESCOPE:
 		// 현재 컨트롤 모드가 SHIP 또는 CANNON일 경우, 무조건 CHARACTER 모드로 전환
 		SetControlMode(ControlMode::CHARACTER);
