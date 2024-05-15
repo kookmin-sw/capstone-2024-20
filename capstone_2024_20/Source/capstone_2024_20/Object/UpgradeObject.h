@@ -17,11 +17,4 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Operate() override;
-
-private:
-	UPROPERTY(EditAnywhere)
-	USkeletalMeshComponent* SkeletalMesh;
-
-	UPROPERTY(EditAnywhere)
-	UBoxComponent* BoxComponent;
 };
