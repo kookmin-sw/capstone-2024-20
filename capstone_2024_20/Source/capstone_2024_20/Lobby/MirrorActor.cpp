@@ -26,7 +26,7 @@ AMirrorActor::AMirrorActor()
 
 	CharacterPositionArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterPositionArrow"));
 	CharacterPositionArrow->SetupAttachment(RootComponent);
-	
+
 	CharacterChangerWidgetComponent = CreateDefaultSubobject<UCharacterChangerWidgetComponent>(
 		TEXT("CharacterChangerWidgetComponent"));
 	CharacterChangerWidgetComponent->SetupAttachment(RootComponent);
@@ -49,6 +49,19 @@ void AMirrorActor::BeginPlay()
 			break;
 		}
 	}
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerController)
+	{
+		CapCharacter = Cast<ACapCharacter>(PlayerController->GetCharacter());
+		PlayerController->InputComponent->BindKey(EKeys::A, IE_Pressed,
+												  this, &ThisClass::Prev);
+		PlayerController->InputComponent->BindKey(EKeys::D, IE_Pressed,
+												  this, &ThisClass::Next);
+		PlayerController->InputComponent->BindKey(EKeys::R, IE_Pressed,
+												  this, &ThisClass::Exit);
+	}
 }
 
 void AMirrorActor::Tick(float DeltaTime)
@@ -65,21 +78,14 @@ void AMirrorActor::InteractionLongEnter()
 
 	OriginalTarget = GetWorld()->GetFirstPlayerController()->GetViewTarget();
 	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(SubCameraActor, 0.3f);
-	
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	
+
 	if (PlayerController)
 	{
 		CapCharacter = Cast<ACapCharacter>(PlayerController->GetCharacter());
 		CapCharacter->SetIsMovement(false);
 		ChangeCharacterLocationAndRotation();
-		
-		PlayerController->InputComponent->BindKey(EKeys::A, IE_Pressed,
-												  this, &ThisClass::Prev);
-		PlayerController->InputComponent->BindKey(EKeys::D, IE_Pressed,
-												  this, &ThisClass::Next);
-		PlayerController->InputComponent->BindKey(EKeys::R, IE_Pressed,
-												  this, &ThisClass::Exit);
 	}
 }
 
@@ -96,7 +102,7 @@ void AMirrorActor::SetCharacterType(int32 CharacterType)
 	UMyAudioInstance* MyAudioInstance = GetGameInstance<UMyAudioInstance>();
 	MyAudioInstance->SetCharacterType(NewEnumValue);
 
-	if(CharacterTypeClamp <= 0)
+	if (CharacterTypeClamp <= 0)
 	{
 		CharacterChangerWidgetComponent->CharacterChangeWidget->PrevButton->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -105,7 +111,7 @@ void AMirrorActor::SetCharacterType(int32 CharacterType)
 		CharacterChangerWidgetComponent->CharacterChangeWidget->PrevButton->SetVisibility(ESlateVisibility::Visible);
 	}
 
-	if(CharacterTypeClamp >= 2)
+	if (CharacterTypeClamp >= 2)
 	{
 		CharacterChangerWidgetComponent->CharacterChangeWidget->NextButton->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -117,9 +123,9 @@ void AMirrorActor::SetCharacterType(int32 CharacterType)
 
 void AMirrorActor::Next()
 {
-	if(CapCharacter->GetIsMovement() == true)
+	if (CapCharacter->GetIsMovement() == true)
 		return;
-	
+
 	UMyAudioInstance* MyAudioInstance = GetGameInstance<UMyAudioInstance>();
 
 	int32 EnumAsInt = MyAudioInstance->GetCharacterType();
@@ -128,9 +134,9 @@ void AMirrorActor::Next()
 
 void AMirrorActor::Prev()
 {
-	if(CapCharacter->GetIsMovement() == true)
+	if (CapCharacter->GetIsMovement() == true)
 		return;
-	
+
 	UMyAudioInstance* MyAudioInstance = GetGameInstance<UMyAudioInstance>();
 
 	int32 EnumAsInt = MyAudioInstance->GetCharacterType();
@@ -141,9 +147,9 @@ void AMirrorActor::Exit()
 {
 	CharacterChangerWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
 	CapCharacter->SetIsMovement(true);
-	
+
 	GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(OriginalTarget, 0.3f);
-	
+
 	CapCharacter->GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 }
 
