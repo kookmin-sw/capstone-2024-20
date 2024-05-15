@@ -30,6 +30,7 @@ void UInteractionWidgetComponent::Show(FString& Key, FString& Explain)
 {
 	RoundProgressWidget->SetKeyText(Key);
 	RoundProgressWidget->SetExplainText(Explain);
+	RoundProgressWidget->SetPercent(0);
 	RoundProgressWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -45,15 +46,15 @@ void UInteractionWidgetComponent::StartProgressBar(float Time)
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, Time, &TimerHandle]()
 	{
-		float ElapsedTime = GetWorld()->GetTimeSeconds();
-		float CurrentValue = FMath::Lerp(0, 1, FMath::Clamp(ElapsedTime / Time, 0.0f, 1.0f));
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, FString::Printf(TEXT("currentValue: %f"), CurrentValue));
-		if (ElapsedTime >= Time)
+		float ElapsedTime = GetWorld()->GetDeltaSeconds();
+		float CurrentValue = FMath::Clamp(RoundProgressWidget->GetPercent() + (ElapsedTime/Time), 0.0f, 1.0f);
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, FString::Printf(TEXT("currentValue: %f,,,,, %f"), CurrentValue, GetWorld()->GetDeltaSeconds()));
+		if (CurrentValue >= Time)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		}
 
 		RoundProgressWidget->SetPercent(CurrentValue);
-	}, 0.0f, true, 0.1f);
+	}, 0.01f, true, 0.1f);
 }
 

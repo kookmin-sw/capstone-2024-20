@@ -16,12 +16,18 @@ void URoundProgressWidget::NativePreConstruct()
 
 void URoundProgressWidget::SetPercent(float NewPercent)
 {
+	Percent = NewPercent;
 	if(IsValid(RoundProgressBar) == false)
 	{
 		RoundProgressBar = Image->GetDynamicMaterial();
 	}
 	
 	RoundProgressBar->SetScalarParameterValue(FName(TEXT("Percent")), NewPercent);
+}
+
+float URoundProgressWidget::GetPercent()
+{
+	return Percent;
 }
 
 void URoundProgressWidget::SetKeyText(FString& NewText)

@@ -34,6 +34,9 @@ public:
 	void SetPercent(float NewPercent);
 
 	UFUNCTION()
+	float GetPercent();
+
+	UFUNCTION()
 	void SetKeyText(FString& NewText);
 
 	UFUNCTION()
