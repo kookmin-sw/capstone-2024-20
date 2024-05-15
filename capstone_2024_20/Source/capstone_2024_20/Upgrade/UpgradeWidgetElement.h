@@ -5,6 +5,7 @@
 #include "UpgradeWidgetElement.generated.h"
 
 
+class UImage;
 class UButton;
 class UTextBlock;
 
@@ -23,16 +24,19 @@ private:
 public:
 	FOnClickUpgradeDelegate OnClickUpgradeDelegate;
 	
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UpgradeImage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* NameText;
 
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* LevelText;
 
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* ExplainText;
 
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UButton* UpgradeButton;
 
 	UFUNCTION()
