@@ -54,7 +54,7 @@ void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	if(AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor))
 	{
-		EnemyShip->Damage(damage);
+		EnemyShip->Damage(Damage);
 	}
 
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -62,11 +62,11 @@ void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	if (GetWorld())
 	{
 		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, destroyDelayTime, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, DestroyDelayTime, false);
 	}
 }
 
 void ACannonBall::SetDamage(const int32 Dmg)
 {
-	damage = Dmg;
+	Damage = Dmg;
 }
