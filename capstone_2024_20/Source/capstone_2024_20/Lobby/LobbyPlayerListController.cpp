@@ -35,7 +35,7 @@ void ALobbyPlayerListController::RefreshTimer()
 			TimerHandle,
 			this,
 			&ThisClass::Refresh,
-			2.0f,
+			1.0f,
 			false);
 }
 
@@ -51,7 +51,7 @@ void ALobbyPlayerListController::RegisterReadyEventTimer(UWorld* World,
 	World->GetTimerManager().SetTimer(
 		TimerHandle,
 		TimerDelegate,
-		4.0f,
+		2.0f,
 		false);
 }
 

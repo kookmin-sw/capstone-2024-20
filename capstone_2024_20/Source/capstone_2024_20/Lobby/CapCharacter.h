@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CapCharacter.generated.h"
 
+class ALobbyPlayerState;
 class UCharacterChangerComponent;
 class ACapInteractionActor;
 class UInputAction;
@@ -34,7 +35,14 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 
 	UPROPERTY()
 	bool bIsMovement = true;
-	
+
+	UPROPERTY(EditAnywhere)
+	class ULobbyPlateWidgetComponent* WidgetComponent;
+
+	UPROPERTY(EditAnywhere)
+	ALobbyPlayerState* LobbyPlayerState;
+
+	void Init();
 public:
 	ACapCharacter();
 	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
@@ -59,6 +67,9 @@ public:
 	void SetIsMovement(bool bNewValue);
 	FORCEINLINE bool GetIsMovement() const {return bIsMovement;};
 
+	UFUNCTION()
+	void SetReady();
+	
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
 	UFUNCTION(Client, Reliable)
