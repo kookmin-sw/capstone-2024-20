@@ -59,6 +59,4 @@ private:
 	void Exit();
 
 	void ChangeCharacterLocationAndRotation();
-
-	
 };
