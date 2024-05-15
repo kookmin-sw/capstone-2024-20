@@ -20,7 +20,7 @@ private:
 	UPROPERTY()
 	int32 MaxLevel;
 	UPROPERTY()
-	int32 CurrentLevel;
+	int32 CurrentLevel=0;
 public:
 	FOnClickUpgradeDelegate OnClickUpgradeDelegate;
 	

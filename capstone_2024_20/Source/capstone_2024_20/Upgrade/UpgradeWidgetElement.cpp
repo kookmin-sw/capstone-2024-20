@@ -4,6 +4,7 @@
 #include "UpgradeWidgetElement.h"
 
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 void UUpgradeWidgetElement::Upgrade()
 {
@@ -12,7 +13,7 @@ void UUpgradeWidgetElement::Upgrade()
 	
 	OnClickUpgradeDelegate.Broadcast();
 	CurrentLevel++;
-
+	LevelText->SetText(FText::FromString(FString::Printf(TEXT("Level %d/%d"), CurrentLevel, MaxLevel)));
 	if(IsLevelOverMax() == true)
 	{
 		UpgradeButton->SetColorAndOpacity(FLinearColor::Gray);
