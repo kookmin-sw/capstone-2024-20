@@ -20,10 +20,9 @@ private:
 	int32 MaxLevel;
 	UPROPERTY()
 	int32 CurrentLevel;
-
-	FOnClickUpgradeDelegate OnClickUpgradeDelegate;
-
 public:
+	FOnClickUpgradeDelegate OnClickUpgradeDelegate;
+	
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	UTextBlock* NameText;
 
@@ -41,13 +40,6 @@ public:
 
 	UFUNCTION()
 	bool IsLevelOverMax() const;
-
-	UFUNCTION()
-	template <typename UserClass, typename... VarTypes, typename... ParamTypes>
-	FORCEINLINE void RegisterUpgradeDelegate(UserClass* InUserObject, typename TMemFunPtrType<false, UserClass, void (ParamTypes..., std::decay_t<VarTypes>...)>::Type InFunc, VarTypes&&... Vars)
-	{
-		OnClickUpgradeDelegate.AddUObject(InUserObject, InFunc);
-	}
 };
 
 
