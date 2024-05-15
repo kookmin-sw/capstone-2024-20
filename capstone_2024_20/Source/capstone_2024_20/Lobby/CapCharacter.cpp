@@ -5,13 +5,52 @@
 
 #include "CapInteractionActor.h"
 #include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "EnhancedPlayerInput.h"
-#include "Camera/CameraComponent.h"
+#include "LobbyPlateWidgetComponent.h"
+#include "LobbyPlayerLinearColorFactory.h"
+#include "LobbyPlayerState.h"
 #include "capstone_2024_20/CharacterChangerComponent.h"
 #include "capstone_2024_20/MyAudioInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+
+void ACapCharacter::Init()
+{
+	LobbyPlayerState = Cast<ALobbyPlayerState>(GetPlayerState());
+	LobbyPlayerState->OnIsReadyChanged.AddLambda([this]
+	{
+		this->SetReady();
+	});
+
+	const int PlayerNumber = LobbyPlayerState->PlayerNumber;
+	if (PlayerNumber != 1)
+	{
+		const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
+
+		WidgetComponent->ChangeColor(PlayerColor);
+		WidgetComponent->SetVisibilityFromBool(false);
+	}
+	else
+	{
+		FString Path = TEXT("/Game/WidgetBlueprints/Lobby/BP_RoomManagerWidget.BP_RoomManagerWidget_C");
+		WidgetComponent->ChangeWidget(Path);
+	}
+
+	if(IsLocallyControlled())
+	{
+		const FString PlayerName = LobbyPlayerState->GetPlayerName();
+		WidgetComponent->SetName(PlayerName);
+	}
+	
+	if (IsLocallyControlled())
+	{
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
+													  LobbyPlayerState, &ALobbyPlayerState::SetReady);
+		}
+	}
+}
 
 ACapCharacter::ACapCharacter()
 {
@@ -23,6 +62,10 @@ ACapCharacter::ACapCharacter()
 
 	CharacterChangerComponent = CreateDefaultSubobject<UCharacterChangerComponent>(TEXT("CharacterChangerComponent"));
 	CharacterChangerComponent->SetIsReplicated(true);
+
+	WidgetComponent = CreateDefaultSubobject<ULobbyPlateWidgetComponent>(TEXT("WidgetComponent"));
+	WidgetComponent->SetupAttachment(GetRootComponent());
+
 	InitMovement();
 }
 
@@ -35,6 +78,9 @@ void ACapCharacter::BeginPlay()
 		GetGameInstance<UMyAudioInstance>()->OnChangeCharacterTypeDelegate.AddUObject(
 			CharacterChangerComponent, &UCharacterChangerComponent::Change);
 	}
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 5.0f, false);
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)
@@ -108,9 +154,14 @@ void ACapCharacter::SetIsMovement(const bool bNewValue)
 	bIsMovement = bNewValue;
 }
 
+void ACapCharacter::SetReady()
+{
+	WidgetComponent->SetVisibilityFromBool(LobbyPlayerState->IsReady());
+}
+
 void ACapCharacter::ServerRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
 {
-	for(int i=0;i<10;i++)
+	for (int i = 0; i < 10; i++)
 	{
 		SetActorLocationAndRotation(NewLocation, NewRotation);
 	}
