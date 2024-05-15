@@ -1,21 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CannonBall.h"
-
 #include "EnemyShip/EnemyShip.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
 ACannonBall::ACannonBall()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	RootComponent = ProjectileMesh;
 
-	// 발사체의 물리적 충돌과 동작을 처리할 프로젝타일 무브먼트 컴포넌트를 생성합니다.
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->SetUpdatedComponent(ProjectileMesh);
 	ProjectileMovement->InitialSpeed = 3000.f;
@@ -23,17 +15,15 @@ ACannonBall::ACannonBall()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false; // 튕겨나가지않음
 
-	// 충돌 시 OnHit 함수를 호출하도록 설정합니다.
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &ACannonBall::OnHit);
 }
 
-// Called when the game starts or when spawned
 void ACannonBall::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-// Called every frame
+// ReSharper disable once CppParameterMayBeConst
 void ACannonBall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -50,45 +40,27 @@ void ACannonBall::DestroyDelay()
 void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                         FVector NormalImpulse, const FHitResult& Hit)
 {
-	// 여기에 충돌 시 필요한 로직을 구현합니다. 예를 들면, 폭발 이펙트 생성, 피해 적용 등이 있습니다.
-	// 이 예제에서는 단순히 로그를 출력하는 것으로 처리합니다.
-	UE_LOG(LogTemp, Warning, TEXT("Projectile hit: %s"), *OtherActor->GetName());
-	GEngine->AddOnScreenDebugMessage(-1,
-	                                 60.f, FColor::Emerald, TEXT("On Hit!!"));
-	if (WaterSplashEffect)
+	if (HasAuthority())
 	{
-		FVector Scale(3.0f, 3.0f, 3.0f);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator(0.0f), Scale);
-	}
-	// 충돌 후 발사체를 제거합니다.
-	
-	AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor);
-	if(EnemyShip)
-	{
-		EnemyShip->Damage(damage);
-		int CurrentHP = EnemyShip->GetCurrentHP();
-
-		FString HPMessage = FString::Printf(TEXT("Enemy Ship HP: %d"), CurrentHP);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, HPMessage);
+		if(AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor))
+		{
+			EnemyShip->Damage(Damage);
+			FTimerHandle TimerHandle;
+	        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, DestroyDelayTime, false);
+			ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 
-	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	if (GetWorld())
-	{
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, destroyDelayTime, false);
-	}
+	MultiCastRPC_OnHit(Hit);
 }
 
-int32 ACannonBall::GetDamage()
+void ACannonBall::MultiCastRPC_OnHit_Implementation(const FHitResult& Hit)
 {
-	return damage;
+	const FVector Scale(3.0f, 3.0f, 3.0f);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator(0.0f), Scale);
 }
 
-void ACannonBall::SetDamage(int32 dmg)
+void ACannonBall::SetDamage(const int32 Dmg)
 {
-	damage = dmg;
+	Damage = Dmg;
 }
-
-

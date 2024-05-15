@@ -1,19 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyCannon.h"
-
 #include "CannonBall.h"
 #include "CannonWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Components/SlateWrapperTypes.h"
 #include "Net/UnrealNetwork.h"
+#include "Sound/SoundCue.h"
 
-// Sets default values
-AMyCannon::AMyCannon()
+AMyCannon::AMyCannon(): M_ShooterMesh(nullptr), ProjectileSpawnPoint(nullptr), FireEffect(nullptr),
+                        Camera_Cannon(nullptr)
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
@@ -24,18 +20,15 @@ AMyCannon::AMyCannon()
 	}
 }
 
-
-// Called when the game starts or when spawned
 void AMyCannon::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-// Called every frame
+// ReSharper disable once CppParameterMayBeConst
 void AMyCannon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AMyCannon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -46,37 +39,35 @@ void AMyCannon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 }
 
 
-FVector AMyCannon::GetCannonSpawnLocation()
+FVector AMyCannon::GetCannonSpawnLocation() const
 {
 	return ProjectileSpawnPoint->GetComponentLocation();
 }
 
-FRotator AMyCannon::GetCannonSpawnRotation()
+FRotator AMyCannon::GetCannonSpawnRotation() const
 {
 	return ProjectileSpawnPoint->GetComponentRotation();
 }
 
 void AMyCannon::FireCannon()
 {
+	ServerRPC_FireCannon();
+}
+
+void AMyCannon::ServerRPC_FireCannon_Implementation()
+{
+	ACannonBall* Ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
+	Ball->SetDamage(1);
+	
 	MultiCastRPC_FireCannon();
 }
 
 void AMyCannon::MultiCastRPC_FireCannon_Implementation()
 {
-	// 발사 위치와 방향 설정
-
-	// 발사체 생성
-	if (HasAuthority())
-	{
-		ACannonBall* ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
-		ball->SetDamage(1);
-	}
-	// FTimerHandle EffectTimerHandle;
-	// GetWorld()->GetTimerManager().SetTimer(EffectTimerHandle, this, &AMyCannon::TriggerEffects, 2.0f, false);
 	TriggerEffects();
 }
 
-void AMyCannon::TriggerEffects()
+void AMyCannon::TriggerEffects() const
 {
 	if (FireEffect)
 	{
@@ -84,27 +75,27 @@ void AMyCannon::TriggerEffects()
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
 		}
+		
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, GetCannonSpawnLocation(), GetCannonSpawnRotation());
 	}
 }
 
-
-void AMyCannon::RotateCannon(FRotator newRot)
+void AMyCannon::RotateCannon(const FRotator& NewRot)
 {
-	MultiCastRPC_RotateCannon(newRot);
+	MultiCastRPC_RotateCannon(NewRot);
 }
 
-void AMyCannon::MultiCastRPC_RotateCannon_Implementation(FRotator newRot)
+void AMyCannon::MultiCastRPC_RotateCannon_Implementation(const FRotator NewRot)
 {
-	M_ShooterMesh->SetRelativeRotation(newRot);
+	M_ShooterMesh->SetRelativeRotation(NewRot);
 }
 
-bool AMyCannon::GetIsLoad()
+bool AMyCannon::GetIsLoad() const
 {
 	return IsLoad;
 }
 
-void AMyCannon::SetIsLoad(bool b)
+void AMyCannon::SetIsLoad(const bool b)
 {
 	IsLoad = b;
 }
@@ -113,8 +104,3 @@ void AMyCannon::VisibleWidget(bool b)
 {
 	WidgetComponent->SetVisibility(b);
 }
-
-
-
-
-
