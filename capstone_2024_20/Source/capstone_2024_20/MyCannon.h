@@ -26,6 +26,9 @@ private:
 	
 public:	
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UCannonWidgetComponent* WidgetComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* M_ShooterMesh;
@@ -64,6 +67,9 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION()
+	void VisibleWidget(bool b);
+	
 	bool GetIsLoad() const;
 	void SetIsLoad(bool b);
 

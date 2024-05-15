@@ -30,4 +30,14 @@ public:
 	bool IsReadyAllPlayer() const;
 
 	void SpawnPlayer(AController* NewPlayer);
+
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	class UInGameRoomInfoWidget* RoomInfoWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInGameRoomInfoWidget> RoomInfoWidgetFactory;
+
+	UFUNCTION()
+	void PrintRoomCode();
 };

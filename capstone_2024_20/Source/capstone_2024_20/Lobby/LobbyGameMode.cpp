@@ -3,10 +3,13 @@
 
 #include "LobbyGameMode.h"
 
-#include "EngineUtils.h"
 #include "LobbyCharacter.h"
+#include "LobbyGameState.h"
 #include "LobbyPlayerListController.h"
 #include "LobbyPlayerState.h"
+#include "capstone_2024_20/01_Network/InGameRoomInfoWidget.h"
+#include "capstone_2024_20/01_Network/NetworkService.h"
+#include "Kismet/GameplayStatics.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
@@ -22,6 +25,28 @@ void ALobbyGameMode::BeginPlay()
 	{
 		PlayerController->InputComponent->BindKey(EKeys::T, IE_Pressed,
 		                                          this, &ThisClass::GameStart);
+	}
+	
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANetworkService::StaticClass(), FoundActors);
+	
+	if (FoundActors.Num() > 0)
+	{
+		ALobbyGameState* LobbyGameState = GetGameState<ALobbyGameState>();
+		LobbyGameState->NetworkService = Cast<ANetworkService>(FoundActors[0]);
+	}
+	
+	RoomInfoWidget = CreateWidget<UInGameRoomInfoWidget>(GetWorld(), RoomInfoWidgetFactory);
+	RoomInfoWidget->AddToViewport();
+
+	const FString RoomCode = GetGameState<ALobbyGameState>()->GetRoomCode().ToString();
+	const FString RoomName = GetGameState<ALobbyGameState>()->GetRoomName().ToString();
+	RoomInfoWidget->InitSetText(RoomName, RoomCode);
+
+	if (PlayerController)
+	{
+		PlayerController->InputComponent->BindKey(EKeys::F1, IE_Pressed, RoomInfoWidget, &UInGameRoomInfoWidget::Show);
+		PlayerController->InputComponent->BindKey(EKeys::F1, IE_Released, RoomInfoWidget, &UInGameRoomInfoWidget::Hide);
 	}
 }
 
@@ -49,7 +74,7 @@ void ALobbyGameMode::Logout(AController* Exiting)
 
 bool ALobbyGameMode::AllowCheats(APlayerController* P)
 {
-	return true;
+	return false;
 }
 
 void ALobbyGameMode::GameStart()
@@ -98,4 +123,9 @@ void ALobbyGameMode::SpawnPlayer(AController* NewPlayer)
 	NewPlayer->StartSpot = PlayerStart;
 	NewPlayer->GetCharacter()->SetActorLocation(PlayerStart->GetActorLocation());
 	NewPlayer->GetCharacter()->SetActorRotation(PlayerStart->GetActorRotation());
+}
+
+void ALobbyGameMode::PrintRoomCode()
+{
+	const FName RoomCode = GetGameState<ALobbyGameState>()->GetRoomCode();
 }

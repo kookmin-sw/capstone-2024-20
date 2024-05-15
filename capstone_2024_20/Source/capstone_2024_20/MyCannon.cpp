@@ -1,7 +1,9 @@
 #include "MyCannon.h"
 #include "CannonBall.h"
+#include "CannonWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Components/SlateWrapperTypes.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
@@ -96,4 +98,9 @@ bool AMyCannon::GetIsLoad() const
 void AMyCannon::SetIsLoad(const bool b)
 {
 	IsLoad = b;
+}
+
+void AMyCannon::VisibleWidget(bool b)
+{
+	WidgetComponent->SetVisibility(b);
 }
