@@ -42,8 +42,7 @@ public:
 	UParticleSystem* WaterSplashEffect;
 
 
-	int32 GetDamage();
-	void SetDamage(int32 dmg);
+	void SetDamage(int32 Dmg);
 	
 	// 충돌 시 호출될 함수
 	UFUNCTION()
