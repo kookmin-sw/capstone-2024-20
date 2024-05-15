@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RoundProgressWidget.generated.h"
 
+class UTextBlock;
 class UImage;
 
 UCLASS()
@@ -22,8 +23,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UImage* Image;
+
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* KeyText;
+
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* ExplainText;
 	
-public:
 	UFUNCTION()
 	void SetPercent(float NewPercent);
+
+	UFUNCTION()
+	void SetKeyText(FString& NewText);
+
+	UFUNCTION()
+	void SetExplainText(FString& NewText);
 };

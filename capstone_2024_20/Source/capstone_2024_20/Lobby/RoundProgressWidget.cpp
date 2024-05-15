@@ -4,6 +4,7 @@
 #include "RoundProgressWidget.h"
 
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 
 void URoundProgressWidget::NativePreConstruct()
 {
@@ -21,4 +22,14 @@ void URoundProgressWidget::SetPercent(float NewPercent)
 	}
 	
 	RoundProgressBar->SetScalarParameterValue(FName(TEXT("Percent")), NewPercent);
+}
+
+void URoundProgressWidget::SetKeyText(FString& NewText)
+{
+	KeyText->SetText(FText::FromString(NewText));
+}
+
+void URoundProgressWidget::SetExplainText(FString& NewText)
+{
+	ExplainText->SetText(FText::FromString(NewText));
 }
