@@ -50,6 +50,9 @@ public:
 	UFUNCTION()
 	void FireCannon();
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_FireCannon();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_FireCannon();
 

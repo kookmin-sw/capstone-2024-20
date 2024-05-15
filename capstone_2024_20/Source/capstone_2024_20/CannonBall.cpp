@@ -5,7 +5,6 @@
 ACannonBall::ACannonBall()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	RootComponent = ProjectileMesh;
 

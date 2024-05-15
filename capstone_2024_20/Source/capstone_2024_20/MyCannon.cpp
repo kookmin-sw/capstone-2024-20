@@ -49,17 +49,19 @@ FRotator AMyCannon::GetCannonSpawnRotation() const
 
 void AMyCannon::FireCannon()
 {
+	ServerRPC_FireCannon();
+}
+
+void AMyCannon::ServerRPC_FireCannon_Implementation()
+{
+	ACannonBall* Ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
+	Ball->SetDamage(1);
+	
 	MultiCastRPC_FireCannon();
 }
 
 void AMyCannon::MultiCastRPC_FireCannon_Implementation()
 {
-	if (HasAuthority())
-	{
-		ACannonBall* Ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
-		Ball->SetDamage(1);
-	}
-	
 	TriggerEffects();
 }
 

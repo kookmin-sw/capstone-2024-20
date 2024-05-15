@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "01_Network/ReplicatedActor.h"
 #include "CannonBall.generated.h"
 
 UCLASS()
-class CAPSTONE_2024_20_API ACannonBall : public AActor
+class CAPSTONE_2024_20_API ACannonBall : public AReplicatedActor
 {
 	GENERATED_BODY()
 	
