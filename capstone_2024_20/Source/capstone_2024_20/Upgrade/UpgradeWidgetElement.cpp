@@ -2,3 +2,8 @@
 
 
 #include "UpgradeWidgetElement.h"
+
+void UUpgradeWidgetElement::Upgrade()
+{
+	OnClickUpgradeDelegate.Broadcast();
+}
