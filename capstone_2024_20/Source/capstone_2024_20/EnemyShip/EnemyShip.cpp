@@ -126,33 +126,22 @@ void AEnemyShip::MultiCastRPC_LookAtMyShip_Implementation(const AMyShip* MyShip)
 	SetActorRotation(LookAtRotation);
 }
 
-AEnemy* AEnemyShip::SpawnEnemy(AActor* MyShip, const float DeltaTime) const
+AEnemy* AEnemyShip::SpawnEnemy(AMyShip* MyShip)
 {
-	SpawnEnemyTimer += DeltaTime;
-
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (SpawnEnemyTimer < 5.0f) 
-	{
-		return nullptr;
-	}
-
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() > 12000.0f) // Todo@autumn - This is a temporary solution, replace it with data.
-	{
-		return nullptr;
-	}
-
 	// Todo@autumn - This is a temporary solution, replace it with data.
 	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
 	const auto RandomLocation = FVector(RandomX, RandomY, 880.0f);
 
-	AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
+	auto SpawnParams = FActorSpawnParameters();
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)), SpawnParams);
+	
 	SpawnedEnemy->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
 	SpawnedEnemy->SetActorRelativeLocation(RandomLocation);
 
-	SpawnEnemyTimer = 0.0f;
-
+	CurrentSpawnEnemyCooldown = SpawnEnemyCooldown;
 	return SpawnedEnemy;
 }
 
@@ -163,14 +152,38 @@ bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 	return Direction.Size() > DistanceToMyShip;
 }
 
-bool AEnemyShip::CanSpawnEnemy() const
+bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
 {
-	return bCanSpawnEnemy;
+	if (!bCanSpawnEnemy)
+	{
+		return false;
+	}
+
+	if (CurrentSpawnEnemyCooldown > 0.0f)
+	{
+		return false;
+	}
+
+	const auto MyShipLocation = MyShip->GetActorLocation();
+	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() > DistanceToMyShip)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool AEnemyShip::CanFireCannon() const
 {
 	return bCanFireCannon;
+}
+
+void AEnemyShip::ReduceSpawnEnemyCooldown(const float DeltaTime)
+{
+	if (CurrentSpawnEnemyCooldown > 0.0f)
+	{
+		CurrentSpawnEnemyCooldown -= DeltaTime;
+	}
 }
 
 void AEnemyShip::FireCannon(const float DeltaTime)
@@ -189,7 +202,6 @@ void AEnemyShip::FireCannon(const float DeltaTime)
 
 void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 {
-	
 	const auto SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
 	const auto SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
 	

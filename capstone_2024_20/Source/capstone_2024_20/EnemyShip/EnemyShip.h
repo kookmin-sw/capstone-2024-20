@@ -36,11 +36,13 @@ public:
 	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
 	void LookAtMyShip(const AMyShip* MyShip);
 	void FireCannon(const float DeltaTime);
-	AEnemy* SpawnEnemy(AActor* MyShip, const float DeltaTime) const;
+	AEnemy* SpawnEnemy(AMyShip* MyShip);
 
 	bool CanMove(const AMyShip* MyShip) const;
-	bool CanSpawnEnemy() const;
+	bool CanSpawnEnemy(const AMyShip* MyShip) const;
 	bool CanFireCannon() const;
+
+	void ReduceSpawnEnemyCooldown(const float DeltaTime);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanSpawnEnemy = false;
@@ -62,11 +64,13 @@ private:
 	int32 CurrentHP = 0;
 	// [end] IHP interface
 	
-	inline static float SpawnEnemyTimer = 0.0f;
 	inline static float FireCannonTimer = 0.0f;
 
 	inline static float DistanceToMyShip = 7000.0f;
 	inline static float MoveSpeed = 400.0f;
+
+	const float SpawnEnemyCooldown = 5.0f;
+	float CurrentSpawnEnemyCooldown = 0.0f;
 	
 	UPROPERTY()
 	UArrowComponent* ProjectileSpawnPoint;
