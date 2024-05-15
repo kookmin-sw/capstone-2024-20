@@ -30,9 +30,6 @@ class CAPSTONE_2024_20_API AMirrorActor : public ACapInteractionActor
 
 	UPROPERTY(EditAnywhere)
 	UArrowComponent* CharacterPositionArrow;
-	
-	UPROPERTY()
-	ACapCharacter* CapCharacter;
 
 	UPROPERTY()
 	AActor* OriginalTarget;

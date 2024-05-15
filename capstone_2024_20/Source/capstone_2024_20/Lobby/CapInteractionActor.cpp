@@ -14,6 +14,11 @@ void ACapInteractionActor::BeginPlay()
 	Super::BeginPlay();
 }
 
+float ACapInteractionActor::GetLongInteractionThreshold()
+{
+	return LongInteractionThreshold;
+}
+
 void ACapInteractionActor::InteractionEnter()
 {
 	Super::InteractionEnter();
