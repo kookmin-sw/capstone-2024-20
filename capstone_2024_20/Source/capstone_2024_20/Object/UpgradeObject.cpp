@@ -30,8 +30,8 @@ void AUpgradeObject::BeginPlay()
 void AUpgradeObject::Operate()
 {
 	Super::Operate();
-
-	const auto PopupUpgradeRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/UpgradeObject/BP_PopupUpgrade.BP_PopupUpgrade_C'");
+	
+	const auto PopupUpgradeRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/UpgradeObject/BP_UpgradeWidget.BP_UpgradeWidget_C'");
 	if (const auto PopupUpgradeClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,PopupUpgradeRef); PopupUpgradeClass != nullptr)
 	{
 		if (UUserWidget* PopupUpgrade = CreateWidget<UUserWidget>(GetWorld(), PopupUpgradeClass); PopupUpgrade != nullptr)
