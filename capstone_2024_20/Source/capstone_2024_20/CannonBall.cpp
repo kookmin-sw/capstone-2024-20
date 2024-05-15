@@ -40,29 +40,24 @@ void ACannonBall::DestroyDelay()
 void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                         FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!HasAuthority())
+	if (HasAuthority())
 	{
-		return;
-	}
-	
-	if (WaterSplashEffect)
-	{
-		const FVector Scale(3.0f, 3.0f, 3.0f);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator(0.0f), Scale);
-	}
-
-	if(AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor))
-	{
-		EnemyShip->Damage(Damage);
+		if(AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor))
+		{
+			EnemyShip->Damage(Damage);
+			FTimerHandle TimerHandle;
+	        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, DestroyDelayTime, false);
+			ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 
-	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
-	if (GetWorld())
-	{
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, DestroyDelayTime, false);
-	}
+	MultiCastRPC_OnHit(Hit);
+}
+
+void ACannonBall::MultiCastRPC_OnHit_Implementation(const FHitResult& Hit)
+{
+	const FVector Scale(3.0f, 3.0f, 3.0f);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator(0.0f), Scale);
 }
 
 void ACannonBall::SetDamage(const int32 Dmg)

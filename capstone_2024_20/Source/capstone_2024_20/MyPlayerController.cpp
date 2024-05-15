@@ -43,6 +43,11 @@ void AMyPlayerController::BeginPlay()
 	Super::BeginPlay();
 	//플레이어 할당
 
+	if (!IsLocalController())
+	{
+		return;
+	}
+
 	if (HasAuthority())
 	{
 		GEngine->AddOnScreenDebugMessage(
