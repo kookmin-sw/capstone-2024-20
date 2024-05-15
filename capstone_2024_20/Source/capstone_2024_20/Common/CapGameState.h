@@ -14,6 +14,7 @@ class CAPSTONE_2024_20_API ACapGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 
+public:
 	ACapGameState();
 
 private:
@@ -37,7 +38,7 @@ public:
 	FRoomStateChangedDelegate AllReadyDelegate;
 	FRoomStateChangedDelegate GameStartDelegate;
 	FRoomStateChangedDelegate LocalReadyDelegate;
-	
+
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
 	virtual void HandleBeginPlay() override;
 	virtual void HandleReady();

@@ -13,7 +13,8 @@ UCLASS()
 class CAPSTONE_2024_20_API ALobbyGameState : public ACapGameState
 {
 	GENERATED_BODY()
-	
+
+public:
 	UPROPERTY(EditAnywhere, Category="Network")
 	class ANetworkService* NetworkService;
 
