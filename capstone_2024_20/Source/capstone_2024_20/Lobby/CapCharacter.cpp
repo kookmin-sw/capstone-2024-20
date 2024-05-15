@@ -6,6 +6,7 @@
 #include "CapInteractionActor.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
+#include "InteractionWidgetComponent.h"
 #include "LobbyPlateWidgetComponent.h"
 #include "LobbyPlayerLinearColorFactory.h"
 #include "LobbyPlayerState.h"
@@ -66,6 +67,9 @@ ACapCharacter::ACapCharacter()
 	WidgetComponent = CreateDefaultSubobject<ULobbyPlateWidgetComponent>(TEXT("WidgetComponent"));
 	WidgetComponent->SetupAttachment(GetRootComponent());
 
+	InteractionWidgetComponent = CreateDefaultSubobject<UInteractionWidgetComponent>(TEXT("InteractionWidgetComponent"));
+	InteractionWidgetComponent->SetupAttachment(RootComponent);
+	
 	InitMovement();
 }
 
@@ -108,6 +112,7 @@ void ACapCharacter::Interact()
 	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionEnter();
+		InteractionWidgetComponent->StartProgressBar(CapInteractionActor->GetLongInteractionThreshold());
 	}
 }
 
@@ -146,6 +151,19 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
 	if (ActorOhter)
 	{
 		CapInteractionActor = ActorOhter;
+		
+		InteractionWidgetComponent->Show(ActorOhter->KeyText, ActorOhter->ExplainText);
+	}
+}
+
+void ACapCharacter::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
+
+	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(OtherActor);
+	if (ActorOhter)
+	{
+		InteractionWidgetComponent->Hide();
 	}
 }
 

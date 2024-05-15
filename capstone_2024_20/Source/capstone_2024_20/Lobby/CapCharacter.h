@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CapCharacter.generated.h"
 
+class UInteractionWidgetComponent;
 class ALobbyPlayerState;
 class UCharacterChangerComponent;
 class ACapInteractionActor;
@@ -33,6 +34,9 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 	UPROPERTY(EditAnywhere)
 	UCharacterChangerComponent* CharacterChangerComponent;
 
+	UPROPERTY(EditAnywhere)
+	UInteractionWidgetComponent* InteractionWidgetComponent;
+	
 	UPROPERTY()
 	bool bIsMovement = true;
 
@@ -63,7 +67,7 @@ public:
 
 	ACapInteractionActor* CapInteractionActor;
 	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 	void SetIsMovement(bool bNewValue);
 	FORCEINLINE bool GetIsMovement() const {return bIsMovement;};
 
