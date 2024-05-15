@@ -4,23 +4,14 @@
 #include "UpgradeWidgetElement.h"
 
 #include "Components/Button.h"
-#include "Components/TextBlock.h"
 
-void UUpgradeWidgetElement::Upgrade()
+void UUpgradeWidgetElement::NativeConstruct()
 {
-	if(IsLevelOverMax() == true)
-		return;
-	
-	OnClickUpgradeDelegate.Broadcast();
-	CurrentLevel++;
-	LevelText->SetText(FText::FromString(FString::Printf(TEXT("Level %d/%d"), CurrentLevel, MaxLevel)));
-	if(IsLevelOverMax() == true)
-	{
-		UpgradeButton->SetColorAndOpacity(FLinearColor::Gray);
-	}
+	Super::NativeConstruct();
+	UpgradeButton->OnClicked.AddDynamic(this, &ThisClass::OnClickUpgradeButton);
 }
 
-bool UUpgradeWidgetElement::IsLevelOverMax() const
+void UUpgradeWidgetElement::OnClickUpgradeButton()
 {
-	return CurrentLevel >= MaxLevel;
+	OnClickUpgradeDelegate.Broadcast();
 }

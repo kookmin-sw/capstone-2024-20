@@ -15,12 +15,7 @@ UCLASS()
 class CAPSTONE_2024_20_API UUpgradeWidgetElement : public UUserWidget
 {
 	GENERATED_BODY()
-
-private:
-	UPROPERTY()
-	int32 MaxLevel;
-	UPROPERTY()
-	int32 CurrentLevel=0;
+	virtual void NativeConstruct() override;
 public:
 	FOnClickUpgradeDelegate OnClickUpgradeDelegate;
 	
@@ -43,10 +38,7 @@ public:
 	UTextBlock* CostText;
 	
 	UFUNCTION()
-	void Upgrade();
-
-	UFUNCTION()
-	bool IsLevelOverMax() const;
+	void OnClickUpgradeButton();
 };
 
 
