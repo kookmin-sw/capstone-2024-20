@@ -41,6 +41,11 @@ void ACannonBall::DestroyDelay()
 void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                         FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
 	if (WaterSplashEffect)
 	{
 		const FVector Scale(3.0f, 3.0f, 3.0f);

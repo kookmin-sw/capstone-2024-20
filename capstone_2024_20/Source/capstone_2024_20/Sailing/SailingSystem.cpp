@@ -341,7 +341,9 @@ void ASailingSystem::SetEnemyShips()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyShip::StaticClass(), FoundEnemyShips);
 	for (const auto FoundEnemyShip : FoundEnemyShips)
 	{
-		EnemyShips.Add(Cast<AEnemyShip>(FoundEnemyShip));
+		AEnemyShip* CastedEnemyShip = Cast<AEnemyShip>(FoundEnemyShip);
+		CastedEnemyShip->EnemyShipDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyShipDie);
+		EnemyShips.Add(CastedEnemyShip);
 	}
 }
 
