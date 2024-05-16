@@ -23,4 +23,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* BoxComponent;
+
+	FVector AdjustedScale = FVector(0.4f, 0.4f, 0.4f);
 };
