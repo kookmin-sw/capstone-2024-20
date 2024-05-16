@@ -3,7 +3,7 @@
 
 #include "InteractionWidgetComponent.h"
 
-#include "RoundProgressWidget.h"
+#include "../Common/RoundProgressWidget.h"
 
 
 UInteractionWidgetComponent::UInteractionWidgetComponent()
