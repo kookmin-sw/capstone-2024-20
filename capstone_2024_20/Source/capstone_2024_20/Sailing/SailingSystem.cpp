@@ -10,8 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
-#include "../Object/UpgradeObject.h"
 #include "../Object/Destination.h"
+#include "Net/UnrealNetwork.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
                                   Destination(nullptr)
@@ -164,6 +164,7 @@ void ASailingSystem::Tick(float DeltaTime)
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASailingSystem, Currency);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)

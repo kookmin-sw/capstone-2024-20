@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "capstone_2024_20/Enemy/Enemy.h"
-#include "GameFramework/Actor.h"
+#include "../01_Network/ReplicatedActor.h"
 #include "SailingSystem.generated.h"
 
 class ADestination;
@@ -15,7 +15,7 @@ class AMyCharacter;
 class UMap;
 
 UCLASS()
-class CAPSTONE_2024_20_API ASailingSystem : public AActor
+class CAPSTONE_2024_20_API ASailingSystem : public AReplicatedActor
 {
 	GENERATED_BODY()
 
@@ -85,6 +85,7 @@ private:
 
 	const float DistanceToDestination = 6000.0f;
 	
+	UPROPERTY(Replicated)
 	int32 Currency = 0;
 
 	bool bIsClear = false;
