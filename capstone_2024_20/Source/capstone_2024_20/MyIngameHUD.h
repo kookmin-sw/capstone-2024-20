@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Upgrade/UpgradeWidget.h"
 #include "MyIngameHUD.generated.h"
 
 class UPopupDead;
@@ -20,6 +21,10 @@ public:
 	void SetPopupDeadTextByReviveCooldown(float ReviveCooldown) const;
 	// [end] PopupDead
 
+	// [begin] PopupUpgrade
+	void SetPopupUpgradeVisibility(bool bIsVisible) const;
+	// [end] PopupUpgrade
+
 protected:
 	// ! Set on blueprint
 	UPROPERTY(BlueprintReadWrite, Category = "UI")
@@ -30,10 +35,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UPopupDead> PopupDeadClass;
 
+	// ! Set on blueprint
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUpgradeWidget> PopupUpgradeClass;
+
 private:
 	UPROPERTY()
 	UUserWidget* InGameWidget;
 
 	UPROPERTY()
 	UPopupDead* PopupDead;
+
+	UPROPERTY()
+	UUpgradeWidget* PopupUpgrade;
 };
