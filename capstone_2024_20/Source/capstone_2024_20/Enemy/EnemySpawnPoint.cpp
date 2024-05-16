@@ -1,4 +1,5 @@
-﻿#include "EnemySpawnPoint.h"
+﻿// ReSharper disable CppParameterMayBeConst
+#include "EnemySpawnPoint.h"
 
 UEnemySpawnPoint::UEnemySpawnPoint()
 {
@@ -15,4 +16,3 @@ void UEnemySpawnPoint::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
-
