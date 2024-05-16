@@ -149,6 +149,11 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
                               const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+
+	if(IsLocallyControlled() == false)
+		return;
+		
 	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(Other);
 	if (ActorOhter)
 	{
@@ -190,7 +195,6 @@ void ACapCharacter::ServerRPC_SetLocationAndRotation_Implementation(FVector NewL
 
 void ACapCharacter::ClientRPC_SetLocationAndRotation_Implementation(FVector NewLocation, FRotator NewRotation)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("ClientRPC"));
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 50000.0f, 0.0f);
 	FVector Direction = NewRotation.Vector().GetSafeNormal();
 	for (int i = 0; i < 5; i++)
