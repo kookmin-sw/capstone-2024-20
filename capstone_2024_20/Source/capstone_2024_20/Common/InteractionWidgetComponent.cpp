@@ -3,12 +3,22 @@
 
 #include "InteractionWidgetComponent.h"
 
-#include "RoundProgressWidget.h"
+#include "../Common/RoundProgressWidget.h"
 
 
 UInteractionWidgetComponent::UInteractionWidgetComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FClassFinder<UUserWidget>
+	B_WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Common/BP_RoundProgressWidget.BP_RoundProgressWidget_C'"));
+	if (B_WidgetClass.Succeeded())
+	{
+		SetWidgetClass(B_WidgetClass.Class);
+	}
+
+	SetWidgetSpace(EWidgetSpace::Screen);
+	SetDrawSize(FVector2d(400.0f, 400.0f));
 }
 
 
@@ -26,10 +36,8 @@ void UInteractionWidgetComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UInteractionWidgetComponent::Show(FString& Key, FString& Explain)
+void UInteractionWidgetComponent::Show()
 {
-	RoundProgressWidget->SetKeyText(Key);
-	RoundProgressWidget->SetExplainText(Explain);
 	RoundProgressWidget->SetPercent(0);
 	RoundProgressWidget->SetVisibility(ESlateVisibility::Visible);
 }

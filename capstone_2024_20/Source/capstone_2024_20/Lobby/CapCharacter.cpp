@@ -6,7 +6,7 @@
 #include "CapInteractionActor.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
-#include "InteractionWidgetComponent.h"
+#include "LobbyInteractionWidgetComponent.h"
 #include "LobbyPlateWidgetComponent.h"
 #include "LobbyPlayerLinearColorFactory.h"
 #include "LobbyPlayerState.h"
@@ -69,7 +69,7 @@ ACapCharacter::ACapCharacter()
 	WidgetComponent->SetupAttachment(GetRootComponent());
 
 	InteractionWidgetComponent = CreateDefaultSubobject<
-		UInteractionWidgetComponent>(TEXT("InteractionWidgetComponent"));
+		ULobbyInteractionWidgetComponent>(TEXT("InteractionWidgetComponent"));
 	InteractionWidgetComponent->SetupAttachment(RootComponent);
 
 	InitMovement();
@@ -154,7 +154,7 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
 	{
 		CapInteractionActor = ActorOhter;
 
-		InteractionWidgetComponent->Show(ActorOhter->KeyText, ActorOhter->ExplainText);
+		InteractionWidgetComponent->ShowWithText(ActorOhter->KeyText, ActorOhter->ExplainText);
 	}
 }
 
