@@ -9,6 +9,16 @@
 UInteractionWidgetComponent::UInteractionWidgetComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FClassFinder<UUserWidget>
+	B_WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Common/BP_RoundProgressWidget.BP_RoundProgressWidget_C'"));
+	if (B_WidgetClass.Succeeded())
+	{
+		SetWidgetClass(B_WidgetClass.Class);
+	}
+
+	SetWidgetSpace(EWidgetSpace::Screen);
+	SetDrawSize(FVector2d(400.0f, 400.0f));
 }
 
 
