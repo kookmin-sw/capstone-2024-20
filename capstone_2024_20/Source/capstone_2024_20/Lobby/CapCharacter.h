@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CapCharacter.generated.h"
 
+class UInteractionWidgetComponent;
 class ALobbyPlayerState;
 class UCharacterChangerComponent;
 class ACapInteractionActor;
@@ -20,7 +21,7 @@ UCLASS()
 class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingContextGetter
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* DefaultMappingContext;
 
@@ -32,7 +33,7 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 
 	UPROPERTY(EditAnywhere)
 	UCharacterChangerComponent* CharacterChangerComponent;
-
+	
 	UPROPERTY()
 	bool bIsMovement = true;
 
@@ -43,7 +44,11 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 	ALobbyPlayerState* LobbyPlayerState;
 
 	void Init();
+
 public:
+	UPROPERTY(EditAnywhere)
+	UInteractionWidgetComponent* InteractionWidgetComponent;
+
 	ACapCharacter();
 	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
 	{
@@ -56,24 +61,29 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Interact();
 	void InteractCancel();
+	
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 
 	ACapInteractionActor* CapInteractionActor;
-	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved,
+	                       FVector HitLocation, FVector HitNormal, FVector NormalImpulse,
+	                       const FHitResult& Hit) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
 	void SetIsMovement(bool bNewValue);
-	FORCEINLINE bool GetIsMovement() const {return bIsMovement;};
+	FORCEINLINE bool GetIsMovement() const { return bIsMovement; };
 
 	UFUNCTION()
 	void SetReady();
-	
+
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
+
 private:
 	void InitMovement();
 };

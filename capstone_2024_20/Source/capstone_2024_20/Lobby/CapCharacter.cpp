@@ -6,11 +6,13 @@
 #include "CapInteractionActor.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
+#include "InteractionWidgetComponent.h"
 #include "LobbyPlateWidgetComponent.h"
 #include "LobbyPlayerLinearColorFactory.h"
 #include "LobbyPlayerState.h"
 #include "capstone_2024_20/CharacterChangerComponent.h"
 #include "capstone_2024_20/MyAudioInstance.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void ACapCharacter::Init()
@@ -35,19 +37,19 @@ void ACapCharacter::Init()
 		WidgetComponent->ChangeWidget(Path);
 	}
 
-	if(IsLocallyControlled())
+	if (IsLocallyControlled())
 	{
 		const FString PlayerName = LobbyPlayerState->GetPlayerName();
 		WidgetComponent->SetName(PlayerName);
 	}
-	
+
 	if (IsLocallyControlled())
 	{
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
 			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
-													  LobbyPlayerState, &ALobbyPlayerState::SetReady);
+			                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
 		}
 	}
 }
@@ -65,6 +67,10 @@ ACapCharacter::ACapCharacter()
 
 	WidgetComponent = CreateDefaultSubobject<ULobbyPlateWidgetComponent>(TEXT("WidgetComponent"));
 	WidgetComponent->SetupAttachment(GetRootComponent());
+
+	InteractionWidgetComponent = CreateDefaultSubobject<
+		UInteractionWidgetComponent>(TEXT("InteractionWidgetComponent"));
+	InteractionWidgetComponent->SetupAttachment(RootComponent);
 
 	InitMovement();
 }
@@ -108,6 +114,7 @@ void ACapCharacter::Interact()
 	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionEnter();
+		InteractionWidgetComponent->StartProgressBar(CapInteractionActor->GetLongInteractionThreshold());
 	}
 }
 
@@ -116,6 +123,7 @@ void ACapCharacter::InteractCancel()
 	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionExit();
+		InteractionWidgetComponent->StopProgressBar();
 	}
 }
 
@@ -141,11 +149,23 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
                               const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-
 	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(Other);
 	if (ActorOhter)
 	{
 		CapInteractionActor = ActorOhter;
+
+		InteractionWidgetComponent->Show(ActorOhter->KeyText, ActorOhter->ExplainText);
+	}
+}
+
+void ACapCharacter::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
+
+	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(OtherActor);
+	if (ActorOhter)
+	{
+		InteractionWidgetComponent->Hide();
 	}
 }
 

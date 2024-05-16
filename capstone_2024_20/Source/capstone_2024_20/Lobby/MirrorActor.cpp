@@ -30,6 +30,8 @@ AMirrorActor::AMirrorActor()
 	CharacterChangerWidgetComponent = CreateDefaultSubobject<UCharacterChangerWidgetComponent>(
 		TEXT("CharacterChangerWidgetComponent"));
 	CharacterChangerWidgetComponent->SetupAttachment(RootComponent);
+
+	ExplainText = TEXT("캐릭터 변경");
 }
 
 void AMirrorActor::BeginPlay()
