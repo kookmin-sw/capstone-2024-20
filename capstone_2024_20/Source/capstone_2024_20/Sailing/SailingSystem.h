@@ -44,11 +44,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
 
-	void AddDelegateToPopupUpgrade() const;
+	void AddDelegateToPopupUpgrade();
 
-	void UpgradeMyShipMoveSpeed() const;
-	void UpgradeMyShipHandling() const;
-	void UpgradeMyShipCannonAttack() const;
+	void UpgradeMyShipMoveSpeed();
+	void UpgradeMyShipHandling();
+	void UpgradeMyShipCannonAttack();
 
 	float GetElapsedTime() const;
 	bool IsAllMyCharactersDead() const;
@@ -93,6 +93,8 @@ private:
 	
 	UPROPERTY(Replicated)
 	int32 Currency = 10000;
+
+	const int32 UpgradeCost = 2000;
 
 	bool bIsClear = false;
 	bool bIsGameOver = false;

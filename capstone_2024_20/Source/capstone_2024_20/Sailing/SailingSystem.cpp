@@ -262,7 +262,7 @@ int ASailingSystem::GetCurrency() const
 	return Currency;
 }
 
-void ASailingSystem::AddDelegateToPopupUpgrade() const
+void ASailingSystem::AddDelegateToPopupUpgrade()
 {
 	const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
 	PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipMoveSpeed);
@@ -270,18 +270,36 @@ void ASailingSystem::AddDelegateToPopupUpgrade() const
 	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
 }
 
-void ASailingSystem::UpgradeMyShipMoveSpeed() const
+void ASailingSystem::UpgradeMyShipMoveSpeed()
 {
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
 	MyShip->UpgradeMoveSpeed();
 }
 
-void ASailingSystem::UpgradeMyShipHandling() const
+void ASailingSystem::UpgradeMyShipHandling()
 {
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
 	MyShip->UpgradeHandling();
 }
 
-void ASailingSystem::UpgradeMyShipCannonAttack() const
+void ASailingSystem::UpgradeMyShipCannonAttack()
 {
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
 	MyShip->UpgradeCannonAttack();
 }
 
