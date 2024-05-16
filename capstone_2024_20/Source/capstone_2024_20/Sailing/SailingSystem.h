@@ -5,6 +5,8 @@
 #include "../01_Network/ReplicatedActor.h"
 #include "SailingSystem.generated.h"
 
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
 class ADestination;
 class AMyShip;
 class AEnemyShip;
@@ -42,12 +44,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
 
-	void UpgradeMyShip() const;
+	void AddDelegateToPopupUpgrade() const;
+
+	void UpgradeMyShipMoveSpeed() const;
+	void UpgradeMyShipHandling() const;
+	void UpgradeMyShipCannonAttack() const;
 
 	float GetElapsedTime() const;
 	bool IsAllMyCharactersDead() const;
 	bool IsReachedDestination() const;
-
+	
 	AMyShip* GetMyShip() const;
 	void SetMyShip();
 	void SetMyCharacters();
@@ -86,9 +92,12 @@ private:
 	const float DistanceToDestination = 6000.0f;
 	
 	UPROPERTY(Replicated)
-	int32 Currency = 0;
+	int32 Currency = 10000;
 
 	bool bIsClear = false;
 	bool bIsGameOver = false;
 	float ElapsedTime = 0;
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD = nullptr;
 };

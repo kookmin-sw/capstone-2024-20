@@ -22,6 +22,7 @@ public:
 	// [end] PopupDead
 
 	// [begin] PopupUpgrade
+	UUpgradeWidget* GetPopupUpgrade() const;
 	void SetPopupUpgradeVisibility(bool bIsVisible) const;
 	// [end] PopupUpgrade
 

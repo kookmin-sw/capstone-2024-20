@@ -1,4 +1,5 @@
 #include "MyIngameHUD.h"
+#include "Upgrade/UpgradeWidgetElement.h"
 #include "WidgetBlueprint/PopupDead.h"
 
 void AMyIngameHUD::BeginPlay()
@@ -30,6 +31,11 @@ void AMyIngameHUD::SetPopupDeadVisibility(const bool bIsVisible) const
 void AMyIngameHUD::SetPopupDeadTextByReviveCooldown(const float ReviveCooldown) const
 {
 	PopupDead->SetTextByReviveCooldown(ReviveCooldown);
+}
+
+UUpgradeWidget* AMyIngameHUD::GetPopupUpgrade() const
+{
+	return PopupUpgrade;
 }
 
 void AMyIngameHUD::SetPopupUpgradeVisibility(const bool bIsVisible) const
