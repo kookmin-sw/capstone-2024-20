@@ -3,11 +3,11 @@
 #include "CannonWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
-#include "Components/SlateWrapperTypes.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
-AMyCannon::AMyCannon(): M_ShooterMesh(nullptr), ProjectileSpawnPoint(nullptr), FireEffect(nullptr),
+AMyCannon::AMyCannon(): WidgetComponent(nullptr), M_ShooterMesh(nullptr), ProjectileSpawnPoint(nullptr),
+                        FireEffect(nullptr),
                         Camera_Cannon(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -57,7 +57,7 @@ void AMyCannon::FireCannon()
 void AMyCannon::ServerRPC_FireCannon_Implementation()
 {
 	ACannonBall* Ball = GetWorld()->SpawnActor<ACannonBall>(ProjectileClass, GetCannonSpawnLocation(), GetCannonSpawnRotation());
-	Ball->SetDamage(1);
+	Ball->SetDamage(AttackDamage);
 	
 	MultiCastRPC_FireCannon();
 }
@@ -100,7 +100,12 @@ void AMyCannon::SetIsLoad(const bool b)
 	IsLoad = b;
 }
 
-void AMyCannon::VisibleWidget(bool b)
+void AMyCannon::UpgradeAttackDamage()
+{
+	AttackDamage++;
+}
+
+void AMyCannon::VisibleWidget(const bool b) const
 {
 	WidgetComponent->SetVisibility(b);
 }

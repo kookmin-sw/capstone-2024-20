@@ -23,6 +23,7 @@ protected:
 private:
 	UPROPERTY(Replicated)
 	bool IsLoad = false;
+	int AttackDamage = 1;
 	
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -68,10 +69,12 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
-	void VisibleWidget(bool b);
+	void VisibleWidget(bool b) const;
 	
 	bool GetIsLoad() const;
 	void SetIsLoad(bool b);
+
+	void UpgradeAttackDamage();
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Cannon;

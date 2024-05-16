@@ -5,6 +5,8 @@
 #include "Common/HP.h"
 #include "MyShip.generated.h"
 
+class AMyCannon;
+
 UCLASS()
 class CAPSTONE_2024_20_API AMyShip : public APawn, public IHP
 {
@@ -34,18 +36,24 @@ public:
     UStaticMeshComponent* M_MeshComponent;
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPC_SetShipLocation(FVector newLoc);
+	void MulticastRPC_SetShipLocation(FVector NewLoc);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void Upgrade();
+	void UpgradeMoveSpeed();
+	void UpgradeHandling();
+	void UpgradeCannonAttack();
+	
 	float GetMoveSpeed() const;
+	float GetRotationAcceleration() const;
 
 	UPROPERTY(Replicated)
 	FRotator TargetRotation;
 
 	UPROPERTY(Replicated)
-	float MoveSpeed = 600.0f; // Todo@autumn replace with data table
+	float MoveSpeed = 600.0f;
+
+	float RotationAcceleration = 1.0f;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Character;
@@ -57,11 +65,15 @@ public:
 	AActor* Camera_Telescope;
 
 	UFUNCTION(BlueprintPure)
-	float GetHPPercent();
+	float GetHPPercent() const;
 
 private:
+	void FindMyCannons();
+	
 	// [begin] IHP interface
 	int32 MaxHP = 0;
 	int32 CurrentHP = 0;
 	// [end] IHP interface
+
+	TArray<AMyCannon*> MyCannons;
 };
