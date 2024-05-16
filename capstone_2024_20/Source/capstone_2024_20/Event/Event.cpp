@@ -7,6 +7,7 @@ AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
 	// TODO@autumn - This is a temporary mesh, replace it with the actual mesh from data
 	Particle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSystem"));
 	Particle->SetTemplate(LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Fire/P_Fire_Big.P_Fire_Big'")));
+	Particle->SetRelativeScale3D(AdjustedScale);
 	RootComponent = Particle;
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
