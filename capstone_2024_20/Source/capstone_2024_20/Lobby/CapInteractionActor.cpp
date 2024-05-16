@@ -3,6 +3,9 @@
 
 #include "CapInteractionActor.h"
 
+#include "CapCharacter.h"
+#include "InteractionWidgetComponent.h"
+
 
 ACapInteractionActor::ACapInteractionActor()
 {
@@ -23,6 +26,13 @@ void ACapInteractionActor::InteractionEnter()
 {
 	Super::InteractionEnter();
 	GetWorldTimerManager().SetTimer(EnterTimerHandle, this, &ThisClass::InteractionLongEnter, LongInteractionThreshold);
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerController)
+	{
+		CapCharacter = Cast<ACapCharacter>(PlayerController->GetCharacter());
+	}
 }
 
 void ACapInteractionActor::InteractionExit()
@@ -33,4 +43,5 @@ void ACapInteractionActor::InteractionExit()
 
 void ACapInteractionActor::InteractionLongEnter()
 {
+	CapCharacter->InteractionWidgetComponent->StopProgressBar();
 }

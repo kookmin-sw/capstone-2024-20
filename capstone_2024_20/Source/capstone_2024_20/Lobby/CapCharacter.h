@@ -33,10 +33,7 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 
 	UPROPERTY(EditAnywhere)
 	UCharacterChangerComponent* CharacterChangerComponent;
-
-	UPROPERTY(EditAnywhere)
-	UInteractionWidgetComponent* InteractionWidgetComponent;
-
+	
 	UPROPERTY()
 	bool bIsMovement = true;
 
@@ -49,6 +46,9 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 	void Init();
 
 public:
+	UPROPERTY(EditAnywhere)
+	UInteractionWidgetComponent* InteractionWidgetComponent;
+
 	ACapCharacter();
 	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
 	{
@@ -61,7 +61,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Interact();
 	void InteractCancel();
-
+	
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;

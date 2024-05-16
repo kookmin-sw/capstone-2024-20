@@ -44,13 +44,11 @@ void UInteractionWidgetComponent::StartProgressBar(float Time)
 	if(GetWorld()->GetTimerManager().IsTimerActive(ProgressTimerHandle) == true)
 		return;
 	
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("StartProgressBar"));
-	
 	GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, [this, Time]()
 	{
 		float ElapsedTime = GetWorld()->GetDeltaSeconds();
 		float CurrentValue = FMath::Clamp(RoundProgressWidget->GetPercent() + (ElapsedTime/Time), 0.0f, 1.0f);
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, FString::Printf(TEXT("currentValue: %f,,,,, %f"), CurrentValue, GetWorld()->GetDeltaSeconds()));
+
 		if (CurrentValue >= Time)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
