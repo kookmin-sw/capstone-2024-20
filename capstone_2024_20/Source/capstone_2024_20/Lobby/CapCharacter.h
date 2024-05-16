@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CapCharacter.generated.h"
 
-class UInteractionWidgetComponent;
+class ULobbyInteractionWidgetComponent;
 class ALobbyPlayerState;
 class UCharacterChangerComponent;
 class ACapInteractionActor;
@@ -47,7 +47,7 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 
 public:
 	UPROPERTY(EditAnywhere)
-	UInteractionWidgetComponent* InteractionWidgetComponent;
+	ULobbyInteractionWidgetComponent* InteractionWidgetComponent;
 
 	ACapCharacter();
 	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override

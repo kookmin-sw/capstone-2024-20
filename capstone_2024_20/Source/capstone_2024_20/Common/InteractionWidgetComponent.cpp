@@ -26,10 +26,8 @@ void UInteractionWidgetComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UInteractionWidgetComponent::Show(FString& Key, FString& Explain)
+void UInteractionWidgetComponent::Show()
 {
-	RoundProgressWidget->SetKeyText(Key);
-	RoundProgressWidget->SetExplainText(Explain);
 	RoundProgressWidget->SetPercent(0);
 	RoundProgressWidget->SetVisibility(ESlateVisibility::Visible);
 }

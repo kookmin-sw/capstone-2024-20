@@ -12,25 +12,32 @@ class CAPSTONE_2024_20_API UInteractionWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	URoundProgressWidget* RoundProgressWidget;
-
-	FTimerHandle ProgressTimerHandle;
 public:
 	UInteractionWidgetComponent();
 
 protected:
+	UPROPERTY()
+	URoundProgressWidget* RoundProgressWidget;
+
+	FTimerHandle ProgressTimerHandle;
+	
 	virtual void BeginPlay() override;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	template< class T >
+	T* GetRoundProgressWidget() const
+	{
+		return Cast<T>(RoundProgressWidget);
+	}
+
 	UFUNCTION()
-	void Show(FString& Key, FString& Explain);
+	void Show();
 	
 	UFUNCTION()
-	void Hide();
+	virtual void Hide();
 	
 	UFUNCTION()
 	void StartProgressBar(float Time);

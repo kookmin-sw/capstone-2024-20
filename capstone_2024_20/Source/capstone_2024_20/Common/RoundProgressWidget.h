@@ -24,21 +24,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UImage* Image;
 
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
-	UTextBlock* KeyText;
-
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
-	UTextBlock* ExplainText;
+	
 	
 	UFUNCTION()
 	void SetPercent(float NewPercent);
 
 	UFUNCTION()
 	float GetPercent();
-
-	UFUNCTION()
-	void SetKeyText(FString& NewText);
-
-	UFUNCTION()
-	void SetExplainText(FString& NewText);
 };

@@ -4,7 +4,8 @@
 #include "CapInteractionActor.h"
 
 #include "CapCharacter.h"
-#include "InteractionWidgetComponent.h"
+#include "LobbyInteractionWidgetComponent.h"
+#include "../Common/InteractionWidgetComponent.h"
 
 
 ACapInteractionActor::ACapInteractionActor()
