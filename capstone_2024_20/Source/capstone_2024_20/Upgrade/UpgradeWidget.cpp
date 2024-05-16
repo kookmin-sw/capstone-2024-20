@@ -1,5 +1,4 @@
 #include "UpgradeWidget.h"
-
 #include "Components/Button.h"
 
 void UUpgradeWidget::NativeConstruct()
@@ -18,6 +17,8 @@ void UUpgradeWidget::SetVisibilityWithBool(const bool IsActive)
 	{
 		this->SetVisibility(ESlateVisibility::Hidden);
 	}
+
+	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = IsActive;
 }
 
 void UUpgradeWidget::OnClickedCloseButton()

@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "capstone_2024_20/Enemy/Enemy.h"
-#include "GameFramework/Actor.h"
+#include "../01_Network/ReplicatedActor.h"
 #include "SailingSystem.generated.h"
 
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
 class ADestination;
 class AMyShip;
 class AEnemyShip;
@@ -15,7 +17,7 @@ class AMyCharacter;
 class UMap;
 
 UCLASS()
-class CAPSTONE_2024_20_API ASailingSystem : public AActor
+class CAPSTONE_2024_20_API ASailingSystem : public AReplicatedActor
 {
 	GENERATED_BODY()
 
@@ -42,12 +44,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
 
-	void UpgradeMyShip() const;
+	void AddDelegateToPopupUpgrade();
+
+	void UpgradeMyShipMoveSpeed();
+	void UpgradeMyShipHandling();
+	void UpgradeMyShipCannonAttack();
 
 	float GetElapsedTime() const;
 	bool IsAllMyCharactersDead() const;
 	bool IsReachedDestination() const;
-
+	
 	AMyShip* GetMyShip() const;
 	void SetMyShip();
 	void SetMyCharacters();
@@ -85,9 +91,15 @@ private:
 
 	const float DistanceToDestination = 6000.0f;
 	
-	int32 Currency = 0;
+	UPROPERTY(Replicated)
+	int32 Currency = 10000;
+
+	const int32 UpgradeCost = 2000;
 
 	bool bIsClear = false;
 	bool bIsGameOver = false;
 	float ElapsedTime = 0;
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD = nullptr;
 };

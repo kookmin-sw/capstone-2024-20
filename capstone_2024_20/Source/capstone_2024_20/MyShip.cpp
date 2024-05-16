@@ -1,7 +1,7 @@
 #include "MyShip.h"
-
-#include "GameFramework/PawnMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "MyCannon.h"
+#include "Kismet/GameplayStatics.h"
 
 AMyShip::AMyShip()
 {
@@ -17,6 +17,7 @@ void AMyShip::BeginPlay()
 	// Todo@autumn replace with data table
 	SetMaxHP(5);
 	SetCurrentHP(5);
+	FindMyCannons();
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -34,14 +35,32 @@ void AMyShip::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AMyShip, TargetRotation);
 }
 
-void AMyShip::Upgrade()
+void AMyShip::UpgradeMoveSpeed()
 {
-	MoveSpeed += 100.0f; // Todo@autumn replace with data table
+	MoveSpeed += 100.0f;
+}
+
+void AMyShip::UpgradeHandling()
+{
+	RotationAcceleration += 1.0f;
+}
+
+void AMyShip::UpgradeCannonAttack()
+{
+	for (AMyCannon* Cannon : MyCannons)
+	{
+		Cannon->UpgradeAttackDamage();
+	}
 }
 
 float AMyShip::GetMoveSpeed() const
 {
 	return MoveSpeed;
+}
+
+float AMyShip::GetRotationAcceleration() const
+{
+	return RotationAcceleration;
 }
 
 void AMyShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -106,13 +125,28 @@ void AMyShip::Die()
 	// do nothing
 }
 
-void AMyShip::MulticastRPC_SetShipLocation_Implementation(FVector newLoc)
+void AMyShip::MulticastRPC_SetShipLocation_Implementation(const FVector NewLoc)
 {
-	AddActorWorldOffset(newLoc, true);
+	AddActorWorldOffset(NewLoc, true);
 }
 
-float AMyShip::GetHPPercent()
+float AMyShip::GetHPPercent() const
 {
+	return static_cast<float>(GetCurrentHP()) / static_cast<float>(GetMaxHP());
+}
 
-	return (float)GetCurrentHP() / (float)GetMaxHP();
+void AMyShip::FindMyCannons()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCannon::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0)
+	{
+		for (AActor* Actor : FoundActors)
+		{
+			if (AMyCannon* Cannon = Cast<AMyCannon>(Actor))
+			{
+				MyCannons.Add(Cannon);
+			}
+		}
+	}
 }

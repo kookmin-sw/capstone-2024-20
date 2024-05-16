@@ -10,8 +10,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
-#include "../Object/UpgradeObject.h"
 #include "../Object/Destination.h"
+#include "../MyIngameHUD.h"
+#include "../Upgrade/UpgradeWidgetElement.h"
+#include "Net/UnrealNetwork.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
                                   Destination(nullptr)
@@ -31,11 +33,14 @@ void ASailingSystem::BeginPlay()
 	
 	CreateMap();
 
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -164,6 +169,7 @@ void ASailingSystem::Tick(float DeltaTime)
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASailingSystem, Currency);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -238,7 +244,6 @@ void ASailingSystem::CalculateEnemyInAttackRange()
 
 void ASailingSystem::EarnCurrency(const int32 Amount)
 {
-	// Todo@autumn Need to think maximum currency
 	Currency += Amount;
 }
 
@@ -257,14 +262,45 @@ int ASailingSystem::GetCurrency() const
 	return Currency;
 }
 
-void ASailingSystem::UpgradeMyShip() const
+void ASailingSystem::AddDelegateToPopupUpgrade()
 {
-	if (MyShip == nullptr)
+	const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
+	PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipMoveSpeed);
+	PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipHandling);
+	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
+}
+
+void ASailingSystem::UpgradeMyShipMoveSpeed()
+{
+	if (Currency < UpgradeCost)
 	{
 		return;
 	}
 
-	MyShip->Upgrade();
+	UseCurrency(UpgradeCost);
+	MyShip->UpgradeMoveSpeed();
+}
+
+void ASailingSystem::UpgradeMyShipHandling()
+{
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
+	MyShip->UpgradeHandling();
+}
+
+void ASailingSystem::UpgradeMyShipCannonAttack()
+{
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
+	MyShip->UpgradeCannonAttack();
 }
 
 float ASailingSystem::GetElapsedTime() const
@@ -304,7 +340,6 @@ AMyShip* ASailingSystem::GetMyShip() const
 
 void ASailingSystem::SetMyShip()
 {
-	// Todo@autumn - This is a temporary solution, replace it.
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyShip::StaticClass(), FoundActors);
 	if (FoundActors.Num() > 0)
