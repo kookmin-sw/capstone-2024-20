@@ -3,6 +3,7 @@
 #include "../Enemy/Enemy.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "capstone_2024_20/Enemy/EnemySpawnPoint.h"
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
 #include "Kismet/GameplayStatics.h"
@@ -128,18 +129,16 @@ void AEnemyShip::MultiCastRPC_LookAtMyShip_Implementation(const AMyShip* MyShip)
 
 AEnemy* AEnemyShip::SpawnEnemy(AMyShip* MyShip)
 {
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 880.0f);
-
+	const UEnemySpawnPoint* EnemySpawnPoint = GetEnemySpawnPointToSpawn(MyShip);
+	const FVector SpawnLocation = EnemySpawnPoint->GetComponentLocation();
+	
 	auto SpawnParams = FActorSpawnParameters();
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
 	AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)), SpawnParams);
 	
 	SpawnedEnemy->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
-	SpawnedEnemy->SetActorRelativeLocation(RandomLocation);
+	SpawnedEnemy->SetActorLocation(SpawnLocation);
 
 	CurrentSpawnEnemyCooldown = SpawnEnemyCooldown;
 	return SpawnedEnemy;
@@ -184,6 +183,40 @@ void AEnemyShip::ReduceSpawnEnemyCooldown(const float DeltaTime)
 	{
 		CurrentSpawnEnemyCooldown -= DeltaTime;
 	}
+}
+
+UEnemySpawnPoint* AEnemyShip::GetEnemySpawnPointToSpawn(const AMyShip* MyShip) const
+{
+	// Find two nearest enemy spawn points
+	TArray<UEnemySpawnPoint*> EnemySpawnPoints = MyShip->GetEnemySpawnPoints();
+
+	TArray<float> Distances;
+	for (const auto EnemySpawnPoint : EnemySpawnPoints)
+	{
+		const auto Distance = FVector::Dist(EnemySpawnPoint->GetComponentLocation(), GetActorLocation());
+		Distances.Add(Distance);
+	}
+
+	int FirstNearestIndex = 0;
+	int SecondNearestIndex = 0;
+
+	for (int i = 0; i < Distances.Num(); i++)
+	{
+		if (Distances[i] < Distances[FirstNearestIndex])
+		{
+			SecondNearestIndex = FirstNearestIndex;
+			FirstNearestIndex = i;
+		}
+		else if (Distances[i] < Distances[SecondNearestIndex])
+		{
+			SecondNearestIndex = i;
+		}
+	}
+
+	UEnemySpawnPoint* FirstNearestEnemySpawnPoint = EnemySpawnPoints[FirstNearestIndex];
+	UEnemySpawnPoint* SecondNearestEnemySpawnPoint = EnemySpawnPoints[SecondNearestIndex];
+
+	return FMath::RandBool() ? FirstNearestEnemySpawnPoint : SecondNearestEnemySpawnPoint;
 }
 
 void AEnemyShip::FireCannon(const float DeltaTime)

@@ -68,6 +68,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent() const;
 
+	TArray<UEnemySpawnPoint*> GetEnemySpawnPoints() const;
+
 private:
 	void FindMyCannons();
 	void FindEnemySpawnPoints();

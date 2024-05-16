@@ -137,6 +137,11 @@ float AMyShip::GetHPPercent() const
 	return static_cast<float>(GetCurrentHP()) / static_cast<float>(GetMaxHP());
 }
 
+TArray<UEnemySpawnPoint*> AMyShip::GetEnemySpawnPoints() const
+{
+	return EnemySpawnPoints;
+}
+
 void AMyShip::FindMyCannons()
 {
 	TArray<AActor*> FoundActors;
