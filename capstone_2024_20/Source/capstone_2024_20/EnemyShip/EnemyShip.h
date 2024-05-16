@@ -10,6 +10,7 @@ class UNavigationPath;
 class AMyShip;
 class AEnemy;
 class AEnemyShip;
+class UEnemySpawnPoint;
 
 DECLARE_DELEGATE_OneParam(FEnemyShipDie, AEnemyShip*);
 
@@ -58,6 +59,9 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_FireCannon();
+
+	// Returns random enemy spawn point from two nearest enemy spawn points
+	UEnemySpawnPoint* GetEnemySpawnPointToSpawn(const AMyShip* MyShip) const;
 	
 	// [begin] IHP interface
 	int32 MaxHP = 0;

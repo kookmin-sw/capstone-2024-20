@@ -1,6 +1,7 @@
 #include "MyShip.h"
 #include "Net/UnrealNetwork.h"
 #include "MyCannon.h"
+#include "Enemy/EnemySpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
 
 AMyShip::AMyShip()
@@ -18,6 +19,7 @@ void AMyShip::BeginPlay()
 	SetMaxHP(5);
 	SetCurrentHP(5);
 	FindMyCannons();
+	FindEnemySpawnPoints();
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -135,6 +137,11 @@ float AMyShip::GetHPPercent() const
 	return static_cast<float>(GetCurrentHP()) / static_cast<float>(GetMaxHP());
 }
 
+TArray<UEnemySpawnPoint*> AMyShip::GetEnemySpawnPoints() const
+{
+	return EnemySpawnPoints;
+}
+
 void AMyShip::FindMyCannons()
 {
 	TArray<AActor*> FoundActors;
@@ -147,6 +154,17 @@ void AMyShip::FindMyCannons()
 			{
 				MyCannons.Add(Cannon);
 			}
+		}
+	}
+}
+
+void AMyShip::FindEnemySpawnPoints()
+{
+	for (TSet<UActorComponent*> Components = GetComponents(); UActorComponent*& Component : Components)
+	{
+		if (UEnemySpawnPoint* EnemySpawnPoint = Cast<UEnemySpawnPoint>(Component))
+		{
+			EnemySpawnPoints.Add(EnemySpawnPoint);
 		}
 	}
 }

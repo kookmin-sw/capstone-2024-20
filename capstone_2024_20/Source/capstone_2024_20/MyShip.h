@@ -5,6 +5,7 @@
 #include "Common/HP.h"
 #include "MyShip.generated.h"
 
+class UEnemySpawnPoint;
 class AMyCannon;
 
 UCLASS()
@@ -67,8 +68,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent() const;
 
+	TArray<UEnemySpawnPoint*> GetEnemySpawnPoints() const;
+
 private:
 	void FindMyCannons();
+	void FindEnemySpawnPoints();
 	
 	// [begin] IHP interface
 	int32 MaxHP = 0;
@@ -76,4 +80,5 @@ private:
 	// [end] IHP interface
 
 	TArray<AMyCannon*> MyCannons;
+	TArray<UEnemySpawnPoint*> EnemySpawnPoints;
 };
