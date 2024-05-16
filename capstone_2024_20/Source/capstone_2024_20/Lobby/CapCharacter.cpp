@@ -149,6 +149,11 @@ void ACapCharacter::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimi
                               const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+
+	if(IsLocallyControlled() == false)
+		return;
+		
 	ACapInteractionActor* ActorOhter = Cast<ACapInteractionActor>(Other);
 	if (ActorOhter)
 	{
