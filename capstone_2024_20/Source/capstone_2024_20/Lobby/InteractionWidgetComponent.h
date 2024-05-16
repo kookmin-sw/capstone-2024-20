@@ -14,7 +14,8 @@ class CAPSTONE_2024_20_API UInteractionWidgetComponent : public UWidgetComponent
 
 	UPROPERTY()
 	URoundProgressWidget* RoundProgressWidget;
-	
+
+	FTimerHandle ProgressTimerHandle;
 public:
 	UInteractionWidgetComponent();
 
@@ -33,4 +34,7 @@ public:
 	
 	UFUNCTION()
 	void StartProgressBar(float Time);
+
+	UFUNCTION()
+	void StopProgressBar();
 };

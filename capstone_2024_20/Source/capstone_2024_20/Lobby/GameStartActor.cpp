@@ -10,6 +10,8 @@ AGameStartActor::AGameStartActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	LongInteractionThreshold = 2.0f;
+
+	ExplainText = TEXT("게임시작");
 }
 
 void AGameStartActor::BeginPlay()

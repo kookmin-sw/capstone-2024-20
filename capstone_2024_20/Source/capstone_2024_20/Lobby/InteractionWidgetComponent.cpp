@@ -41,20 +41,31 @@ void UInteractionWidgetComponent::Hide()
 
 void UInteractionWidgetComponent::StartProgressBar(float Time)
 {
+	if(GetWorld()->GetTimerManager().IsTimerActive(ProgressTimerHandle) == true)
+		return;
+	
 	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("StartProgressBar"));
 	
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, Time, &TimerHandle]()
+	GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, [this, Time]()
 	{
 		float ElapsedTime = GetWorld()->GetDeltaSeconds();
 		float CurrentValue = FMath::Clamp(RoundProgressWidget->GetPercent() + (ElapsedTime/Time), 0.0f, 1.0f);
 		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, FString::Printf(TEXT("currentValue: %f,,,,, %f"), CurrentValue, GetWorld()->GetDeltaSeconds()));
 		if (CurrentValue >= Time)
 		{
-			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 		}
 
 		RoundProgressWidget->SetPercent(CurrentValue);
 	}, 0.01f, true, 0.1f);
+}
+
+void UInteractionWidgetComponent::StopProgressBar()
+{
+	if(GetWorld()->GetTimerManager().IsTimerActive(ProgressTimerHandle) == true)
+	{
+		RoundProgressWidget->SetPercent(0.0f);
+		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
+	}
 }
 

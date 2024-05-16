@@ -121,6 +121,7 @@ void ACapCharacter::InteractCancel()
 	if (CapInteractionActor)
 	{
 		CapInteractionActor->InteractionExit();
+		InteractionWidgetComponent->StopProgressBar();
 	}
 }
 
