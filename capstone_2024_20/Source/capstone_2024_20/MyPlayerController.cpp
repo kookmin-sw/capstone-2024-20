@@ -43,11 +43,6 @@ void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IsLocalController())
-	{
-		return;
-	}
-
 	if (HasAuthority())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("HasAutority"));
