@@ -20,6 +20,7 @@ protected:
 	URoundProgressWidget* RoundProgressWidget;
 
 	FTimerHandle ProgressTimerHandle;
+	double PrevTimeSeconds;
 	
 	virtual void BeginPlay() override;
 
