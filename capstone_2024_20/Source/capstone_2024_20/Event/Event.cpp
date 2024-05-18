@@ -1,5 +1,8 @@
 ﻿#include "Event.h"
 #include "capstone_2024_20/MyShip.h"
+#include "capstone_2024_20/WidgetBlueprint/PopupEvent.h"
+#include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
 
 AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
@@ -19,19 +22,32 @@ AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
 
 	BoxComponent->ComponentTags.Add(TEXT("Object"));
 	BoxComponent->ComponentTags.Add(TEXT("FireEvent"));
-
+	
+	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Event/BP_PopupEvent.BP_PopupEvent_C'"));
+    PopupEventWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
+    PopupEventWidgetComponent->SetWidgetClass(WidgetClass.Class);
+    PopupEventWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+    PopupEventWidgetComponent->SetupAttachment(RootComponent);
+	
 	CanBeOperated = true;
 }
 
 void AEvent::BeginPlay()
 {
 	Super::BeginPlay();
+	PopupEvent = Cast<UPopupEvent>(PopupEventWidgetComponent->GetUserWidgetObject());
 }
 
 void AEvent::Operate()
 {
 	EventOperateDelegate.ExecuteIfBound(this);
 	Destroy();
+}
+
+void AEvent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AEvent, CurrentDamageCooldown);
 }
 
 void AEvent::DamageMyShip(AMyShip* MyShip)
@@ -46,6 +62,13 @@ void AEvent::ReduceCurrentDamageCooldown(const float DeltaTime)
 	{
 		CurrentDamageCooldown -= DeltaTime;
 	}
+
+	MulticastRPC_ReduceCurrentDamageCooldown();
+}
+
+void AEvent::MulticastRPC_ReduceCurrentDamageCooldown_Implementation()
+{
+	PopupEvent->SetDamageCoolDownProgressBarPercent(CurrentDamageCooldown / DamageCooldown);
 }
 
 bool AEvent::CanDamageMyShip() const
