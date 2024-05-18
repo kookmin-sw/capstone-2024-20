@@ -15,7 +15,6 @@ void UCharacterChangerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("CharacterChangerComponent"));
 	ACharacter* Character = GetOwner<ACharacter>();
 	if (Character)
 	{
@@ -32,7 +31,7 @@ void UCharacterChangerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 }
 
 void UCharacterChangerComponent::OnRep_CharacterType()
-{
+{	
 	ChangeCharacter(CharacterType);
 }
 

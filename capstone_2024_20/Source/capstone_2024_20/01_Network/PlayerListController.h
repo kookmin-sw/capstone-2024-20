@@ -26,6 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UPlayerListWidget> PlayerListWigetClass;
 
+	UPROPERTY(EditAnywhere)
 	UPlayerListWidget* PlayerListWidget;
 
 public:
