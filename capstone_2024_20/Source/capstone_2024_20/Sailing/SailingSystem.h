@@ -30,7 +30,8 @@ public:
 
 	void OnEnemyDie(AEnemy* Enemy);
 	void OnEnemyShipDie(AEnemyShip* EnemyShip);
-
+	void OnEventOperate(AEvent* Event);
+	
 	void CreateMap();
 	void CreateObstacles() const;
 	

@@ -13,6 +13,7 @@
 #include "../MyIngameHUD.h"
 #include "../Upgrade/UpgradeWidgetElement.h"
 #include "Net/UnrealNetwork.h"
+#include "../Event/Event.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
                                   Destination(nullptr)
@@ -177,6 +178,11 @@ void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 	EarnCurrency(100);
 }
 
+void ASailingSystem::OnEventOperate(AEvent* Event)
+{
+	Events.Remove(Event);
+}
+
 void ASailingSystem::CreateMap()
 {
 	Map = NewObject<UMap>();
@@ -250,6 +256,7 @@ void ASailingSystem::AddDelegateToPopupUpgrade()
 
 void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)
 {
+	Event->EventOperateDelegate.BindUObject(this, &ASailingSystem::OnEventOperate);
 	Events.Add(Event);
 }
 
