@@ -97,7 +97,7 @@ private:
 	UPROPERTY(Replicated)
 	float CurrentReviveCooldown = 0.0f;
 	
-	const float AttackCooldown = 5.0f;
+	const float AttackCooldown = 1.0f;
 
 	UPROPERTY(Replicated)
 	float CurrentAttackCooldown = 0.0f;
