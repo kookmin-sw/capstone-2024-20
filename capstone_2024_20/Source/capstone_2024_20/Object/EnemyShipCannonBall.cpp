@@ -49,7 +49,7 @@ void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* Othe
 		return;
 	}
 		
-	MyShip->Damage(1); // Todo@autumn - This is a temporary solution, replace it with data.
+	MyShip->Damage(Damage);
 	
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

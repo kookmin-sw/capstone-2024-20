@@ -34,4 +34,6 @@ private:
 
 	const float DestroyDelayTime = 1.0f;
 	const FVector WaterSplashEffectScale = FVector(3.0f, 3.0f, 3.0f);
+
+	const int Damage = 1;
 };
