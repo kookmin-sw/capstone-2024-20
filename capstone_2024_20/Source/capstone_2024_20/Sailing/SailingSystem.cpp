@@ -41,8 +41,6 @@ void ASailingSystem::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
-
-
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -400,12 +398,10 @@ float ASailingSystem::DestinationProgress()
 		// 진행도 계산
 		Progress = 1.0f - (CurrentDistance / TotalDistance);
 		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
-		
 	}
-	return Progress;
 	
+	return Progress;
 }
-
 
 // nullable
 AMyCharacter* ASailingSystem::FindNearestMyCharacter(const AEnemy* Enemy) const
