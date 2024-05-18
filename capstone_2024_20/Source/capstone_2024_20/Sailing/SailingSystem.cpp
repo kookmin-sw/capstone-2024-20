@@ -156,14 +156,6 @@ void ASailingSystem::Tick(float DeltaTime)
 	}
 
 	CalculateEnemyInAttackRange();
-
-	SpawnEventTimer += DeltaTime;
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (SpawnEventTimer >= 10.0f)
-	{
-		// SpawnEvent();
-		SpawnEventTimer = 0.0f;
-	}
 }
 
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -203,19 +195,6 @@ void ASailingSystem::CreateObstacles() const
 		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
 		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
 	}
-}
-
-void ASailingSystem::SpawnEvent()
-{
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 850.0f);
-	
-	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
-	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
-	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
-	Events.Add(SpawnedEvent);
 }
 
 void ASailingSystem::CalculateEnemyInAttackRange()
