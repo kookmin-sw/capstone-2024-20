@@ -78,7 +78,10 @@ private:
 	void FindEventSpawnPoints();
 	
 	// [begin] IHP interface
+	UPROPERTY(Replicated)
 	int32 MaxHP = 0;
+
+	UPROPERTY(Replicated)
 	int32 CurrentHP = 0;
 	// [end] IHP interface
 
