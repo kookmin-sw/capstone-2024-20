@@ -2,7 +2,6 @@
 #include "../EnemyShip/EnemyShip.h"
 #include "../Enemy/Enemy.h"
 #include "../MyShip.h"
-#include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
 #include "../Map/Obstacle.h"
 #include "Blueprint/UserWidget.h"
