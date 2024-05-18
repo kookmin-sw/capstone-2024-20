@@ -4,6 +4,7 @@
 #include "MyObject.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
+#include "Sound/SoundCue.h"
 #include "MyCannon.generated.h"
 
 UCLASS()
