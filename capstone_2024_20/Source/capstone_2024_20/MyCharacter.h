@@ -7,6 +7,7 @@
 #include "Common/HP.h"
 #include "MyCharacter.generated.h"
 
+class UPopupInteraction;
 // ReSharper disable once IdentifierTypo
 class AMyIngameHUD;
 class UCharacterChangerComponent;
@@ -39,6 +40,9 @@ public:
 
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	class UWidgetComponent* TextWidget;
+
+	UPROPERTY(Category=UI, VisibleAnywhere)
+	UPopupInteraction* PopupInteraction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UNamePlateWidgetComponent* NamePlateWidget;
@@ -134,6 +138,16 @@ public:
 		TEXT("Bed"),
 		TEXT("Upgrade"),
 		TEXT("FireEvent")
+	};
+
+	TMap<FString, FString> InteractionTextMap = {
+		{TEXT("Cannon"), TEXT("대포")},
+		{TEXT("SteelWheel"), TEXT("운전")},
+		{TEXT("CannonBallBox"), TEXT("포탄 꺼내기")},
+		{TEXT("Telescope"), TEXT("망원경")},
+		{TEXT("Bed"), TEXT("휴식")},
+		{TEXT("Upgrade"), TEXT("업그레이드")},
+		{TEXT("FireEvent"), TEXT("불 끄기")}
 	};
 
 	UPROPERTY(Replicated)

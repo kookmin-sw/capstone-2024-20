@@ -10,6 +10,7 @@
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Pirate/PirateAnimInstance.h"
+#include "WidgetBlueprint/PopupInteraction.h"
 
 class AStaticMeshActor;
 
@@ -62,6 +63,7 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	PopupInteraction = Cast<UPopupInteraction>(TextWidget->GetUserWidgetObject());
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
@@ -86,8 +88,6 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if(CurrentPlayerState != UserState::DRAGGING)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
-		if(IsLocallyControlled())
-			TextWidget->SetVisibility(true);
 		bIsOverlap = true;
 	
 		for (const FString& Tag : ObjectList)
@@ -97,6 +97,13 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 				CurrentHitObjectName = Tag;
 				break;
 			}
+		}
+
+		if(IsLocallyControlled())
+		{
+			TextWidget->SetVisibility(true);
+			const FString PopupText = InteractionTextMap.FindRef(CurrentHitObjectName);
+			PopupInteraction->SetInteractionText(PopupText);
 		}
 
 		CurrentHitObject = Cast<AMyObject>(OtherActor);
