@@ -155,6 +155,16 @@ void ASailingSystem::Tick(float DeltaTime)
 		Enemy->ReduceCurrentAttackCooldown(DeltaTime);
 	}
 
+	for (const auto Event : Events)
+	{
+		if (Event->CanDamageMyShip())
+		{
+			Event->DamageMyShip(MyShip);
+		}
+		
+		Event->ReduceCurrentDamageCooldown(DeltaTime);
+	}
+
 	CalculateEnemyInAttackRange();
 }
 
