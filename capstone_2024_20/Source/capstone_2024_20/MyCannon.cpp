@@ -4,7 +4,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
-#include "Sound/SoundCue.h"
 
 AMyCannon::AMyCannon(): WidgetComponent(nullptr), M_ShooterMesh(nullptr), ProjectileSpawnPoint(nullptr),
                         FireEffect(nullptr),
