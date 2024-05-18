@@ -58,6 +58,9 @@ public:
 	void SetEnemyShips();
 	void SetDestination();
 
+	UFUNCTION(BlueprintPure)
+	float DestinationProgress();
+
 private:
 	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
 	
@@ -97,6 +100,10 @@ private:
 	bool bIsGameOver = false;
 	float ElapsedTime = 0;
 
+	FVector InitLocation;
+	UPROPERTY(Replicated)
+	float Progress = 0.0f;
+	
 	UPROPERTY()
 	AMyIngameHUD* MyInGameHUD = nullptr;
 };

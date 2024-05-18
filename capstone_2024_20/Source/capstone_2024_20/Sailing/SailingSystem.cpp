@@ -40,6 +40,8 @@ void ASailingSystem::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
+
+
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -161,6 +163,7 @@ void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASailingSystem, Currency);
+	DOREPLIFETIME(ASailingSystem, Progress);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -324,6 +327,7 @@ void ASailingSystem::SetMyShip()
 	{
 		MyShip = Cast<AMyShip>(FoundActors[0]);
 	}
+	InitLocation = MyShip->GetActorLocation();
 }
 
 void ASailingSystem::SetMyCharacters()
@@ -361,6 +365,25 @@ void ASailingSystem::SetDestination()
 		Destination = Cast<ADestination>(FoundActors[0]);
 	}
 }
+
+float ASailingSystem::DestinationProgress()
+{
+	if(Destination)
+	{
+		const FVector DestinationLocation = Destination->GetActorLocation();
+		const FVector MyShipLocation = MyShip->GetActorLocation();
+		const float TotalDistance = FVector::Dist(InitLocation, DestinationLocation); // 전체 거리
+		const float CurrentDistance = FVector::Dist(DestinationLocation, MyShipLocation);
+
+		// 진행도 계산
+		Progress = 1.0f - (CurrentDistance / TotalDistance);
+		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+		
+	}
+	return Progress;
+	
+}
+
 
 // nullable
 AMyCharacter* ASailingSystem::FindNearestMyCharacter(const AEnemy* Enemy) const
