@@ -248,6 +248,11 @@ void ASailingSystem::AddDelegateToPopupUpgrade()
 	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
 }
 
+void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)
+{
+	Events.Add(Event);
+}
+
 void ASailingSystem::UpgradeMyShipMoveSpeed()
 {
 	if (Currency < UpgradeCost)
