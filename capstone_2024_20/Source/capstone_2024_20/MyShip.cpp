@@ -2,6 +2,7 @@
 #include "Net/UnrealNetwork.h"
 #include "MyCannon.h"
 #include "Enemy/EnemySpawnPoint.h"
+#include "Event/EventSpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
 
 AMyShip::AMyShip()
@@ -20,6 +21,7 @@ void AMyShip::BeginPlay()
 	SetCurrentHP(5);
 	FindMyCannons();
 	FindEnemySpawnPoints();
+	FindEventSpawnPoints();
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -165,6 +167,17 @@ void AMyShip::FindEnemySpawnPoints()
 		if (UEnemySpawnPoint* EnemySpawnPoint = Cast<UEnemySpawnPoint>(Component))
 		{
 			EnemySpawnPoints.Add(EnemySpawnPoint);
+		}
+	}
+}
+
+void AMyShip::FindEventSpawnPoints()
+{
+	for (TSet<UActorComponent*> Components = GetComponents(); UActorComponent*& Component : Components)
+	{
+		if (UEventSpawnPoint* EventSpawnPoint = Cast<UEventSpawnPoint>(Component))
+		{
+			EventSpawnPoints.Add(EventSpawnPoint);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include "Common/HP.h"
 #include "MyShip.generated.h"
 
+class UEventSpawnPoint;
 class UEnemySpawnPoint;
 class AMyCannon;
 
@@ -73,6 +74,7 @@ public:
 private:
 	void FindMyCannons();
 	void FindEnemySpawnPoints();
+	void FindEventSpawnPoints();
 	
 	// [begin] IHP interface
 	int32 MaxHP = 0;
@@ -81,4 +83,5 @@ private:
 
 	TArray<AMyCannon*> MyCannons;
 	TArray<UEnemySpawnPoint*> EnemySpawnPoints;
+	TArray<UEventSpawnPoint*> EventSpawnPoints;
 };
