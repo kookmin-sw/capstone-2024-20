@@ -80,12 +80,8 @@ bool AEnemyShipCannonBall::CanStartFire()
 
 void AEnemyShipCannonBall::StartFire(AMyShip* MyShip) const
 {
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 850.0f);
-	
+	const FVector SpawnLocation = MyShip->GetNearestEventSpawnPointLocationFrom(GetActorLocation());
 	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
-	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
+	SpawnedEvent->SetActorLocation(SpawnLocation);
 }

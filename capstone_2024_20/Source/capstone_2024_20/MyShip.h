@@ -48,7 +48,8 @@ public:
 	
 	float GetMoveSpeed() const;
 	float GetRotationAcceleration() const;
-
+	FVector GetNearestEventSpawnPointLocationFrom(const FVector& FromLocation) const;
+	
 	UPROPERTY(Replicated)
 	FRotator TargetRotation;
 

@@ -67,6 +67,23 @@ float AMyShip::GetRotationAcceleration() const
 	return RotationAcceleration;
 }
 
+FVector AMyShip::GetNearestEventSpawnPointLocationFrom(const FVector& FromLocation) const
+{
+	FVector NearestLocation = EnemySpawnPoints[0]->GetComponentLocation();
+	float NearestDistance = FVector::Dist(FromLocation, NearestLocation);
+
+	for (const UEventSpawnPoint* EventSpawnPoint : EventSpawnPoints)
+	{
+		if (FVector::Dist(FromLocation, EventSpawnPoint->GetComponentLocation()) < NearestDistance)
+		{
+			NearestLocation = EventSpawnPoint->GetComponentLocation();
+			NearestDistance = FVector::Dist(FromLocation, NearestLocation);
+		}
+	}
+
+	return NearestLocation;
+}
+
 void AMyShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
