@@ -100,12 +100,17 @@ void AEnemy::Damage(const int32 DamageAmount)
 		Die();
 	}
 
-	PopupEnemyWidget->SetHPProgressBarPercent(static_cast<float>(CurrentHP) / MaxHP);
+	MulticastRPC_Damage();
 }
 
 void AEnemy::Die()
 {
 	EnemyDieDelegate.Execute(this);
+}
+
+void AEnemy::MulticastRPC_Damage_Implementation()
+{
+	PopupEnemyWidget->SetHPProgressBarPercent(static_cast<float>(CurrentHP) / MaxHP);
 }
 
 void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)

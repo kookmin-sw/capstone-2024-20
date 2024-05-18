@@ -33,6 +33,10 @@ public:
 	virtual void Damage(const int32 DamageAmount) override;
 	virtual void Die() override;
 	// [end] IHP interface
+
+	// ! Reliable로 설정할 경우, 클라이언트에서 CurrentHP가 Replicated되지 않는 문제가 발생하여 Unreliable로 설정
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRPC_Damage();
 	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
 	void Attack(AMyCharacter* MyCharacter);
