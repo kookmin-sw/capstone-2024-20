@@ -6,6 +6,8 @@
 #include "../Common/HP.h"
 #include "Enemy.generated.h"
 
+class UPopupEnemy;
+class UWidgetComponent;
 class AMyCharacter;
 class AEnemy;
 
@@ -19,6 +21,8 @@ class CAPSTONE_2024_20_API AEnemy : public AReplicatedCharacter, public IHP
 public:
 	AEnemy();
 	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// [begin] IHP interface
 	virtual int32 GetMaxHP() const override;
@@ -55,9 +59,18 @@ public:
 
 private:
 	// [begin] IHP interface
+	UPROPERTY(Replicated)
 	int32 MaxHP = 0;
+
+	UPROPERTY(Replicated)
 	int32 CurrentHP = 0;
 	// [end] IHP interface
+
+	UPROPERTY()
+	UWidgetComponent* PopupEnemyWidgetComponent = nullptr;
+
+	UPROPERTY()
+	UPopupEnemy* PopupEnemyWidget = nullptr;
 	
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;
