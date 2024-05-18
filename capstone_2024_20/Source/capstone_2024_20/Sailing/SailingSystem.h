@@ -43,6 +43,7 @@ public:
 	int GetCurrency() const;
 
 	void AddDelegateToPopupUpgrade();
+	void AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event);
 
 	void UpgradeMyShipMoveSpeed();
 	void UpgradeMyShipHandling();

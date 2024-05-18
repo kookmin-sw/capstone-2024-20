@@ -3,6 +3,7 @@
 #include "Particles/ParticleSystem.h"
 #include "../MyShip.h"
 #include "capstone_2024_20/Event/Event.h"
+#include "capstone_2024_20/Sailing/SailingSystem.h"
 
 AEnemyShipCannonBall::AEnemyShipCannonBall(): StaticMesh(nullptr)
 {
@@ -87,4 +88,11 @@ void AEnemyShipCannonBall::StartFire(AMyShip* MyShip) const
 	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
 	SpawnedEvent->SetActorLocation(SpawnLocation);
+
+	// [begin] ! Never modify or call anything of SailingSystem instance in this class except for these lines.
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASailingSystem::StaticClass(), FoundActors);
+	ASailingSystem* SailingSystem = Cast<ASailingSystem>(FoundActors[0]);
+	SailingSystem->AddSpawnedEventFromEnemyShipCannonBall(SpawnedEvent);
+	// [end] ! Never modify or call anything of SailingSystem instance in this class except for these lines.
 }
