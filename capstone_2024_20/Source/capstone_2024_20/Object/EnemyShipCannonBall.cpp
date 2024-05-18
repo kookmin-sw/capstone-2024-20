@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "../MyShip.h"
+#include "capstone_2024_20/Event/Event.h"
 
 AEnemyShipCannonBall::AEnemyShipCannonBall(): StaticMesh(nullptr)
 {
@@ -49,7 +50,12 @@ void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* Othe
 		return;
 	}
 		
-	MyShip->Damage(1); // Todo@autumn - This is a temporary solution, replace it with data.
+	MyShip->Damage(Damage);
+
+	if (CanStartFire())
+	{
+		StartFire(MyShip);
+	}
 	
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -60,4 +66,25 @@ void AEnemyShipCannonBall::DestroyWithDelay()
 	{
 		Destroy();
 	}
+}
+
+bool AEnemyShipCannonBall::CanStartFire() const
+{
+	if(!FMath::RandBool())
+	{
+		return false;
+	}
+
+	TArray<AActor*> FoundFire;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEvent::StaticClass(), FoundFire);
+
+	return FoundFire.Num() == 0;
+}
+
+void AEnemyShipCannonBall::StartFire(AMyShip* MyShip) const
+{
+	const FVector SpawnLocation = MyShip->GetNearestEventSpawnPointLocationFrom(GetActorLocation());
+	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
+	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+	SpawnedEvent->SetActorLocation(SpawnLocation);
 }

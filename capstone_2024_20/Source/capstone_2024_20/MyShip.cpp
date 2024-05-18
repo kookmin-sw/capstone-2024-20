@@ -2,6 +2,7 @@
 #include "Net/UnrealNetwork.h"
 #include "MyCannon.h"
 #include "Enemy/EnemySpawnPoint.h"
+#include "Event/EventSpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
 
 AMyShip::AMyShip()
@@ -20,6 +21,7 @@ void AMyShip::BeginPlay()
 	SetCurrentHP(5);
 	FindMyCannons();
 	FindEnemySpawnPoints();
+	FindEventSpawnPoints();
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -63,6 +65,23 @@ float AMyShip::GetMoveSpeed() const
 float AMyShip::GetRotationAcceleration() const
 {
 	return RotationAcceleration;
+}
+
+FVector AMyShip::GetNearestEventSpawnPointLocationFrom(const FVector& FromLocation) const
+{
+	FVector NearestLocation = EnemySpawnPoints[0]->GetComponentLocation();
+	float NearestDistance = FVector::Dist(FromLocation, NearestLocation);
+
+	for (const UEventSpawnPoint* EventSpawnPoint : EventSpawnPoints)
+	{
+		if (FVector::Dist(FromLocation, EventSpawnPoint->GetComponentLocation()) < NearestDistance)
+		{
+			NearestLocation = EventSpawnPoint->GetComponentLocation();
+			NearestDistance = FVector::Dist(FromLocation, NearestLocation);
+		}
+	}
+
+	return NearestLocation;
 }
 
 void AMyShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -165,6 +184,17 @@ void AMyShip::FindEnemySpawnPoints()
 		if (UEnemySpawnPoint* EnemySpawnPoint = Cast<UEnemySpawnPoint>(Component))
 		{
 			EnemySpawnPoints.Add(EnemySpawnPoint);
+		}
+	}
+}
+
+void AMyShip::FindEventSpawnPoints()
+{
+	for (TSet<UActorComponent*> Components = GetComponents(); UActorComponent*& Component : Components)
+	{
+		if (UEventSpawnPoint* EventSpawnPoint = Cast<UEventSpawnPoint>(Component))
+		{
+			EventSpawnPoints.Add(EventSpawnPoint);
 		}
 	}
 }

@@ -34,8 +34,6 @@ public:
 	void CreateMap();
 	void CreateObstacles() const;
 	
-	void SpawnEvent();
-
 	void CalculateEnemyInAttackRange();
 	
 	void EarnCurrency(int32 Amount);
@@ -71,7 +69,6 @@ private:
 	UPROPERTY(Replicated)
 	TArray<AEnemy*> Enemies;
 
-	inline static float SpawnEventTimer = 0.0f;
 	TArray<AEvent*> Events;
 
 	UPROPERTY(Replicated)
