@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "capstone_2024_20/MyShip.h"
 #include "capstone_2024_20/01_Network/ReplicatedActor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "EnemyShipCannonBall.generated.h"
@@ -22,7 +23,9 @@ private:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	void DestroyWithDelay();
-	
+	static bool CanStartFire();
+	void StartFire(AMyShip* MyShip) const;
+
 	UPROPERTY()
 	UStaticMeshComponent* StaticMesh;
 
