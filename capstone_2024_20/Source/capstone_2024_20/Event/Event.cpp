@@ -30,6 +30,6 @@ void AEvent::BeginPlay()
 
 void AEvent::Operate()
 {
-	// Todo@autumn - This is a temporary implementation, need to replace it.
+	EventOperateDelegate.ExecuteIfBound(this);
 	Destroy();
 }

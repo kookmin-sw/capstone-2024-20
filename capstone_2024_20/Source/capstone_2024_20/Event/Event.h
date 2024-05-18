@@ -6,6 +6,10 @@
 #include "Components/BoxComponent.h"
 #include "Event.generated.h"
 
+class AEvent;
+
+DECLARE_DELEGATE_OneParam(FEventOperateDelegate, AEvent*);
+
 UCLASS()
 class CAPSTONE_2024_20_API AEvent : public AMyObject
 {
@@ -16,6 +20,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Operate() override;
+
+	FEventOperateDelegate EventOperateDelegate;
 
 private:
 	UPROPERTY(EditAnywhere)
