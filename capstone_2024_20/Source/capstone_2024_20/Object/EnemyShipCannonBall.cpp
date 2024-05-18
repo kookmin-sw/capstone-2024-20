@@ -40,25 +40,32 @@ void AEnemyShipCannonBall::Tick(float DeltaTime)
 void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
-	
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyWithDelay, DestroyDelayTime, false);
-	
-	AMyShip* MyShip = Cast<AMyShip>(OtherActor);
-	if(MyShip == nullptr)
+	if (HasAuthority())
 	{
-		return;
-	}
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyWithDelay, DestroyDelayTime, false);
+		StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+		AMyShip* MyShip = Cast<AMyShip>(OtherActor);
+		if(MyShip == nullptr)
+		{
+			return;
+		}
 		
-	MyShip->Damage(Damage);
+		MyShip->Damage(Damage);
 
-	if (CanStartFire())
-	{
-		StartFire(MyShip);
+		if (CanStartFire())
+		{
+			StartFire(MyShip);
+		}
 	}
-	
-	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	MulticastRPC_OnHit(Hit);
+}
+
+void AEnemyShipCannonBall::MulticastRPC_OnHit_Implementation(const FHitResult& Hit)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
 }
 
 void AEnemyShipCannonBall::DestroyWithDelay()
