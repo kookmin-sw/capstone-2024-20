@@ -23,7 +23,7 @@ private:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	void DestroyWithDelay();
-	static bool CanStartFire();
+	bool CanStartFire() const;
 	void StartFire(AMyShip* MyShip) const;
 
 	UPROPERTY()

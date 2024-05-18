@@ -68,14 +68,17 @@ void AEnemyShipCannonBall::DestroyWithDelay()
 	}
 }
 
-bool AEnemyShipCannonBall::CanStartFire()
+bool AEnemyShipCannonBall::CanStartFire() const
 {
 	if(!FMath::RandBool())
 	{
 		return false;
 	}
 
-	return true;
+	TArray<AActor*> FoundFire;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEvent::StaticClass(), FoundFire);
+
+	return FoundFire.Num() == 0;
 }
 
 void AEnemyShipCannonBall::StartFire(AMyShip* MyShip) const
