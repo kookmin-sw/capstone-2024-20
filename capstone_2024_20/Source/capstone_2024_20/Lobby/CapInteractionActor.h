@@ -21,7 +21,7 @@ private:
 	FTimerHandle EnterTimerHandle;
 
 public:
-	FString KeyText = TEXT("SpaceBar");
+	FString KeyText = TEXT("F");
 	FString ExplainText = TEXT("Interaction 입니다.");
 
 	UPROPERTY(EditAnywhere)
