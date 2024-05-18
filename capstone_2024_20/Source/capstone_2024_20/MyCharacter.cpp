@@ -351,6 +351,8 @@ void AMyCharacter::DestroyCannonBall()
 void AMyCharacter::DragObject()
 {
 	CurrentHitObject->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	FRotator RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // -90도 회전 (캐릭터 메시도 -90도 회전시켜서 사용중)
+	CurrentHitObject->SetActorRelativeRotation(RelativeRotation);
 
 	if (CurrentHitObject)
 	{
