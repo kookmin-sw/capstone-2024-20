@@ -43,8 +43,6 @@ void AMirrorActor::BeginPlay()
 	for (TActorIterator<ACameraActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		ACameraActor* CameraActor = *ActorItr;
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-		                                 CameraActor->GetName());
 		if (CameraActor && CameraActor->GetName() == "SubCameraActor")
 		{
 			SubCameraActor = CameraActor;
@@ -147,6 +145,9 @@ void AMirrorActor::Prev()
 
 void AMirrorActor::Exit()
 {
+	if (CapCharacter->GetIsMovement() == true)
+		return;
+	
 	CharacterChangerWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
 	CapCharacter->SetIsMovement(true);
 
