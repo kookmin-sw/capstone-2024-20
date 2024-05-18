@@ -6,6 +6,8 @@
 #include "../Common/HP.h"
 #include "Enemy.generated.h"
 
+class UPopupEnemy;
+class UWidgetComponent;
 class AMyCharacter;
 class AEnemy;
 
@@ -20,6 +22,8 @@ public:
 	AEnemy();
 	virtual void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// [begin] IHP interface
 	virtual int32 GetMaxHP() const override;
 	virtual int32 GetCurrentHP() const override;
@@ -29,6 +33,10 @@ public:
 	virtual void Damage(const int32 DamageAmount) override;
 	virtual void Die() override;
 	// [end] IHP interface
+
+	// ! Reliable로 설정할 경우, 클라이언트에서 CurrentHP가 Replicated되지 않는 문제가 발생하여 Unreliable로 설정
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRPC_Damage();
 	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
 	void Attack(AMyCharacter* MyCharacter);
@@ -55,9 +63,18 @@ public:
 
 private:
 	// [begin] IHP interface
+	UPROPERTY(Replicated)
 	int32 MaxHP = 0;
+
+	UPROPERTY(Replicated)
 	int32 CurrentHP = 0;
 	// [end] IHP interface
+
+	UPROPERTY()
+	UWidgetComponent* PopupEnemyWidgetComponent = nullptr;
+
+	UPROPERTY()
+	UPopupEnemy* PopupEnemyWidget = nullptr;
 	
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;

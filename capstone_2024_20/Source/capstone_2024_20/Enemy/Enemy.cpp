@@ -3,6 +3,8 @@
 #include "../MyCharacter.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "capstone_2024_20/WidgetBlueprint/PopupEnemy.h"
+#include "Net/UnrealNetwork.h"
 
 AEnemy::AEnemy(): SkeletalMesh(nullptr)
 {
@@ -20,6 +22,12 @@ AEnemy::AEnemy(): SkeletalMesh(nullptr)
 
 	SkeletalMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	SkeletalMesh->SetAnimInstanceClass(LoadObject<UClass>(nullptr, TEXT("/Script/Engine.AnimBlueprint'/Game/GameObjects/Enemy/ABP_Enemy.ABP_Enemy_C'")));
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Enemy/BP_PopupEnemy.BP_PopupEnemy_C'"));
+	PopupEnemyWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
+	PopupEnemyWidgetComponent->SetWidgetClass(WidgetClass.Class);
+	PopupEnemyWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	PopupEnemyWidgetComponent->SetupAttachment(RootComponent);
 }
 
 void AEnemy::BeginPlay()
@@ -28,6 +36,17 @@ void AEnemy::BeginPlay()
 
 	SetMaxHP(2);
 	SetCurrentHP(2);
+
+	PopupEnemyWidget = Cast<UPopupEnemy>(PopupEnemyWidgetComponent->GetUserWidgetObject());
+	PopupEnemyWidget->SetHPProgressBarPercent(1);
+}
+
+void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEnemy, MaxHP);
+	DOREPLIFETIME(AEnemy, CurrentHP);
 }
 
 int32 AEnemy::GetMaxHP() const
@@ -80,11 +99,18 @@ void AEnemy::Damage(const int32 DamageAmount)
 	{
 		Die();
 	}
+
+	MulticastRPC_Damage();
 }
 
 void AEnemy::Die()
 {
 	EnemyDieDelegate.Execute(this);
+}
+
+void AEnemy::MulticastRPC_Damage_Implementation()
+{
+	PopupEnemyWidget->SetHPProgressBarPercent(static_cast<float>(CurrentHP) / MaxHP);
 }
 
 void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
