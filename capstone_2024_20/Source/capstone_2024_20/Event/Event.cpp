@@ -1,5 +1,5 @@
 ﻿#include "Event.h"
-
+#include "capstone_2024_20/MyShip.h"
 #include "Particles/ParticleSystemComponent.h"
 
 AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
@@ -30,6 +30,25 @@ void AEvent::BeginPlay()
 
 void AEvent::Operate()
 {
-	// Todo@autumn - This is a temporary implementation, need to replace it.
+	EventOperateDelegate.ExecuteIfBound(this);
 	Destroy();
+}
+
+void AEvent::DamageMyShip(AMyShip* MyShip)
+{
+	MyShip->Damage(1);
+	CurrentDamageCooldown = DamageCooldown;
+}
+
+void AEvent::ReduceCurrentDamageCooldown(const float DeltaTime)
+{
+	if (CurrentDamageCooldown > 0.0f)
+	{
+		CurrentDamageCooldown -= DeltaTime;
+	}
+}
+
+bool AEvent::CanDamageMyShip() const
+{
+	return CurrentDamageCooldown <= 0.0f;
 }

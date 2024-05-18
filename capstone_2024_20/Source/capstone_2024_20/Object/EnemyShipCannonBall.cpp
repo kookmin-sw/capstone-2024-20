@@ -3,6 +3,7 @@
 #include "Particles/ParticleSystem.h"
 #include "../MyShip.h"
 #include "capstone_2024_20/Event/Event.h"
+#include "capstone_2024_20/Sailing/SailingSystem.h"
 
 AEnemyShipCannonBall::AEnemyShipCannonBall(): StaticMesh(nullptr)
 {
@@ -39,25 +40,32 @@ void AEnemyShipCannonBall::Tick(float DeltaTime)
 void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
-	
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyWithDelay, DestroyDelayTime, false);
-	
-	AMyShip* MyShip = Cast<AMyShip>(OtherActor);
-	if(MyShip == nullptr)
+	if (HasAuthority())
 	{
-		return;
-	}
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyWithDelay, DestroyDelayTime, false);
+		StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+		AMyShip* MyShip = Cast<AMyShip>(OtherActor);
+		if(MyShip == nullptr)
+		{
+			return;
+		}
 		
-	MyShip->Damage(Damage);
+		MyShip->Damage(Damage);
 
-	if (CanStartFire())
-	{
-		StartFire(MyShip);
+		if (CanStartFire())
+		{
+			StartFire(MyShip);
+		}
 	}
-	
-	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	MulticastRPC_OnHit(Hit);
+}
+
+void AEnemyShipCannonBall::MulticastRPC_OnHit_Implementation(const FHitResult& Hit)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
 }
 
 void AEnemyShipCannonBall::DestroyWithDelay()
@@ -87,4 +95,11 @@ void AEnemyShipCannonBall::StartFire(AMyShip* MyShip) const
 	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
 	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
 	SpawnedEvent->SetActorLocation(SpawnLocation);
+
+	// [begin] ! Never modify or call anything of SailingSystem instance in this class except for these lines.
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASailingSystem::StaticClass(), FoundActors);
+	ASailingSystem* SailingSystem = Cast<ASailingSystem>(FoundActors[0]);
+	SailingSystem->AddSpawnedEventFromEnemyShipCannonBall(SpawnedEvent);
+	// [end] ! Never modify or call anything of SailingSystem instance in this class except for these lines.
 }

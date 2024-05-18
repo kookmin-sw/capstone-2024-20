@@ -30,7 +30,8 @@ public:
 
 	void OnEnemyDie(AEnemy* Enemy);
 	void OnEnemyShipDie(AEnemyShip* EnemyShip);
-
+	void OnEventOperate(AEvent* Event);
+	
 	void CreateMap();
 	void CreateObstacles() const;
 	
@@ -43,6 +44,7 @@ public:
 	int GetCurrency() const;
 
 	void AddDelegateToPopupUpgrade();
+	void AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event);
 
 	void UpgradeMyShipMoveSpeed();
 	void UpgradeMyShipHandling();

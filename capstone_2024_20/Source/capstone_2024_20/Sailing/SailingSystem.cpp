@@ -13,6 +13,7 @@
 #include "../MyIngameHUD.h"
 #include "../Upgrade/UpgradeWidgetElement.h"
 #include "Net/UnrealNetwork.h"
+#include "../Event/Event.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
                                   Destination(nullptr)
@@ -40,8 +41,6 @@ void ASailingSystem::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
-
-
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -156,6 +155,16 @@ void ASailingSystem::Tick(float DeltaTime)
 		Enemy->ReduceCurrentAttackCooldown(DeltaTime);
 	}
 
+	for (const auto Event : Events)
+	{
+		if (Event->CanDamageMyShip())
+		{
+			Event->DamageMyShip(MyShip);
+		}
+		
+		Event->ReduceCurrentDamageCooldown(DeltaTime);
+	}
+
 	CalculateEnemyInAttackRange();
 }
 
@@ -178,6 +187,11 @@ void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 	EnemyShips.Remove(EnemyShip);
 	EnemyShip->Destroy();
 	EarnCurrency(100);
+}
+
+void ASailingSystem::OnEventOperate(AEvent* Event)
+{
+	Events.Remove(Event);
 }
 
 void ASailingSystem::CreateMap()
@@ -249,6 +263,12 @@ void ASailingSystem::AddDelegateToPopupUpgrade()
 	PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipMoveSpeed);
 	PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipHandling);
 	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
+}
+
+void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)
+{
+	Event->EventOperateDelegate.BindUObject(this, &ASailingSystem::OnEventOperate);
+	Events.Add(Event);
 }
 
 void ASailingSystem::UpgradeMyShipMoveSpeed()
@@ -378,12 +398,10 @@ float ASailingSystem::DestinationProgress()
 		// 진행도 계산
 		Progress = 1.0f - (CurrentDistance / TotalDistance);
 		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
-		
 	}
-	return Progress;
 	
+	return Progress;
 }
-
 
 // nullable
 AMyCharacter* ASailingSystem::FindNearestMyCharacter(const AEnemy* Enemy) const
