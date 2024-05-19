@@ -21,12 +21,8 @@ void ACameraPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
 void ACameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald,
-		TEXT("AAAA"));
 }
 

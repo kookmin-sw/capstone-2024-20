@@ -2,7 +2,6 @@
 #include "../EnemyShip/EnemyShip.h"
 #include "../Enemy/Enemy.h"
 #include "../MyShip.h"
-#include "../Event/Event.h"
 #include "../Trigger/Trigger.h"
 #include "../Map/Obstacle.h"
 #include "Blueprint/UserWidget.h"
@@ -10,9 +9,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
-#include "../Object/UpgradeObject.h"
+#include "../Object/Destination.h"
+#include "../MyIngameHUD.h"
+#include "../Upgrade/UpgradeWidgetElement.h"
+#include "Net/UnrealNetwork.h"
+#include "../Event/Event.h"
 
-ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr)
+ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
+                                  Destination(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -26,20 +30,17 @@ void ASailingSystem::BeginPlay()
 	
 	GameOverTrigger = NewObject<UTrigger>();
 	GameOverTrigger->Initialize("T_0002", this);
-
+	
 	CreateMap();
 
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	
-	//Spawn UpgradeObject
-	const FVector Location = FVector(1400, 400, 1000);
-	AUpgradeObject* SpawnedUpgradeObject = GetWorld()->SpawnActor<AUpgradeObject>(AUpgradeObject::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
-	SpawnedUpgradeObject->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
-	SpawnedUpgradeObject->SetActorRelativeLocation(Location);
-	
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -47,17 +48,24 @@ void ASailingSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	if (MyShip == nullptr)
 	{
 		return;
 	}
 
-	if (bIsClear)
+	if (bIsClear || bIsGameOver)
 	{
 		return;
 	}
 
 	ElapsedTime += DeltaTime;
+	
+	SetMyCharacters();
 	
 	if (ClearTrigger->IsTriggered() && !bIsClear)
 	{
@@ -75,45 +83,85 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	if (GameOverTrigger->IsTriggered())
 	{
-		// Todo@autumn do something
+		const auto GameOverWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageFailPopUpWidget.StageFailPopUpWidget_C'");
+		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,GameOverWidgetRef); StagePopUpWidgetClass != nullptr)
+		{
+			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
+			{
+				PopUpWidget->AddToViewport();
+			}
+		}
+		
+		bIsGameOver = true;
 	}
 
-	SpawnEnemyShipTimer += DeltaTime;
-
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (SpawnEnemyShipTimer >= 5.0f)
+	for (const auto MyCharacter : MyCharacters)
 	{
-		SpawnEnemyShip();
-		SpawnEnemyShipTimer = 0.0f;
+		if (MyCharacter->GetCurrentPlayerState() == UserState::DEAD)
+		{
+			MyCharacter->ReduceReviveCooldown(DeltaTime);
+
+			if (MyCharacter->CanRevive())
+			{
+				MyCharacter->Revive();
+			}
+		}
+		
+		MyCharacter->ReduceAttackCooldown(DeltaTime);
 	}
 
 	for (const auto EnemyShip : EnemyShips)
 	{
-		EnemyShip->LookAtMyShip(MyShip);
-		EnemyShip->MoveToMyShip(MyShip);
-
-		if (const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip, DeltaTime); SpawnedEnemy != nullptr)
+		if (EnemyShip->CanMove(MyShip))
 		{
-			Enemies.Add(SpawnedEnemy);
-			SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
+			EnemyShip->MoveToMyShip(MyShip, DeltaTime);
+		}
+
+		if (EnemyShip->CanFireCannon())
+		{
+			EnemyShip->FireCannon(DeltaTime);
 		}
 	}
 
 	for (const auto Enemy : Enemies)
 	{
-		// Todo@autumn - This is a temporary solution
-		Enemy->MoveToMyCharacter(MyCharacters[0]);
+		if (AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy); NearestMyCharacter != nullptr)
+		{
+			if (Enemy->CanMove())
+			{
+				Enemy->MoveToMyCharacter(NearestMyCharacter);
+			}
+
+			if (Enemy->CanAttack())
+			{
+				if (const float Distance = FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()); Distance <= Enemy->GetDistanceToMyCharacter())
+				{
+					Enemy->Attack(NearestMyCharacter);
+				}	
+			}	
+		}
+
+		Enemy->ReduceCurrentAttackCooldown(DeltaTime);
+	}
+
+	for (const auto Event : Events)
+	{
+		if (Event->CanDamageMyShip())
+		{
+			Event->DamageMyShip(MyShip);
+		}
+		
+		Event->ReduceCurrentDamageCooldown(DeltaTime);
 	}
 
 	CalculateEnemyInAttackRange();
+}
 
-	SpawnEventTimer += DeltaTime;
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	if (SpawnEventTimer >= 10.0f)
-	{
-		SpawnEvent();
-		SpawnEventTimer = 0.0f;
-	}
+void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASailingSystem, Currency);
+	DOREPLIFETIME(ASailingSystem, Progress);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -123,6 +171,15 @@ void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
 	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
 }
 
+void ASailingSystem::OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies)
+{
+	for (const auto SpawnedEnemy : SpawnedEnemies)
+	{
+		SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
+		Enemies.Add(SpawnedEnemy);
+	}
+}
+
 void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 {
 	EnemyShips.Remove(EnemyShip);
@@ -130,6 +187,10 @@ void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 	EarnCurrency(100);
 }
 
+void ASailingSystem::OnEventOperate(AEvent* Event)
+{
+	Events.Remove(Event);
+}
 
 void ASailingSystem::CreateMap()
 {
@@ -137,7 +198,8 @@ void ASailingSystem::CreateMap()
 	Map->Initialize();
 	Map->CellularAutomata();
 
-	CreateObstacles();
+	// ! 기술 설명 등 필요한 경우에 사용할 수 있도록, 제거하지 않고 주석 처리하여 남겨둔다.
+	// CreateObstacles();
 }
 
 void ASailingSystem::CreateObstacles() const
@@ -147,35 +209,6 @@ void ASailingSystem::CreateObstacles() const
 		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
 		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
 	}
-}
-
-void ASailingSystem::SpawnEnemyShip()
-{
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	auto RandomX = FMath::RandRange(-20000.0f, 20000.0f);
-	auto RandomY = FMath::RandRange(-20000.0f, 20000.0f);
-
-	RandomX = RandomX < 0 ? RandomX - 10000.0f : RandomX + 10000.0f;
-	RandomY = RandomY < 0 ? RandomY - 10000.0f : RandomY + 10000.0f;
-	
-	const auto RandomLocation = FVector(RandomX, RandomY, 0.0f);
-	AEnemyShip* SpawnedEnemyShip = GetWorld()->SpawnActor<AEnemyShip>(AEnemyShip::StaticClass(), FTransform(RandomLocation));
-	EnemyShips.Add(SpawnedEnemyShip);
-	
-	SpawnedEnemyShip->EnemyShipDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyShipDie);
-}
-
-void ASailingSystem::SpawnEvent()
-{
-	// Todo@autumn - This is a temporary solution, replace it with data.
-	const auto RandomX = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomY = FMath::RandRange(-100.0f, 100.0f);
-	const auto RandomLocation = FVector(RandomX, RandomY, 850.0f);
-	
-	AEvent* SpawnedEvent = GetWorld()->SpawnActor<AEvent>(AEvent::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)));
-	SpawnedEvent->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
-	SpawnedEvent->SetActorRelativeLocation(RandomLocation);
-	Events.Add(SpawnedEvent);
 }
 
 void ASailingSystem::CalculateEnemyInAttackRange()
@@ -204,7 +237,6 @@ void ASailingSystem::CalculateEnemyInAttackRange()
 
 void ASailingSystem::EarnCurrency(const int32 Amount)
 {
-	// Todo@autumn Need to think maximum currency
 	Currency += Amount;
 }
 
@@ -218,14 +250,56 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 	Currency -= Amount;
 }
 
-void ASailingSystem::UpgradeMyShip() const
+int ASailingSystem::GetCurrency() const
 {
-	if (MyShip == nullptr)
+	return Currency;
+}
+
+void ASailingSystem::AddDelegateToPopupUpgrade()
+{
+	const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
+	PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipMoveSpeed);
+	PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipHandling);
+	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
+}
+
+void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)
+{
+	Event->EventOperateDelegate.BindUObject(this, &ASailingSystem::OnEventOperate);
+	Events.Add(Event);
+}
+
+void ASailingSystem::UpgradeMyShipMoveSpeed()
+{
+	if (Currency < UpgradeCost)
 	{
 		return;
 	}
 
-	MyShip->Upgrade();
+	UseCurrency(UpgradeCost);
+	MyShip->UpgradeMoveSpeed();
+}
+
+void ASailingSystem::UpgradeMyShipHandling()
+{
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
+	MyShip->UpgradeHandling();
+}
+
+void ASailingSystem::UpgradeMyShipCannonAttack()
+{
+	if (Currency < UpgradeCost)
+	{
+		return;
+	}
+
+	UseCurrency(UpgradeCost);
+	MyShip->UpgradeCannonAttack();
 }
 
 float ASailingSystem::GetElapsedTime() const
@@ -233,23 +307,126 @@ float ASailingSystem::GetElapsedTime() const
 	return ElapsedTime;
 }
 
+bool ASailingSystem::IsAllMyCharactersDead() const
+{
+	bool bIsAllMyCharactersDead = true;
+
+	for (const auto MyCharacter : MyCharacters)
+	{
+		if (MyCharacter->GetCurrentPlayerState() != UserState::DEAD)
+		{
+			bIsAllMyCharactersDead = false;
+			break;
+		}
+	}
+	
+	return bIsAllMyCharactersDead;
+}
+
+bool ASailingSystem::IsReachedDestination() const
+{
+	const FVector DestinationLocation = Destination->GetActorLocation();
+	const FVector MyShipLocation = MyShip->GetActorLocation();
+	const double Distance = FVector::Dist(DestinationLocation, MyShipLocation);
+
+	return Distance < DistanceToDestination;
+}
+
+AMyShip* ASailingSystem::GetMyShip() const
+{
+	return MyShip;
+}
+
 void ASailingSystem::SetMyShip()
 {
-	// Todo@autumn - This is a temporary solution, replace it.
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyShip::StaticClass(), FoundActors);
 	if (FoundActors.Num() > 0)
 	{
 		MyShip = Cast<AMyShip>(FoundActors[0]);
 	}
+	InitLocation = MyShip->GetActorLocation();
 }
 
 void ASailingSystem::SetMyCharacters()
 {
+	MyCharacters.Empty();
+	
 	TArray<AActor*> FoundMyCharacters;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCharacter::StaticClass(), FoundMyCharacters);
 	for (const auto FoundMyCharacter : FoundMyCharacters)
 	{
 		MyCharacters.Add(Cast<AMyCharacter>(FoundMyCharacter));
 	}
+}
+
+void ASailingSystem::SetEnemyShips()
+{
+	EnemyShips.Empty();
+
+	TArray<AActor*> FoundEnemyShips;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyShip::StaticClass(), FoundEnemyShips);
+	for (const auto FoundEnemyShip : FoundEnemyShips)
+	{
+		AEnemyShip* CastedEnemyShip = Cast<AEnemyShip>(FoundEnemyShip);
+		CastedEnemyShip->EnemyShipDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyShipDie);
+		CastedEnemyShip->SpawnEnemyDelegate.BindUObject(this, &ASailingSystem::OnEnemiesSpawned);
+		EnemyShips.Add(CastedEnemyShip);
+	}
+}
+
+void ASailingSystem::SetDestination()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADestination::StaticClass(), FoundActors);
+	if (FoundActors.Num() > 0)
+	{
+		Destination = Cast<ADestination>(FoundActors[0]);
+	}
+}
+
+float ASailingSystem::DestinationProgress()
+{
+	if(Destination)
+	{
+		const FVector DestinationLocation = Destination->GetActorLocation();
+		const FVector MyShipLocation = MyShip->GetActorLocation();
+		const float TotalDistance = FVector::Dist(InitLocation, DestinationLocation); // 전체 거리
+		const float CurrentDistance = FVector::Dist(DestinationLocation, MyShipLocation);
+
+		// 진행도 계산
+		Progress = 1.0f - (CurrentDistance / TotalDistance);
+		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+	}
+	
+	return Progress;
+}
+
+// nullable
+AMyCharacter* ASailingSystem::FindNearestMyCharacter(const AEnemy* Enemy) const
+{
+	AMyCharacter* NearestMyCharacter = nullptr;
+
+	for (const auto MyCharacter : MyCharacters)
+	{
+		if (MyCharacter->GetCurrentPlayerState() == UserState::DEAD)
+		{
+			continue;
+		}
+
+		if (NearestMyCharacter == nullptr)
+		{
+			NearestMyCharacter = MyCharacter;
+		}
+		else
+		{
+			if (const auto Distance = FVector::Dist(Enemy->GetActorLocation(), MyCharacter->GetActorLocation());
+				Distance < FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()))
+			{
+				NearestMyCharacter = MyCharacter;
+			}
+		}
+	}
+
+	return NearestMyCharacter;
 }

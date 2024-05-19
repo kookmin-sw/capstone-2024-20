@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,34 +6,25 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "MyCannon.h"
-#include "CannonBall.h"
 #include "MyCannonBallBox.h"
-#include "MyCarryCannonBall.h"
 #include "MyCharacter.h"
 #include "MyShip.h"
+#include "MyBed.h"
 #include "MyPlayerController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class CAPSTONE_2024_20_API AMyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	// Sets default values for this character's properties
 	AMyPlayerController();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	virtual void Tick(float DeltaSeconds) override;
 	
 public:	
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
-
 	virtual void OnPossess(APawn* InPawn) override;
 	
 private:
@@ -62,7 +51,7 @@ private:
 	
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
-	class UWidgetComponent* TextWidget;
+	UWidgetComponent* TextWidget;
 
 private:
 	AActor* ControlledActor;
@@ -72,6 +61,7 @@ private:
 	AMyCannon* Cannon;
 	AMyObject* CurrentHitObject;
 	AMyCannonBallBox* CannonBallBox;
+	AMyBed* Bed;
 	UStaticMesh* CannonBall;
 	UEnhancedInputLocalPlayerSubsystem* Subsystem;
 	UInputMappingContext* LastMappingContext;
@@ -88,19 +78,21 @@ private:
 	void Interaction_Pressed();
 	void Interaction_Trigger();
 	void Interaction_Released();
-
 	
 	void DraggingRotate(const FInputActionInstance& Instance);
 
+	FTimerHandle HealthTimerHandle;
 	
 public:
 	void Move(const FInputActionInstance& Instance);
-	void Interaction(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Shoot(AMyCannon* CannonActor);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Attack();
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_RotateCannon(AMyCannon* CannonActor, FRotator newRot);
@@ -132,14 +124,26 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_DestroyCarryCannonBall(AMyCharacter* user);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_PlayerSleep(AMyCharacter* user, bool b, AMyBed* bed);
+
+	UFUNCTION()
+	void PlayerSleep();
+
+	UFUNCTION()
+	void PlayerAwake();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_PlayerAwake(AMyCharacter* user, bool b, AMyBed* bed);
+
 protected:
-	
 	enum class ControlMode
 	{
 		CHARACTER,
 		SHIP,
 		CANNON,
-		TELESCOPE
+		TELESCOPE,
+		BED
 	};
 	
 	void SetControlMode(ControlMode NewControlMode);

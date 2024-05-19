@@ -14,9 +14,6 @@ void UInGameRoomInfoWidget::InitSetText(const FString& Name, const FString& Code
 void UInGameRoomInfoWidget::Show()
 {
 	PlayAnimationForward(InfoAnimation);
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
-	                                 FString::Printf(TEXT("룸 코드")));
 }
 
 void UInGameRoomInfoWidget::Hide()

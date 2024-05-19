@@ -1,18 +1,16 @@
-
 #pragma once
 
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "CoreMinimal.h"
 #include "MyObject.h"
-#include "Camera/CameraComponent.h"
 #include "Common/NamePlateWidgetComponent.h"
 #include "GameFramework/Character.h"
-#include "UObject/ObjectRename.h"
+#include "Common/HP.h"
 #include "MyCharacter.generated.h"
 
-
+class UPopupInteraction;
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
+class UCharacterChangerComponent;
 class USpringArmComponent;
 class AEnemy;
 
@@ -21,31 +19,30 @@ enum class UserState : uint8
 {
 	NONE,
 	CARRYING,
-	DRAGGING
+	DRAGGING,
+	SLEEPING,
+	DEAD
 };
 
 UCLASS()
-class CAPSTONE_2024_20_API AMyCharacter : public ACharacter
+class CAPSTONE_2024_20_API AMyCharacter : public ACharacter, public IHP
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AMyCharacter();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
-public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	class UWidgetComponent* TextWidget;
+
+	UPROPERTY(Category=UI, VisibleAnywhere)
+	UPopupInteraction* PopupInteraction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UNamePlateWidgetComponent* NamePlateWidget;
@@ -58,22 +55,22 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<AActor> BP_CannonBallClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UCharacterChangerComponent* CharacterChangerComponent;
 	
 protected:
-
-	unsigned int PlayerMaxHP = 10;
-	unsigned int PlayerHP = PlayerMaxHP;
-	
-	bool bIsChanging=false;
-	float TargetArmLength;
-	FVector TargetLocation;
-	FRotator TargetRotation;
-	float ChangeSpeed = 5.0f;
 	bool bIsOverlap = false;
 
+	UPROPERTY()
 	AMyObject* CurrentHitObject;
+	
 	FString CurrentHitObjectName;
+
+	UPROPERTY()
 	AActor* SpawnedCannonBall;
+
+	UPROPERTY()
 	AActor* CurrentCarryObject;
 	
 	UFUNCTION()
@@ -86,57 +83,113 @@ protected:
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
-
-
 	
 private:
+	// [begin] IHP interface
 	UPROPERTY(Replicated)
-	FRotator MeshRotation;
+	int32 MaxHP = 0;
+	
+	UPROPERTY(Replicated)
+	int32 CurrentHP = 0;
+	// [end] IHP interface
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD;
+	
+	const float ReviveCooldown = 10.0f;
+
+	UPROPERTY(Replicated)
+	float CurrentReviveCooldown = 0.0f;
+	
+	const float AttackCooldown = 1.0f;
+
+	UPROPERTY(Replicated)
+	float CurrentAttackCooldown = 0.0f;
 
 	UPROPERTY()
 	AEnemy* EnemyInAttackRange = nullptr;
-	
-public:
 
+public:
+	// [begin] IHP interface
+	virtual int32 GetMaxHP() const override;
+	virtual int32 GetCurrentHP() const override;
+	virtual void SetMaxHP(const int32 NewMaxHP) override;
+	virtual void SetCurrentHP(const int32 NewCurrentHP) override;
+	virtual void Heal(const int32 HealAmount) override;
+	virtual void Damage(const int32 DamageAmount) override;
+	virtual void Die() override;
+	// [end] IHP interface
+	
+	void Revive();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Die() const;
+
+	UFUNCTION (NetMulticast, Reliable)
+	void Multicast_Revive() const;
+	
+	UPROPERTY(Replicated)
+	bool bIsSleeping = false;
 	TArray<FString> ObjectList = {
 		TEXT("Cannon"), 
 		TEXT("SteelWheel"), 
 		TEXT("CannonBallBox"), 
-		TEXT("Telescope")
+		TEXT("Telescope"),
+		TEXT("Bed"),
+		TEXT("Upgrade"),
+		TEXT("FireEvent")
 	};
-	
-	
+
+	TMap<FString, FString> InteractionTextMap = {
+		{TEXT("Cannon"), TEXT("대포")},
+		{TEXT("SteelWheel"), TEXT("운전")},
+		{TEXT("CannonBallBox"), TEXT("포탄 꺼내기")},
+		{TEXT("Telescope"), TEXT("망원경")},
+		{TEXT("Bed"), TEXT("휴식")},
+		{TEXT("Upgrade"), TEXT("업그레이드")},
+		{TEXT("FireEvent"), TEXT("불 끄기")}
+	};
+
+	UPROPERTY(Replicated)
 	UserState CurrentPlayerState = UserState::NONE;
-	
+
+	UserState GetCurrentPlayerState() const;
 	void SetPlayerState(UserState NewPlayerState);
+
+	static UserState GetUserStateNone();
+	static UserState GetUserStateCarrying();
+	static UserState GetUserStateDragging();
+	static UserState GetUserStateSleeping();
+
+	UFUNCTION()
+	void SetNamePlate() const;
 	
-	UserState GetUserStateNone();
-	UserState GetUserStateCarrying();
-	UserState GetUserStateDragging();
+	UFUNCTION()
+	bool GetIsOverLap() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSleeping();
+
+	UFUNCTION()
+	void SetIsSleeping(bool b);
 
 	UFUNCTION(Server, Reliable)
-	void ServerRPC_MeshRotation(FRotator NewRotation);
+	void ServerRPC_SetIsSleeping(bool b);
 
 	UFUNCTION()
-	void SetNamePlate();
-	
-	UFUNCTION()
-	bool GetIsOverLap();
+	void SetTextWidgetVisible(bool b) const;
 
 	UFUNCTION()
-	void SetTextWidgetVisible(bool b);
+	bool GetTextWidgetVisible() const;
 
 	UFUNCTION()
-	bool GetTextWidgetVisible();
-
-	UFUNCTION()
-	AMyObject* GetCurrentHitObject();
+	AMyObject* GetCurrentHitObject() const;
 
 	UFUNCTION()
 	FString GetCurrentHitObjectName();
 
 	UFUNCTION()
-	void SetCurrentCarryObject(AActor* obj);
+	void SetCurrentCarryObject(AActor* OBJ);
 
 	UFUNCTION()
 	void DestroyCannonBall();
@@ -145,39 +198,32 @@ public:
 	void DragObject();
 
 	UFUNCTION()
-	void DropObject(AActor* ship);
+	void DropObject(AActor* Ship) const;
 
-	void Attack() const;
+	void Attack();
 
-	UFUNCTION()
-	unsigned int GetPlayerHP();
-
-	UFUNCTION()
-	void SetPlayerHP(unsigned int hp);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Attack();
 	
-	UFUNCTION()
-	void IncreaseHP(int plusHP);
-
-	UFUNCTION()
-	void DecreaseHP(unsigned int minusHP);
-
-	UFUNCTION()
-	unsigned int GetPlayerMaxHP();
-
-	UFUNCTION()
-	void SetPlayerMaxHP(unsigned int hp);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Attack() const;
 	
-	UFUNCTION()
-	void IncreaseMaxHP(int plusHP);
-
-	UFUNCTION()
-	void DecreaseMaxHP(int minusHP);
-
-	UFUNCTION()
-	void PlayerDead();
-
-	UFUNCTION()
-	FRotator GetMeshRotation();
-
 	void SetEnemyInAttackRange(AEnemy* Enemy);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_SetEnemyInAttackRange(AEnemy* Enemy);
+
+	UFUNCTION(BlueprintPure)
+	float GetHPPercent() const;
+	
+	void ReduceReviveCooldown(float DeltaTime);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_ReduceReviveCooldown();
+	
+	bool CanRevive() const;
+
+	bool IsAttacking() const;
+	void ReduceAttackCooldown(float DeltaTime);
+	bool CanAttack() const;
 };

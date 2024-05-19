@@ -1,10 +1,12 @@
-﻿#pragma once
+﻿// ReSharper disable IdentifierTypo
+#pragma once
 
 #include "CoreMinimal.h"
 #include "../MyObject.h"
 #include "GameFramework/Actor.h"
 #include "UpgradeObject.generated.h"
 
+class AMyIngameHUD;
 class UBoxComponent;
 
 UCLASS()
@@ -18,10 +20,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Operate() override;
 
-private:
-	UPROPERTY(EditAnywhere)
-	USkeletalMeshComponent* SkeletalMesh;
-
-	UPROPERTY(EditAnywhere)
-	UBoxComponent* BoxComponent;
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD = nullptr;
 };

@@ -8,7 +8,7 @@ public class capstone_2024_20 : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OnlineSubsystemSteam", "OnlineSubsystem" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OnlineSubsystemSteam", "OnlineSubsystem", "NavigationSystem", "LevelSequence", "MovieScene" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput", "UMG" });
 

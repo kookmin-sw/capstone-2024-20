@@ -23,14 +23,13 @@ void PlayerListWidgetCreate::PostLogin(TArray<APlayerState*> PlayerStates)
 	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
 	                                 TEXT("Create PostLogin"));
 	*ControllerPlayerList = new UPlayerListWidgetModifier(PlayerListWidget);
-	(**ControllerPlayerList).PostLogin(PlayerStates);
+	(*ControllerPlayerList)->PostLogin(PlayerStates);
 	*ControllerPlayerListWidget = PlayerListWidget;
 }
 
 UPlayerListWidget* PlayerListWidgetCreate::CreatePlayerListWidget()
 {
-	UPlayerListWidget* WidgetInstance = nullptr;
-	WidgetInstance = CreateWidget<UPlayerListWidget>(CurrentWorld, PlayerListWidgetClass);
+	UPlayerListWidget* WidgetInstance = CreateWidget<UPlayerListWidget>(CurrentWorld, PlayerListWidgetClass);
 	WidgetInstance->AddToViewport(100);
 
 	return WidgetInstance;

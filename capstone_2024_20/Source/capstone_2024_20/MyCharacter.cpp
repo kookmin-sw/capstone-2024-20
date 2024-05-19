@@ -1,43 +1,38 @@
 #include "MyCharacter.h"
-
+#include "CharacterChangerComponent.h"
+#include "MyAudioInstance.h"
+#include "MyIngameHUD.h"
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/PlayerState.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Pirate/PirateAnimInstance.h"
+#include "WidgetBlueprint/PopupInteraction.h"
 
 class AStaticMeshActor;
-// Sets default values
+
 AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	
 	TextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
-	TextWidget->SetupAttachment(GetMesh());
-	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
+	TextWidget->SetupAttachment(RootComponent);
 	TextWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
 	NamePlateWidget = CreateDefaultSubobject<UNamePlateWidgetComponent>(TEXT("NICKNAMEWIDGET"));
 	NamePlateWidget->SetupAttachment(RootComponent);
 	
-	
+	CharacterChangerComponent = CreateDefaultSubobject<UCharacterChangerComponent>(TEXT("CharacterChanger"));
+	CharacterChangerComponent->SetIsReplicated(true);
 	
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
-	if(UI_HUD.Succeeded())
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("UMG Success"));
-		TextWidget->SetWidgetClass(UI_HUD.Class);
-		TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
-		TextWidget->SetVisibility(false);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("UMG Failed"));
-	}
+	TextWidget->SetWidgetClass(UI_HUD.Class);
+	TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+	TextWidget->SetVisibility(false);
 	
 	RootComponent = GetCapsuleComponent();
 
@@ -49,48 +44,44 @@ AMyCharacter::AMyCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 }
 
-// Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	check(GEngine != nullptr);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using FPSCharacter."));
+	
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	PopupInteraction = Cast<UPopupInteraction>(TextWidget->GetUserWidgetObject());
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
 
 	FTimerHandle timer;
-	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 2.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
+	
+	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
 
+	SetMaxHP(10);
+	SetCurrentHP(10);
 }
 
-
-
-
-
-// Called every frame
+// ReSharper disable once CppParameterMayBeConst
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	// ! 캐릭터에 Attach한 UI가 Movement에 따라 움직이는 문제가 있어, Tick에서 위치를 업데이트
+	TextWidget->SetWorldLocation(GetActorLocation() + FVector(0.0f, 0.0f, -200.0f));
 }
 
-//충돌 처리
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
 	if(CurrentPlayerState != UserState::DRAGGING)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
-		if(IsLocallyControlled())
-			TextWidget->SetVisibility(true);
 		bIsOverlap = true;
 	
 		for (const FString& Tag : ObjectList)
@@ -102,10 +93,15 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			}
 		}
 
+		if(IsLocallyControlled())
+		{
+			TextWidget->SetVisibility(true);
+			const FString PopupText = InteractionTextMap.FindRef(CurrentHitObjectName);
+			PopupInteraction->SetInteractionText(PopupText);
+		}
+
 		CurrentHitObject = Cast<AMyObject>(OtherActor);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, CurrentHitObject->GetName());
 	}
-		
 }
 
 void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -114,7 +110,6 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		if(OtherComp->ComponentTags.Contains(TEXT("Object")))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit Out"));
 			TextWidget->SetVisibility(false);
 			bIsOverlap = false;
 		}
@@ -122,59 +117,203 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 }
 
+int32 AMyCharacter::GetMaxHP() const
+{
+	return MaxHP;
+}
+
+int32 AMyCharacter::GetCurrentHP() const
+{
+	return CurrentHP;
+}
+
+void AMyCharacter::SetMaxHP(const int32 NewMaxHP)
+{
+	if (NewMaxHP < 0)
+	{
+		MaxHP = 0;
+		return;
+	}
+	
+	MaxHP = NewMaxHP;
+}
+
+void AMyCharacter::SetCurrentHP(const int32 NewCurrentHP)
+{
+	if (NewCurrentHP < 0)
+	{
+		CurrentHP = 0;
+		return;
+	}
+	
+	CurrentHP = NewCurrentHP;
+}
+
+void AMyCharacter::Heal(const int32 HealAmount)
+{
+	CurrentHP = FMath::Clamp(CurrentHP + HealAmount, 0, MaxHP);
+}
+
+void AMyCharacter::Damage(const int32 DamageAmount)
+{
+	if (CurrentHP == 0)
+	{
+		return;
+	}
+	
+	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, MaxHP);
+
+	if (CurrentHP == 0)
+	{
+		Die();
+	}
+}
+
+void AMyCharacter::Die()
+{
+	SetPlayerState(UserState::DEAD);
+	CurrentReviveCooldown = ReviveCooldown;
+	Multicast_Die();
+}
+
+void AMyCharacter::Multicast_Die_Implementation() const
+{
+	if (IsLocallyControlled())
+	{
+		MyInGameHUD->SetPopupDeadVisibility(true);
+	}
+}
+
+void AMyCharacter::Revive()
+{
+	CurrentHP = MaxHP;
+	SetPlayerState(UserState::NONE);
+	Multicast_Revive();
+}
+
+void AMyCharacter::Multicast_Revive_Implementation() const
+{
+	if (IsLocallyControlled())
+	{
+		MyInGameHUD->SetPopupDeadVisibility(false);
+	}
+}
+
+// ReSharper disable once CppParameterMayBeConst
+void AMyCharacter::ReduceReviveCooldown(float DeltaTime)
+{
+	if (CurrentReviveCooldown <= 0.0f)
+	{
+		return;
+	}
+	
+	CurrentReviveCooldown -= DeltaTime;
+	Multicast_ReduceReviveCooldown();
+}
+
+void AMyCharacter::Multicast_ReduceReviveCooldown_Implementation()
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	
+	MyInGameHUD->SetPopupDeadTextByReviveCooldown(CurrentReviveCooldown);
+}
+
+bool AMyCharacter::CanRevive() const
+{
+	return CurrentReviveCooldown <= 0.0f;
+}
+
+bool AMyCharacter::IsAttacking() const
+{
+	const UPirateAnimInstance* AnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+	return AnimInstance->bIsAttacking;
+}
+
+// ReSharper disable once CppParameterMayBeConst
+void AMyCharacter::ReduceAttackCooldown(float DeltaTime)
+{
+	if (CurrentAttackCooldown > 0.0f)
+	{
+		CurrentAttackCooldown -= DeltaTime;
+	}
+}
+
+bool AMyCharacter::CanAttack() const
+{
+	return CurrentAttackCooldown <= 0.0f;
+}
 
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMyCharacter, MeshRotation);
+	DOREPLIFETIME(AMyCharacter, bIsSleeping);
+	DOREPLIFETIME(AMyCharacter, CurrentAttackCooldown);
+	DOREPLIFETIME(AMyCharacter, MaxHP);
+	DOREPLIFETIME(AMyCharacter, CurrentHP);
+	DOREPLIFETIME(AMyCharacter, CurrentPlayerState);
+	DOREPLIFETIME(AMyCharacter, CurrentReviveCooldown);
 }
 
-
-void AMyCharacter::ServerRPC_MeshRotation_Implementation(FRotator NewRotation)
-{
-	MeshRotation = NewRotation;
-}
-
-void AMyCharacter::SetNamePlate()
+void AMyCharacter::SetNamePlate() const
 {
 	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
 }
 
-
-bool AMyCharacter::GetIsOverLap()
+bool AMyCharacter::GetIsOverLap() const
 {
 	return bIsOverlap;
 }
 
-void AMyCharacter::SetTextWidgetVisible(bool b)
+bool AMyCharacter::GetIsSleeping()
+{
+	return bIsSleeping;
+}
+
+void AMyCharacter::SetIsSleeping(const bool b)
+{
+	bIsSleeping = b;
+}
+
+void AMyCharacter::ServerRPC_SetIsSleeping_Implementation(const bool b)
+{
+	bIsSleeping = b;
+}
+
+void AMyCharacter::SetTextWidgetVisible(const bool b) const
 {
 	TextWidget->SetVisibility(b);
 }
 
-bool AMyCharacter::GetTextWidgetVisible()
+bool AMyCharacter::GetTextWidgetVisible() const
 {
 	return TextWidget->IsVisible();
 }
 
-
-AMyObject* AMyCharacter::GetCurrentHitObject()
+AMyObject* AMyCharacter::GetCurrentHitObject() const
 {
 	return CurrentHitObject;
 }
-
 
 FString AMyCharacter::GetCurrentHitObjectName()
 {
 	return CurrentHitObjectName;
 }
 
-void AMyCharacter::SetCurrentCarryObject(AActor* obj)
+void AMyCharacter::SetCurrentCarryObject(AActor* OBJ)
 {
-	CurrentCarryObject = obj;
+	CurrentCarryObject = OBJ;
 }
 
-void AMyCharacter::SetPlayerState(UserState NewPlayerState)
+UserState AMyCharacter::GetCurrentPlayerState() const
+{
+	return CurrentPlayerState;
+}
+
+void AMyCharacter::SetPlayerState(const UserState NewPlayerState)
 {
 	CurrentPlayerState = NewPlayerState;
 }
@@ -194,6 +333,11 @@ UserState AMyCharacter::GetUserStateDragging()
 	return UserState::DRAGGING;
 }
 
+UserState AMyCharacter::GetUserStateSleeping()
+{
+	return UserState::SLEEPING;
+}
+
 void AMyCharacter::DestroyCannonBall()
 {
 	if(CurrentCarryObject)
@@ -206,6 +350,8 @@ void AMyCharacter::DestroyCannonBall()
 void AMyCharacter::DragObject()
 {
 	CurrentHitObject->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	FRotator RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // -90도 회전 (캐릭터 메시도 -90도 회전시켜서 사용중)
+	CurrentHitObject->SetActorRelativeRotation(RelativeRotation);
 
 	if (CurrentHitObject)
 	{
@@ -219,19 +365,14 @@ void AMyCharacter::DragObject()
 				Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			}
 		}
-
 		CurrentHitObject->SetIsDragging(true);
-		
-		
 	}
-                    
-
 }
 
-void AMyCharacter::DropObject(AActor* ship)
+void AMyCharacter::DropObject(AActor* Ship) const
 {
 	CurrentHitObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	CurrentHitObject->AttachToActor(ship, FAttachmentTransformRules::KeepWorldTransform);
+	CurrentHitObject->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
 
 	if (CurrentHitObject)
 	{
@@ -246,93 +387,40 @@ void AMyCharacter::DropObject(AActor* ship)
 	}
 }
 
-void AMyCharacter::Attack() const
+void AMyCharacter::Attack()
+{
+	ServerRPC_Attack();
+}
+
+void AMyCharacter::ServerRPC_Attack_Implementation()
 {
 	if (EnemyInAttackRange != nullptr)
 	{
 		// Todo@autumn - Need to change the damage value
 		EnemyInAttackRange->Damage(1);
 	}
+
+	CurrentAttackCooldown = AttackCooldown;
+	MulticastRPC_Attack();
 }
 
-unsigned int AMyCharacter::GetPlayerHP()
+void AMyCharacter::MulticastRPC_Attack_Implementation() const
 {
-	return PlayerHP;
-}
-
-void AMyCharacter::SetPlayerHP(unsigned int hp)
-{
-	PlayerHP = hp;
-}
-
-
-void AMyCharacter::IncreaseHP(int plusHP)
-{
-	if(PlayerHP + plusHP > PlayerMaxHP)
-		PlayerHP = PlayerMaxHP;
-	else
-		PlayerHP += plusHP;
-}
-
-void AMyCharacter::DecreaseHP(unsigned int minusHP)
-{
-	if(PlayerHP <= minusHP)
-	{
-		PlayerHP = 0;
-		PlayerDead();
-	}
-	else
-	{
-		PlayerHP -= minusHP;
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Player HP: %u"), PlayerHP));
-	
-}
-
-unsigned int AMyCharacter::GetPlayerMaxHP()
-{
-	return PlayerMaxHP;
-}
-
-void AMyCharacter::SetPlayerMaxHP(unsigned int hp)
-{
-	PlayerMaxHP = hp;
-}
-
-
-void AMyCharacter::IncreaseMaxHP(int plusHP)
-{
-	PlayerMaxHP += plusHP;
-}
-
-void AMyCharacter::DecreaseMaxHP(int minusHP)
-{
-	PlayerMaxHP -= minusHP;
-	if(PlayerHP > PlayerMaxHP)
-		PlayerHP = PlayerMaxHP;
-}
-
-void AMyCharacter::PlayerDead()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Dead"));
-}
-
-FRotator AMyCharacter::GetMeshRotation()
-{
-	return MeshRotation;
+	UPirateAnimInstance* AnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->bIsAttacking = true;
 }
 
 void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
 {
+	MulticastRPC_SetEnemyInAttackRange(Enemy);
+}
+
+void AMyCharacter::MulticastRPC_SetEnemyInAttackRange_Implementation(AEnemy* Enemy)
+{
 	EnemyInAttackRange = Enemy;
 }
 
-
-
-
-
-
-
-
-
-
+float AMyCharacter::GetHPPercent() const
+{
+	return static_cast<float>(GetCurrentHP()) / static_cast<float>(GetMaxHP());
+}
