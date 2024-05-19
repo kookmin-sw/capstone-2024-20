@@ -6,6 +6,9 @@
 #include "CapInteractionActor.h"
 #include "GameStartActor.generated.h"
 
+class ULevelSequencePlayer;
+class ULevelSequence;
+
 UCLASS()
 class CAPSTONE_2024_20_API AGameStartActor : public ACapInteractionActor
 {
@@ -14,6 +17,11 @@ class CAPSTONE_2024_20_API AGameStartActor : public ACapInteractionActor
 public:
 	AGameStartActor();
 
+	UPROPERTY(EditAnywhere)
+	ULevelSequence* LevelSequence;
+	
+	UPROPERTY(EditAnywhere)
+	ULevelSequencePlayer* LevelSequencePlayer;
 protected:
 	virtual void BeginPlay() override;
 
@@ -21,4 +29,11 @@ public:
 	virtual void InteractionEnter() override;
 	virtual void InteractionLongEnter() override;
 	virtual void InteractionExit() override;
+
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlaySequence();
+
+	UFUNCTION()
+	void GameStart();
 };

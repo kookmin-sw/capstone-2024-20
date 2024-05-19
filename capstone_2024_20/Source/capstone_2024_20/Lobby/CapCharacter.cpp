@@ -203,6 +203,20 @@ void ACapCharacter::ClientRPC_SetLocationAndRotation_Implementation(FVector NewL
 	}
 }
 
+void ACapCharacter::SetVisibleWigetWithBool(bool IsActive)
+{
+	if(IsActive == true)
+	{
+		WidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
+		InteractionWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		WidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
+		InteractionWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
 void ACapCharacter::InitMovement()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = true;
