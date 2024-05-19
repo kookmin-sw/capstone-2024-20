@@ -1,6 +1,7 @@
 #include "MyShip.h"
 #include "Net/UnrealNetwork.h"
 #include "MyCannon.h"
+#include "Components/BoxComponent.h"
 #include "Enemy/EnemySpawnPoint.h"
 #include "Event/EventSpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,6 +11,12 @@ AMyShip::AMyShip()
 	PrimaryActorTick.bCanEverTick = true;
 	M_MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = M_MeshComponent;
+
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	BoxComponent->SetupAttachment(RootComponent);
+	BoxComponent->SetCollisionProfileName(TEXT("OverlapAll"));
+	BoxComponent->SetGenerateOverlapEvents(true);
+	BoxComponent->SetBoxExtent(FVector(3000.0f, 1000.0f, 1000.0f));
 }
 
 void AMyShip::BeginPlay()

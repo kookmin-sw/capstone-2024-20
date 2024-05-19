@@ -5,6 +5,7 @@
 #include "Common/HP.h"
 #include "MyShip.generated.h"
 
+class UBoxComponent;
 class UEventSpawnPoint;
 class UEnemySpawnPoint;
 class AMyCannon;
@@ -66,6 +67,9 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Camera_Telescope;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UBoxComponent* BoxComponent;
 
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent() const;
