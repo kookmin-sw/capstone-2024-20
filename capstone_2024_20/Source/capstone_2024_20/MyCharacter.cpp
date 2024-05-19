@@ -10,6 +10,7 @@
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Pirate/PirateAnimInstance.h"
+#include "WidgetBlueprint/PopupInteraction.h"
 
 class AStaticMeshActor;
 
@@ -19,8 +20,7 @@ AMyCharacter::AMyCharacter()
 	bReplicates = true;
 	
 	TextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
-	TextWidget->SetupAttachment(GetMesh());
-	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
+	TextWidget->SetupAttachment(RootComponent);
 	TextWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
 	NamePlateWidget = CreateDefaultSubobject<UNamePlateWidgetComponent>(TEXT("NICKNAMEWIDGET"));
@@ -30,16 +30,9 @@ AMyCharacter::AMyCharacter()
 	CharacterChangerComponent->SetIsReplicated(true);
 	
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
-	if(UI_HUD.Succeeded())
-	{
-		TextWidget->SetWidgetClass(UI_HUD.Class);
-		TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
-		TextWidget->SetVisibility(false);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("UMG Failed"));
-	}
+	TextWidget->SetWidgetClass(UI_HUD.Class);
+	TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+	TextWidget->SetVisibility(false);
 	
 	RootComponent = GetCapsuleComponent();
 
@@ -62,6 +55,7 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	PopupInteraction = Cast<UPopupInteraction>(TextWidget->GetUserWidgetObject());
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
@@ -79,15 +73,15 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// ! 캐릭터에 Attach한 UI가 Movement에 따라 움직이는 문제가 있어, Tick에서 위치를 업데이트
+	TextWidget->SetWorldLocation(GetActorLocation() + FVector(0.0f, 0.0f, -200.0f));
 }
 
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(CurrentPlayerState != UserState::DRAGGING)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
-		if(IsLocallyControlled())
-			TextWidget->SetVisibility(true);
 		bIsOverlap = true;
 	
 		for (const FString& Tag : ObjectList)
@@ -99,8 +93,14 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			}
 		}
 
+		if(IsLocallyControlled())
+		{
+			TextWidget->SetVisibility(true);
+			const FString PopupText = InteractionTextMap.FindRef(CurrentHitObjectName);
+			PopupInteraction->SetInteractionText(PopupText);
+		}
+
 		CurrentHitObject = Cast<AMyObject>(OtherActor);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, CurrentHitObject->GetName());
 	}
 }
 
@@ -110,7 +110,6 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		if(OtherComp->ComponentTags.Contains(TEXT("Object")))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit Out"));
 			TextWidget->SetVisibility(false);
 			bIsOverlap = false;
 		}
