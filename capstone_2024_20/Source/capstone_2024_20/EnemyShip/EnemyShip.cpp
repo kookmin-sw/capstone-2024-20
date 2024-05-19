@@ -1,8 +1,9 @@
 ﻿#include "EnemyShip.h"
+#include "EnemyShipHead.h"
+#include "NavigationPath.h"
 #include "../MyShip.h"
 #include "../Enemy/Enemy.h"
 #include "NavigationSystem.h"
-#include "NavigationPath.h"
 #include "capstone_2024_20/MyIngameHUD.h"
 #include "capstone_2024_20/Enemy/EnemySpawnPoint.h"
 #include "Particles/ParticleSystem.h"
@@ -32,6 +33,7 @@ void AEnemyShip::BeginPlay()
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
 	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	
 	SetMaxHP(2);
 	SetCurrentHP(2);
@@ -128,12 +130,11 @@ void AEnemyShip::MulticastRPC_Die_Implementation()
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 {
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	const auto MyLocation = GetActorLocation();
-
-	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	const UNavigationPath* PathToMyShip = NavSys->FindPathToLocationSynchronously(GetWorld(), MyLocation, MyShipLocation);
-	if (!PathToMyShip || PathToMyShip->PathPoints.Num() == 0)
+	const FVector EnemyShipHeadLocation = FindComponentByClass<UEnemyShipHead>()->GetComponentLocation();
+	const FVector NearestMovePointLocation = MyShip->GetNearestEnemyShipMovePointLocationFrom(EnemyShipHeadLocation);
+	const UNavigationPath* PathToMyShip = NavSys->FindPathToLocationSynchronously(GetWorld(), EnemyShipHeadLocation, NearestMovePointLocation);
+	
+	if (!PathToMyShip || !PathToMyShip->IsValid() || PathToMyShip->PathPoints.Num() < 2)
 	{
 		return;
 	}
@@ -143,18 +144,7 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * DeltaTime;
 	
 	SetActorLocation(NewLocation);
-}
-
-void AEnemyShip::LookAtMyShip(const AMyShip* MyShip)
-{
-	MultiCastRPC_LookAtMyShip(MyShip);
-}
-
-void AEnemyShip::MultiCastRPC_LookAtMyShip_Implementation(const AMyShip* MyShip)
-{
-	const auto Direction = MyShip->GetActorLocation() - GetActorLocation();
-	const auto LookAtRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
-	SetActorRotation(LookAtRotation);
+	SetActorRotation(DirectionToNextPoint.Rotation());
 }
 
 bool AEnemyShip::CanMove(const AMyShip* MyShip) const

@@ -9,6 +9,7 @@
 #include "Sound/SoundCue.h"
 #include "EnemyShip.generated.h"
 
+class UNavigationSystemV1;
 class USphereComponent;
 // ReSharper disable once IdentifierTypo
 class AMyIngameHUD;
@@ -49,7 +50,6 @@ public:
 	void MulticastRPC_Die();
 
 	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
-	void LookAtMyShip(const AMyShip* MyShip);
 	void FireCannon(const float DeltaTime);
 
 	bool CanMove(const AMyShip* MyShip) const;
@@ -72,9 +72,6 @@ public:
 	FSpawnEnemyDelegate SpawnEnemyDelegate;
 
 private:
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiCastRPC_LookAtMyShip(const AMyShip* MyShip);
-	
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_FireCannon();
 
@@ -111,4 +108,7 @@ private:
 
 	UPROPERTY()
 	AMyIngameHUD* MyInGameHUD;
+
+	UPROPERTY()
+	UNavigationSystemV1* NavSys;
 };
