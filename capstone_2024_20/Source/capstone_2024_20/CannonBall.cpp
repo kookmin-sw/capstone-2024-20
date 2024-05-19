@@ -45,10 +45,11 @@ void ACannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		if(AEnemyShip* EnemyShip = Cast<AEnemyShip>(OtherActor))
 		{
 			EnemyShip->Damage(Damage);
-			FTimerHandle TimerHandle;
-	        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, DestroyDelayTime, false);
+
 			ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::DestroyDelay, DestroyDelayTime, false);
 	}
 
 	MultiCastRPC_OnHit(Hit);
