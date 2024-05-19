@@ -74,7 +74,7 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_FireCannon();
 
-	void SpawnEnemies(AMyShip* MyShip);
+	void SpawnEnemies(AMyShip* MyShip) const;
 
 	// Return three nearest enemy spawn points
 	TArray<UEnemySpawnPoint*> GetEnemySpawnPointsToSpawn(const AMyShip* MyShip) const;

@@ -158,18 +158,7 @@ bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 
 bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
 {
-	if (!bCanSpawnEnemy)
-	{
-		return false;
-	}
-
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	if (const auto Direction = MyShipLocation - GetActorLocation(); Direction.Size() > DistanceToMyShip)
-	{
-		return false;
-	}
-
-	return true;
+	return bCanSpawnEnemy;
 }
 
 bool AEnemyShip::CanFireCannon() const
@@ -248,7 +237,7 @@ void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);
 }
 
-void AEnemyShip::SpawnEnemies(AMyShip* MyShip)
+void AEnemyShip::SpawnEnemies(AMyShip* MyShip) const
 {
 	const TArray<UEnemySpawnPoint*> EnemySpawnPoints = GetEnemySpawnPointsToSpawn(MyShip);
 	TArray<FVector> SpawnLocations;
