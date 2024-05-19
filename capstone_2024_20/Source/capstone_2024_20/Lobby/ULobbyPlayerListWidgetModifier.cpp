@@ -13,11 +13,11 @@ void ULobbyPlayerListWidgetModifier::RefreshItem(TArray<APlayerState*> PlayerSta
 {
 	UPlayerListWidgetModifier::RefreshItem(PlayerStates, LogoutPlayerState);
 
-	int index = 0;
+	int32 Index = 0;
 	for (int32 i = 0; i < PlayerStates.Num(); i++)
 	{
 		ULobbyPlayerListElementWidget* LobbyPlayerListElement =
-			Cast<ULobbyPlayerListElementWidget>(PlayerListWidget->PlayerElements[index]);
+			Cast<ULobbyPlayerListElementWidget>(PlayerListWidget->PlayerElements[Index]);
 
 		ALobbyPlayerState* PlayerState = Cast<ALobbyPlayerState>(PlayerStates[i]);
 
@@ -34,6 +34,6 @@ void ULobbyPlayerListWidgetModifier::RefreshItem(TArray<APlayerState*> PlayerSta
 			LobbyPlayerListElement->SetVisibilityFromBool(true);
 		}
 
-		index++;
+		Index++;
 	}
 }
