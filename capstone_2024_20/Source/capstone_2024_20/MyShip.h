@@ -5,6 +5,7 @@
 #include "Common/HP.h"
 #include "MyShip.generated.h"
 
+class UEnemyShipMovePoint;
 class UBoxComponent;
 class UEventSpawnPoint;
 class UEnemySpawnPoint;
@@ -50,6 +51,7 @@ public:
 	float GetMoveSpeed() const;
 	float GetRotationAcceleration() const;
 	FVector GetNearestEventSpawnPointLocationFrom(const FVector& FromLocation) const;
+	FVector GetNearestEnemyShipMovePointLocationFrom(const FVector& FromLocation) const;
 	
 	UPROPERTY(Replicated)
 	FRotator TargetRotation;
@@ -80,6 +82,7 @@ private:
 	void FindMyCannons();
 	void FindEnemySpawnPoints();
 	void FindEventSpawnPoints();
+	void FindEnemyShipMovePoints();
 	
 	// [begin] IHP interface
 	UPROPERTY(Replicated)
@@ -92,4 +95,5 @@ private:
 	TArray<AMyCannon*> MyCannons;
 	TArray<UEnemySpawnPoint*> EnemySpawnPoints;
 	TArray<UEventSpawnPoint*> EventSpawnPoints;
+	TArray<UEnemyShipMovePoint*> EnemyShipMovePoints;
 };
