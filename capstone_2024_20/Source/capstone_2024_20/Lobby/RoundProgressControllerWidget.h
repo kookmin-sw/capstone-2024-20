@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "capstone_2024_20/Common/RoundProgressWidget.h"
 #include "RoundProgressControllerWidget.generated.h"
 
 class URoundProgressWidget;
@@ -11,22 +12,14 @@ class URoundProgressWidget;
  * 
  */
 UCLASS()
-class CAPSTONE_2024_20_API URoundProgressControllerWidget : public UUserWidget
+class CAPSTONE_2024_20_API URoundProgressControllerWidget : public URoundProgressWidget
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
-	URoundProgressWidget* RoundProgressWidget;
-
 	FTimerHandle ProgressTimerHandle;
 	double PrevTimeSeconds;
 
 public:
-	template< class T >
-	T* GetRoundProgressWidget() const
-	{
-		return Cast<T>(RoundProgressWidget);
-	}
 	
 	UFUNCTION()
 	void StartProgressBar(float Time);

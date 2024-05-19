@@ -14,14 +14,14 @@ void URoundProgressControllerWidget::StartProgressBar(float Time)
 	GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, [this, Time]()
 	{
 		const double ElapsedTime = GetWorld()->GetTimeSeconds();
-		const float CurrentValue = FMath::Clamp(RoundProgressWidget->GetPercent() + ((ElapsedTime-PrevTimeSeconds)/Time), 0.0f, 1.0f);
+		const float CurrentValue = FMath::Clamp(GetPercent() + ((ElapsedTime-PrevTimeSeconds)/Time), 0.0f, 1.0f);
 		PrevTimeSeconds = ElapsedTime;
 		if (CurrentValue >= Time)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 		}
 
-		RoundProgressWidget->SetPercent(CurrentValue);
+		SetPercent(CurrentValue);
 	}, 0.01f, true, 0.0f);
 }
 
@@ -29,7 +29,7 @@ void URoundProgressControllerWidget::StopProgressBar()
 {
 	if(GetWorld()->GetTimerManager().IsTimerActive(ProgressTimerHandle) == true)
 	{
-		RoundProgressWidget->SetPercent(0.0f);
+		SetPercent(0.0f);
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 	}
 }
