@@ -29,7 +29,7 @@ $RunUATPath = "C:\\Program Files\\Epic Games\\UE_5.3\\Engine\\Build\\BatchFiles\
 $ProjectOption = "-project=C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\capstone-2024-20\\capstone_2024_20\\capstone_2024_20.uproject" 
 $ArchivePath = Resolve-Path($Version)
 $ArchiveOption = "-archivedirectory="+$ArchivePath
-$UATOptions = @("BuildCookRun", $ProjectOption, "-Distribution", "-stage", "-pak", "-build", "-cook", "-prereqs", "-package", "-archive", $ArchiveOption)
+$UATOptions = @("BuildCookRun", $ProjectOption, "-Distribution", "-stage", "-pak", "-build", "-cook", "-prereqs", "-package", "-archive", "-clientconfig=Release", $ArchiveOption -)
 Start-Process -FilePath $RunUATPath -ArgumentList $UATOptions -NoNewWindow -Wait
 
 # Make a zip file of the build
