@@ -51,7 +51,8 @@ void AStageSelectController::ServerTravel()
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		World->ServerTravel(FString("/Game/Level/level_1?listen"));
+		// 여기가 StageSelect 레벨 이동
+		World->ServerTravel(FString("/Game/Level/Ingame?listen"));
 	}
 }
 
