@@ -16,9 +16,7 @@ bool UMyUserWidget::Initialize()
 
 		if (i > ClearStage)
 		{
-			//Button->SetIsEnabled(false);
 			Button->SetBackgroundColor(FColor::Red);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("button off"));
 		}
 		if (Button != nullptr)
 		{
