@@ -3,11 +3,12 @@
 #include "../Enemy/Enemy.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "capstone_2024_20/MyIngameHUD.h"
 #include "capstone_2024_20/Enemy/EnemySpawnPoint.h"
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Net/UnrealNetwork.h"
 
 AEnemyShip::AEnemyShip()
 {
@@ -22,6 +23,7 @@ void AEnemyShip::BeginPlay()
 	ProjectileClass = AEnemyShipCannonBall::StaticClass();
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	SetMaxHP(2);
 	SetCurrentHP(2);
@@ -37,6 +39,14 @@ void AEnemyShip::Tick(float DeltaTime)
 		Location = GetActorLocation();
 		Rotation = GetActorRotation();
 	}
+}
+
+void AEnemyShip::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEnemyShip, MaxHP);
+	DOREPLIFETIME(AEnemyShip, CurrentHP);
 }
 
 int32 AEnemyShip::GetMaxHP() const
@@ -84,7 +94,8 @@ void AEnemyShip::Damage(const int32 DamageAmount)
 	}
 	
 	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, MaxHP);
-
+	MulticastRPC_Damage();
+	
 	if (CurrentHP == 0)
 	{
 		Die();
@@ -93,7 +104,18 @@ void AEnemyShip::Damage(const int32 DamageAmount)
 
 void AEnemyShip::Die()
 {
+	MulticastRPC_Die();
 	EnemyShipDieDelegate.Execute(this);
+}
+
+void AEnemyShip::MulticastRPC_Damage_Implementation()
+{
+	MyInGameHUD->SetEnemyShipHPProgressBarPercent(static_cast<float>(CurrentHP) / MaxHP);
+}
+
+void AEnemyShip::MulticastRPC_Die_Implementation()
+{
+	MyInGameHUD->SetEnemyShipHPProgressBarVisibility(false);
 }
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)

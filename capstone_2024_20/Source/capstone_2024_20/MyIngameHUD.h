@@ -6,6 +6,7 @@
 #include "Upgrade/UpgradeWidget.h"
 #include "MyIngameHUD.generated.h"
 
+class UProgressBar;
 class UPopupDead;
 
 UCLASS()
@@ -25,6 +26,12 @@ public:
 	UUpgradeWidget* GetPopupUpgrade() const;
 	void SetPopupUpgradeVisibility(bool bIsVisible) const;
 	// [end] PopupUpgrade
+
+	// [begin] EnemyShipUI
+	bool GetEnemyShipHPProgressBarVisibility() const;
+	void SetEnemyShipHPProgressBarVisibility(bool bIsVisible) const;
+	void SetEnemyShipHPProgressBarPercent(float Percent) const;
+	// [end] EnemyShipUI
 
 protected:
 	// ! Set on blueprint
@@ -49,4 +56,7 @@ private:
 
 	UPROPERTY()
 	UUpgradeWidget* PopupUpgrade;
+
+	UPROPERTY()
+	UProgressBar* EnemyShipProgressBar;
 };
