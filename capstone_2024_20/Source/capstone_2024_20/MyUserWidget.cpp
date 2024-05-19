@@ -13,7 +13,11 @@ bool UMyUserWidget::Initialize()
 		FString ButtonName = FString::Printf(TEXT("StageButton%d"), i);
 		UWidget* BtnWidget = GetWidgetFromName(*ButtonName);
 		UStageButton* Button = Cast<UStageButton>(BtnWidget);
-		
+
+		if (i > ClearStage)
+		{
+			Button->SetBackgroundColor(FColor::Red);
+		}
 		if (Button != nullptr)
 		{
 			Buttons.Add(Button);

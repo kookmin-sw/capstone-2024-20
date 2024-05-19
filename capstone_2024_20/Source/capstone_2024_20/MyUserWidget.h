@@ -17,8 +17,8 @@ class CAPSTONE_2024_20_API UMyUserWidget : public UUserWidget
 	GENERATED_BODY()
 	virtual bool Initialize() override;
 
-	int BtnNum=4;
-	int ClearStage = 2;
+	int BtnNum=6;
+	int ClearStage = 6;
 	TArray<UStageButton*> Buttons;
 
 	UPROPERTY(meta=(BindWidget))
