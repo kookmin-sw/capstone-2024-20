@@ -8,6 +8,7 @@
 #include "LobbyGameMode.h"
 #include "LobbyPlateWidgetComponent.h"
 #include "LobbyWidget.h"
+#include "RoundProgressControllerWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "capstone_2024_20/01_Network/PlayerListWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -51,6 +52,16 @@ void AGameStartActor::InteractionExit()
 void AGameStartActor::SetVisibleWidget(UUserWidget* NewUserWidget)
 {
 	VisibleWidget = NewUserWidget;
+}
+
+void AGameStartActor::SkipPressed()
+{
+	RoundProgressControllerWidget->StartProgressBar(2.0f);
+}
+
+void AGameStartActor::SkipRealesed()
+{
+	RoundProgressControllerWidget->StopProgressBar();
 }
 
 void AGameStartActor::GameStart()
@@ -113,5 +124,20 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 		// 	Cast<ACapCharacter>(CharacterActor)->WidgetComponent->SetVisibilityFromBool(false);
 		// }
 	}
+
+	if(HasAuthority() == true)
+	{
+		RoundProgressControllerWidget = CreateWidget<URoundProgressControllerWidget>(GetWorld(), RoundProgressControllerWidgetClass);
+		RoundProgressControllerWidget->AddToViewport();
+	
+		if (PlayerController)
+		{
+			PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Pressed,
+			this, &ThisClass::SkipPressed);
+			PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Released,
+													  this, &ThisClass::SkipRealesed);
+		}
+	}
+	
 	LevelSequencePlayer->Play();
 }

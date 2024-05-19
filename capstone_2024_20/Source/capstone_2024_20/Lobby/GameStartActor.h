@@ -6,6 +6,7 @@
 #include "CapInteractionActor.h"
 #include "GameStartActor.generated.h"
 
+class URoundProgressControllerWidget;
 class ULevelSequencePlayer;
 class ULevelSequence;
 
@@ -34,6 +35,18 @@ public:
 	void SetVisibleWidget(UUserWidget* NewUserWidget);
 	UPROPERTY()
 	UUserWidget* VisibleWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> RoundProgressControllerWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	URoundProgressControllerWidget* RoundProgressControllerWidget;
+
+	UFUNCTION()
+	void SkipPressed();
+
+	UFUNCTION()
+	void SkipRealesed();
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlaySequence();
