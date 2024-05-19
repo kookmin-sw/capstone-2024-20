@@ -4,9 +4,13 @@
 #include "../01_Network/ReplicatedActor.h"
 #include "../Common/HP.h"
 #include "Components/ArrowComponent.h"
+// 패키징 문제로 인해, SoundCue 헤더 파일 include 필요
+// ReSharper disable once CppUnusedIncludeDirective
 #include "Sound/SoundCue.h"
 #include "EnemyShip.generated.h"
 
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
 class UNavigationPath;
 class AMyShip;
 class AEnemy;
@@ -24,6 +28,7 @@ public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// [begin] IHP interface
 	virtual int32 GetMaxHP() const override;
@@ -34,6 +39,12 @@ public:
 	virtual void Damage(const int32 DamageAmount) override;
 	virtual void Die() override;
 	// [end] IHP interface
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRPC_Damage();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Die();
 
 	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
 	void LookAtMyShip(const AMyShip* MyShip);
@@ -65,7 +76,10 @@ private:
 	UEnemySpawnPoint* GetEnemySpawnPointToSpawn(const AMyShip* MyShip) const;
 	
 	// [begin] IHP interface
+	UPROPERTY(Replicated)
 	int32 MaxHP = 0;
+
+	UPROPERTY(Replicated)
 	int32 CurrentHP = 0;
 	// [end] IHP interface
 	
@@ -87,4 +101,7 @@ private:
 
 	UPROPERTY()
 	USoundCue* CannonSoundCue;
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD;
 };
