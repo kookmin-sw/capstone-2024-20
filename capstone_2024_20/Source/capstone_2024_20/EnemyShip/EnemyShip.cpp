@@ -149,23 +149,6 @@ void AEnemyShip::MultiCastRPC_LookAtMyShip_Implementation(const AMyShip* MyShip)
 	SetActorRotation(LookAtRotation);
 }
 
-AEnemy* AEnemyShip::SpawnEnemy(AMyShip* MyShip)
-{
-	const UEnemySpawnPoint* EnemySpawnPoint = GetEnemySpawnPointToSpawn(MyShip);
-	const FVector SpawnLocation = EnemySpawnPoint->GetComponentLocation();
-	
-	auto SpawnParams = FActorSpawnParameters();
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
-	AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)), SpawnParams);
-	
-	SpawnedEnemy->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
-	SpawnedEnemy->SetActorLocation(SpawnLocation);
-
-	CurrentSpawnEnemyCooldown = SpawnEnemyCooldown;
-	return SpawnedEnemy;
-}
-
 bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 {
 	const auto MyShipLocation = MyShip->GetActorLocation();
@@ -176,11 +159,6 @@ bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
 {
 	if (!bCanSpawnEnemy)
-	{
-		return false;
-	}
-
-	if (CurrentSpawnEnemyCooldown > 0.0f)
 	{
 		return false;
 	}
@@ -199,17 +177,9 @@ bool AEnemyShip::CanFireCannon() const
 	return bCanFireCannon;
 }
 
-void AEnemyShip::ReduceSpawnEnemyCooldown(const float DeltaTime)
+TArray<UEnemySpawnPoint*> AEnemyShip::GetEnemySpawnPointsToSpawn(const AMyShip* MyShip) const
 {
-	if (CurrentSpawnEnemyCooldown > 0.0f)
-	{
-		CurrentSpawnEnemyCooldown -= DeltaTime;
-	}
-}
-
-UEnemySpawnPoint* AEnemyShip::GetEnemySpawnPointToSpawn(const AMyShip* MyShip) const
-{
-	// Find two nearest enemy spawn points
+	// Find three nearest enemy spawn points
 	TArray<UEnemySpawnPoint*> EnemySpawnPoints = MyShip->GetEnemySpawnPoints();
 
 	TArray<float> Distances;
@@ -221,6 +191,7 @@ UEnemySpawnPoint* AEnemyShip::GetEnemySpawnPointToSpawn(const AMyShip* MyShip) c
 
 	int FirstNearestIndex = 0;
 	int SecondNearestIndex = 0;
+	int ThirdNearestIndex = 0;
 
 	for (int i = 0; i < Distances.Num(); i++)
 	{
@@ -233,12 +204,22 @@ UEnemySpawnPoint* AEnemyShip::GetEnemySpawnPointToSpawn(const AMyShip* MyShip) c
 		{
 			SecondNearestIndex = i;
 		}
+		else if (Distances[i] < Distances[ThirdNearestIndex])
+		{
+			ThirdNearestIndex = i;
+		}
 	}
 
 	UEnemySpawnPoint* FirstNearestEnemySpawnPoint = EnemySpawnPoints[FirstNearestIndex];
 	UEnemySpawnPoint* SecondNearestEnemySpawnPoint = EnemySpawnPoints[SecondNearestIndex];
+	UEnemySpawnPoint* ThirdNearestEnemySpawnPoint = EnemySpawnPoints[ThirdNearestIndex];
 
-	return FMath::RandBool() ? FirstNearestEnemySpawnPoint : SecondNearestEnemySpawnPoint;
+	TArray<UEnemySpawnPoint*> NearestEnemySpawnPoints;
+	NearestEnemySpawnPoints.Add(FirstNearestEnemySpawnPoint);
+	NearestEnemySpawnPoints.Add(SecondNearestEnemySpawnPoint);
+	NearestEnemySpawnPoints.Add(ThirdNearestEnemySpawnPoint);
+
+	return NearestEnemySpawnPoints;
 }
 
 void AEnemyShip::FireCannon(const float DeltaTime)
@@ -265,4 +246,30 @@ void AEnemyShip::MultiCastRPC_FireCannon_Implementation()
 
 	UGameplayStatics::PlaySoundAtLocation(this, CannonSoundCue, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect, SpawnLocation, SpawnRotation);
+}
+
+void AEnemyShip::SpawnEnemies(AMyShip* MyShip)
+{
+	const TArray<UEnemySpawnPoint*> EnemySpawnPoints = GetEnemySpawnPointsToSpawn(MyShip);
+	TArray<FVector> SpawnLocations;
+
+	for (const auto EnemySpawnPoint : EnemySpawnPoints)
+	{
+		SpawnLocations.Add(EnemySpawnPoint->GetComponentLocation());
+	}
+
+	TArray<AEnemy*> SpawnedEnemies;
+	auto SpawnParams = FActorSpawnParameters();
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	for (const auto SpawnLocation : SpawnLocations)
+	{
+		AEnemy* SpawnedEnemy = GetWorld()->SpawnActor<AEnemy>(AEnemy::StaticClass(), FTransform(UE::Math::TVector<double>(0, 0, 0)), SpawnParams);
+		SpawnedEnemy->AttachToActor(MyShip, FAttachmentTransformRules::KeepRelativeTransform);
+		SpawnedEnemy->SetActorLocation(SpawnLocation);
+
+		SpawnedEnemies.Add(SpawnedEnemy);
+	}
+	
+	SpawnEnemyDelegate.Execute(SpawnedEnemies);
 }
