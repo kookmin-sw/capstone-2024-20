@@ -6,6 +6,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "EnemyShipCannonBall.generated.h"
 
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
+
 UCLASS()
 class CAPSTONE_2024_20_API AEnemyShipCannonBall : public AReplicatedActor
 {
@@ -37,6 +40,9 @@ private:
 	
 	UPROPERTY()
 	UParticleSystem* WaterSplashEffect;
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD;
 
 	const float DestroyDelayTime = 1.0f;
 	const FVector WaterSplashEffectScale = FVector(3.0f, 3.0f, 3.0f);

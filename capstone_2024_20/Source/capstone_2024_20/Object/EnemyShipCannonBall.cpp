@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "../MyShip.h"
+#include "capstone_2024_20/MyIngameHUD.h"
 #include "capstone_2024_20/Event/Event.h"
 #include "capstone_2024_20/Sailing/SailingSystem.h"
 
@@ -29,6 +30,7 @@ AEnemyShipCannonBall::AEnemyShipCannonBall(): StaticMesh(nullptr)
 void AEnemyShipCannonBall::BeginPlay()
 {
 	Super::BeginPlay();
+	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -66,6 +68,11 @@ void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* Othe
 void AEnemyShipCannonBall::MulticastRPC_OnHit_Implementation(const FHitResult& Hit)
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
+
+	if (MyInGameHUD->GetEnemyShipHPProgressBarVisibility() == false)
+	{
+		MyInGameHUD->SetEnemyShipHPProgressBarVisibility(true);
+	}
 }
 
 void AEnemyShipCannonBall::DestroyWithDelay()
