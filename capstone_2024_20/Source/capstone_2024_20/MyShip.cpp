@@ -3,6 +3,7 @@
 #include "MyCannon.h"
 #include "Components/BoxComponent.h"
 #include "Enemy/EnemySpawnPoint.h"
+#include "EnemyShip/EnemyShipMovePoint.h"
 #include "Event/EventSpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -29,6 +30,7 @@ void AMyShip::BeginPlay()
 	FindMyCannons();
 	FindEnemySpawnPoints();
 	FindEventSpawnPoints();
+	FindEnemyShipMovePoints();
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -86,6 +88,23 @@ FVector AMyShip::GetNearestEventSpawnPointLocationFrom(const FVector& FromLocati
 		if (FVector::Dist(FromLocation, EventSpawnPoint->GetComponentLocation()) < NearestDistance)
 		{
 			NearestLocation = EventSpawnPoint->GetComponentLocation();
+			NearestDistance = FVector::Dist(FromLocation, NearestLocation);
+		}
+	}
+
+	return NearestLocation;
+}
+
+FVector AMyShip::GetNearestEnemyShipMovePointLocationFrom(const FVector& FromLocation) const
+{
+	FVector NearestLocation = EnemyShipMovePoints[0]->GetComponentLocation();
+	float NearestDistance = FVector::Dist(FromLocation, NearestLocation);
+
+	for (const UEnemyShipMovePoint* EnemyShipMovePoint : EnemyShipMovePoints)
+	{
+		if (FVector::Dist(FromLocation, EnemyShipMovePoint->GetComponentLocation()) < NearestDistance)
+		{
+			NearestLocation = EnemyShipMovePoint->GetComponentLocation();
 			NearestDistance = FVector::Dist(FromLocation, NearestLocation);
 		}
 	}
@@ -204,6 +223,17 @@ void AMyShip::FindEventSpawnPoints()
 		if (UEventSpawnPoint* EventSpawnPoint = Cast<UEventSpawnPoint>(Component))
 		{
 			EventSpawnPoints.Add(EventSpawnPoint);
+		}
+	}
+}
+
+void AMyShip::FindEnemyShipMovePoints()
+{
+	for (TSet<UActorComponent*> Components = GetComponents(); UActorComponent*& Component : Components)
+	{
+		if (UEnemyShipMovePoint* EnemyShipMovePoint = Cast<UEnemyShipMovePoint>(Component))
+		{
+			EnemyShipMovePoints.Add(EnemyShipMovePoint);
 		}
 	}
 }
