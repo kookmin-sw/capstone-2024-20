@@ -20,7 +20,6 @@ AEnemyShip::AEnemyShip()
 	SphereComponent->InitSphereRadius(50.0f);
 	SphereComponent->SetCollisionProfileName(TEXT("OverlapAll"));
 	SphereComponent->SetGenerateOverlapEvents(true);
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyShip::BeginOverlap);
 	SphereComponent->SetupAttachment(RootComponent);
 }
 
@@ -34,6 +33,7 @@ void AEnemyShip::BeginPlay()
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
 	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyShip::BeginOverlap);
 	
 	SetMaxHP(2);
 	SetCurrentHP(2);
