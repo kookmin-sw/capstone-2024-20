@@ -56,12 +56,19 @@ void AGameStartActor::SetVisibleWidget(UUserWidget* NewUserWidget)
 
 void AGameStartActor::SkipPressed()
 {
+	GetWorld()->GetTimerManager().SetTimer(SkipTimerHandle, this, &ThisClass::Skip, 2.2f);
 	RoundProgressControllerWidget->StartProgressBar(2.0f);
 }
 
 void AGameStartActor::SkipRealesed()
 {
+	GetWorld()->GetTimerManager().ClearTimer(SkipTimerHandle);
 	RoundProgressControllerWidget->StopProgressBar();
+}
+
+void AGameStartActor::Skip()
+{
+	GameStart();
 }
 
 void AGameStartActor::GameStart()
@@ -89,7 +96,7 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 		ACapCharacter* ClientCharacter = Cast<ACapCharacter>(PlayerController->GetCharacter());
 		ClientCharacter->SetVisibleWigetWithBool(false);
 	}
-	
+
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -99,10 +106,11 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 
 		TArray<UUserWidget*> FoundWidgets2;
 		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets2, ULobbyWidget::StaticClass(), false);
-		
+
 		TArray<UUserWidget*> FoundWidgets3;
-		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets3, UReadyCharacterWidget::StaticClass(), false);
-		
+		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets3, UReadyCharacterWidget::StaticClass(),
+		                                              false);
+
 		TArray<AActor*> FoundCharacter;
 		UGameplayStatics::GetAllActorsOfClass(World, ACapCharacter::StaticClass(), FoundCharacter);
 
@@ -125,19 +133,20 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 		// }
 	}
 
-	if(HasAuthority() == true)
+	if (HasAuthority() == true)
 	{
-		RoundProgressControllerWidget = CreateWidget<URoundProgressControllerWidget>(GetWorld(), RoundProgressControllerWidgetClass);
+		RoundProgressControllerWidget = CreateWidget<URoundProgressControllerWidget>(
+			GetWorld(), RoundProgressControllerWidgetClass);
 		RoundProgressControllerWidget->AddToViewport();
-	
+
 		if (PlayerController)
 		{
 			PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Pressed,
-			this, &ThisClass::SkipPressed);
+			                                          this, &ThisClass::SkipPressed);
 			PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Released,
-													  this, &ThisClass::SkipRealesed);
+			                                          this, &ThisClass::SkipRealesed);
 		}
 	}
-	
+
 	LevelSequencePlayer->Play();
 }

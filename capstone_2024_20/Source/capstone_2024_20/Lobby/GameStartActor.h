@@ -47,6 +47,10 @@ public:
 
 	UFUNCTION()
 	void SkipRealesed();
+
+	void Skip();
+
+	FTimerHandle SkipTimerHandle;
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlaySequence();
