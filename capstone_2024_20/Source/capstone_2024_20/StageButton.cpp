@@ -39,14 +39,11 @@ void UStageButton::HidePopUp()
 
 void UStageButton::Stage_Start()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Ahoi-!"));
-	UGameplayStatics::OpenLevel(this, TEXT("level_1"));
+	UGameplayStatics::OpenLevel(this, TEXT("Ingame"));
 }
 
 UUserWidget* UStageButton::CreatePopup()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
-									 FString::Printf(TEXT("create button")));
 	//팝업 위젯 생성
 	UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass);
 	if(PopUpWidget != nullptr)
