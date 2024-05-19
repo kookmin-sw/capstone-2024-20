@@ -30,16 +30,9 @@ AMyCharacter::AMyCharacter()
 	CharacterChangerComponent->SetIsReplicated(true);
 	
 	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/WidgetBlueprints/NewWidgetBlueprint"));
-	if(UI_HUD.Succeeded())
-	{
-		TextWidget->SetWidgetClass(UI_HUD.Class);
-		TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
-		TextWidget->SetVisibility(false);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("UMG Failed"));
-	}
+	TextWidget->SetWidgetClass(UI_HUD.Class);
+	TextWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+	TextWidget->SetVisibility(false);
 	
 	RootComponent = GetCapsuleComponent();
 
@@ -89,7 +82,6 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	if(CurrentPlayerState != UserState::DRAGGING)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit"));
 		bIsOverlap = true;
 	
 		for (const FString& Tag : ObjectList)
@@ -109,7 +101,6 @@ void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		}
 
 		CurrentHitObject = Cast<AMyObject>(OtherActor);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, CurrentHitObject->GetName());
 	}
 }
 
@@ -119,7 +110,6 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		if(OtherComp->ComponentTags.Contains(TEXT("Object")))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Hit Out"));
 			TextWidget->SetVisibility(false);
 			bIsOverlap = false;
 		}
