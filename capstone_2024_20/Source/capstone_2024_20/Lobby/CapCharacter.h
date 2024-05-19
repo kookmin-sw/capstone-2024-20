@@ -36,16 +36,16 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 	
 	UPROPERTY()
 	bool bIsMovement = true;
-
-	UPROPERTY(EditAnywhere)
-	class ULobbyPlateWidgetComponent* WidgetComponent;
-
+	
 	UPROPERTY(EditAnywhere)
 	ALobbyPlayerState* LobbyPlayerState;
 
 	void Init();
 
 public:
+	UPROPERTY(EditAnywhere)
+	class ULobbyPlateWidgetComponent* WidgetComponent;
+
 	UPROPERTY(EditAnywhere)
 	ULobbyInteractionWidgetComponent* InteractionWidgetComponent;
 

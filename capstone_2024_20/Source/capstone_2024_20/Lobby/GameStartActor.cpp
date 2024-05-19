@@ -6,9 +6,11 @@
 #include "CapCharacter.h"
 #include "LevelSequencePlayer.h"
 #include "LobbyGameMode.h"
+#include "LobbyPlateWidgetComponent.h"
 #include "LobbyWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "capstone_2024_20/01_Network/PlayerListWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AGameStartActor::AGameStartActor()
@@ -86,6 +88,12 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 
 		TArray<UUserWidget*> FoundWidgets2;
 		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets2, ULobbyWidget::StaticClass(), false);
+		
+		TArray<UUserWidget*> FoundWidgets3;
+		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets3, UReadyCharacterWidget::StaticClass(), false);
+		
+		TArray<AActor*> FoundCharacter;
+		UGameplayStatics::GetAllActorsOfClass(World, ACapCharacter::StaticClass(), FoundCharacter);
 
 		for (UUserWidget* Widget : FoundWidgets)
 		{
@@ -95,11 +103,15 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 		{
 			Widget->SetVisibility(ESlateVisibility::Hidden);
 		}
-
-		for (UUserWidget* Widget : FoundWidgets2)
+		for (UUserWidget* Widget : FoundWidgets3)
 		{
 			Widget->SetVisibility(ESlateVisibility::Hidden);
 		}
+
+		// for (AActor* CharacterActor : FoundCharacter)
+		// {
+		// 	Cast<ACapCharacter>(CharacterActor)->WidgetComponent->SetVisibilityFromBool(false);
+		// }
 	}
 	LevelSequencePlayer->Play();
 }
