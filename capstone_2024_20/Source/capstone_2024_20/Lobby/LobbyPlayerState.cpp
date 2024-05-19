@@ -15,13 +15,6 @@ void ALobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void ALobbyPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		GEngine->AddOnScreenDebugMessage(-1,
-		                                 60.0f, FColor::Emerald,
-		                                 TEXT("Has AUtority"));
-	}
 }
 
 void ALobbyPlayerState::SetReady()

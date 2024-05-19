@@ -84,6 +84,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_SetLocationAndRotation(FVector NewLocation, FRotator NewRotation);
 
+
+	UFUNCTION()
+	void SetVisibleWigetWithBool(bool IsActive);
 private:
 	void InitMovement();
 };
