@@ -29,6 +29,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void OnEnemyDie(AEnemy* Enemy);
+	void OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies);
 	void OnEnemyShipDie(AEnemyShip* EnemyShip);
 	void OnEventOperate(AEvent* Event);
 	

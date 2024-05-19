@@ -9,6 +9,7 @@
 #include "Sound/SoundCue.h"
 #include "EnemyShip.generated.h"
 
+class USphereComponent;
 // ReSharper disable once IdentifierTypo
 class AMyIngameHUD;
 class UNavigationPath;
@@ -18,6 +19,7 @@ class AEnemyShip;
 class UEnemySpawnPoint;
 
 DECLARE_DELEGATE_OneParam(FEnemyShipDie, AEnemyShip*);
+DECLARE_DELEGATE_OneParam(FSpawnEnemyDelegate, TArray<AEnemy*>);
 
 UCLASS()
 class AEnemyShip : public AReplicatedActor, public IHP
@@ -49,13 +51,10 @@ public:
 	void MoveToMyShip(const AMyShip* MyShip, const float DeltaTime);
 	void LookAtMyShip(const AMyShip* MyShip);
 	void FireCannon(const float DeltaTime);
-	AEnemy* SpawnEnemy(AMyShip* MyShip);
 
 	bool CanMove(const AMyShip* MyShip) const;
 	bool CanSpawnEnemy(const AMyShip* MyShip) const;
 	bool CanFireCannon() const;
-
-	void ReduceSpawnEnemyCooldown(const float DeltaTime);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanSpawnEnemy = false;
@@ -63,7 +62,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanFireCannon = true;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float DistanceToMyShip = 7000.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USphereComponent* SphereComponent;
+
 	FEnemyShipDie EnemyShipDieDelegate;
+	FSpawnEnemyDelegate SpawnEnemyDelegate;
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
@@ -72,8 +78,14 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiCastRPC_FireCannon();
 
-	// Returns random enemy spawn point from two nearest enemy spawn points
-	UEnemySpawnPoint* GetEnemySpawnPointToSpawn(const AMyShip* MyShip) const;
+	void SpawnEnemies(AMyShip* MyShip) const;
+
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+					  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	// Return three nearest enemy spawn points
+	TArray<UEnemySpawnPoint*> GetEnemySpawnPointsToSpawn(const AMyShip* MyShip) const;
 	
 	// [begin] IHP interface
 	UPROPERTY(Replicated)
@@ -84,13 +96,8 @@ private:
 	// [end] IHP interface
 	
 	inline static float FireCannonTimer = 0.0f;
-
-	inline static float DistanceToMyShip = 7000.0f;
 	inline static float MoveSpeed = 400.0f;
 
-	const float SpawnEnemyCooldown = 5.0f;
-	float CurrentSpawnEnemyCooldown = 0.0f;
-	
 	UPROPERTY()
 	UArrowComponent* ProjectileSpawnPoint;
 	

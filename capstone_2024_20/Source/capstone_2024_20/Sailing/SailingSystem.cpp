@@ -123,15 +123,6 @@ void ASailingSystem::Tick(float DeltaTime)
 		{
 			EnemyShip->FireCannon(DeltaTime);
 		}
-
-		if (EnemyShip->CanSpawnEnemy(MyShip))
-		{
-			const auto SpawnedEnemy = EnemyShip->SpawnEnemy(MyShip);
-			Enemies.Add(SpawnedEnemy);
-			SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
-		}
-
-		EnemyShip->ReduceSpawnEnemyCooldown(DeltaTime);
 	}
 
 	for (const auto Enemy : Enemies)
@@ -180,6 +171,15 @@ void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
 	Enemies.Remove(Enemy);
 	Enemy->Destroy();
 	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
+}
+
+void ASailingSystem::OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies)
+{
+	for (const auto SpawnedEnemy : SpawnedEnemies)
+	{
+		SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
+		Enemies.Add(SpawnedEnemy);
+	}
 }
 
 void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
@@ -372,6 +372,7 @@ void ASailingSystem::SetEnemyShips()
 	{
 		AEnemyShip* CastedEnemyShip = Cast<AEnemyShip>(FoundEnemyShip);
 		CastedEnemyShip->EnemyShipDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyShipDie);
+		CastedEnemyShip->SpawnEnemyDelegate.BindUObject(this, &ASailingSystem::OnEnemiesSpawned);
 		EnemyShips.Add(CastedEnemyShip);
 	}
 }
