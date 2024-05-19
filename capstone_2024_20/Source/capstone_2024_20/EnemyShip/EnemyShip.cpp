@@ -7,12 +7,20 @@
 #include "capstone_2024_20/Enemy/EnemySpawnPoint.h"
 #include "Particles/ParticleSystem.h"
 #include "capstone_2024_20/Object/EnemyShipCannonBall.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AEnemyShip::AEnemyShip()
 {
 	AActor::SetReplicateMovement(true);
+
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	SphereComponent->InitSphereRadius(50.0f);
+	SphereComponent->SetCollisionProfileName(TEXT("OverlapAll"));
+	SphereComponent->SetGenerateOverlapEvents(true);
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyShip::BeginOverlap);
+	SphereComponent->SetupAttachment(RootComponent);
 }
 
 void AEnemyShip::BeginPlay()
@@ -24,7 +32,7 @@ void AEnemyShip::BeginPlay()
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
 	CannonSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sounds/Cannon/CannonSQ.CannonSQ'"));
 	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-
+	
 	SetMaxHP(2);
 	SetCurrentHP(2);
 }
@@ -261,4 +269,28 @@ void AEnemyShip::SpawnEnemies(AMyShip* MyShip) const
 	}
 	
 	SpawnEnemyDelegate.Execute(SpawnedEnemies);
+}
+
+// For binding to the OnComponentBeginOverlap event
+// ReSharper disable once CppMemberFunctionMayBeConst
+void AEnemyShip::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	AMyShip* MyShip = Cast<AMyShip>(OtherActor);
+	if (!MyShip)
+	{
+		return;
+	}
+ 
+	if (!CanSpawnEnemy(MyShip))
+	{
+		return;
+	}
+
+	Die();
 }

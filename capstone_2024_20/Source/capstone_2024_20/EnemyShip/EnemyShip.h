@@ -9,6 +9,7 @@
 #include "Sound/SoundCue.h"
 #include "EnemyShip.generated.h"
 
+class USphereComponent;
 // ReSharper disable once IdentifierTypo
 class AMyIngameHUD;
 class UNavigationPath;
@@ -64,6 +65,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float DistanceToMyShip = 7000.0f;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USphereComponent* SphereComponent;
+
 	FEnemyShipDie EnemyShipDieDelegate;
 	FSpawnEnemyDelegate SpawnEnemyDelegate;
 
@@ -75,6 +79,10 @@ private:
 	void MultiCastRPC_FireCannon();
 
 	void SpawnEnemies(AMyShip* MyShip) const;
+
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+					  int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// Return three nearest enemy spawn points
 	TArray<UEnemySpawnPoint*> GetEnemySpawnPointsToSpawn(const AMyShip* MyShip) const;
