@@ -42,6 +42,8 @@ void AEnemyShipCannonBall::Tick(float DeltaTime)
 void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+	bool bIsShowEnemyShipHPProgressBar = false;
+	
 	if (HasAuthority())
 	{
 		FTimerHandle TimerHandle;
@@ -55,6 +57,7 @@ void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* Othe
 		}
 		
 		MyShip->Damage(Damage);
+		bIsShowEnemyShipHPProgressBar = true;
 
 		if (CanStartFire())
 		{
@@ -62,14 +65,14 @@ void AEnemyShipCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* Othe
 		}
 	}
 
-	MulticastRPC_OnHit(Hit);
+	MulticastRPC_OnHit(Hit, bIsShowEnemyShipHPProgressBar);
 }
 
-void AEnemyShipCannonBall::MulticastRPC_OnHit_Implementation(const FHitResult& Hit)
+void AEnemyShipCannonBall::MulticastRPC_OnHit_Implementation(const FHitResult& Hit, const bool bIsShowEnemyShipHPProgressBar)
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
 
-	if (MyInGameHUD->GetEnemyShipHPProgressBarVisibility() == false)
+	if (bIsShowEnemyShipHPProgressBar && MyInGameHUD->GetEnemyShipHPProgressBarVisibility() == false)
 	{
 		MyInGameHUD->SetEnemyShipHPProgressBarVisibility(true);
 	}

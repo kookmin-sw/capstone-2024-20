@@ -26,7 +26,7 @@ private:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPC_OnHit(const FHitResult& Hit);
+	void MulticastRPC_OnHit(const FHitResult& Hit, const bool bIsShowEnemyShipHPProgressBar);
 	
 	void DestroyWithDelay();
 	bool CanStartFire() const;
