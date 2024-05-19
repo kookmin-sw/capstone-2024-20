@@ -292,5 +292,6 @@ void AEnemyShip::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		return;
 	}
 
+	SpawnEnemies(MyShip);
 	Die();
 }
