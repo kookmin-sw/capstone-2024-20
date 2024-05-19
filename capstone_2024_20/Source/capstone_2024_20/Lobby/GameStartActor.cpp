@@ -6,6 +6,11 @@
 #include "CapCharacter.h"
 #include "LevelSequencePlayer.h"
 #include "LobbyGameMode.h"
+#include "LobbyPlateWidgetComponent.h"
+#include "LobbyWidget.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "capstone_2024_20/01_Network/PlayerListWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AGameStartActor::AGameStartActor()
@@ -43,6 +48,11 @@ void AGameStartActor::InteractionExit()
 	Super::InteractionExit();
 }
 
+void AGameStartActor::SetVisibleWidget(UUserWidget* NewUserWidget)
+{
+	VisibleWidget = NewUserWidget;
+}
+
 void AGameStartActor::GameStart()
 {
 	ALobbyGameMode* GameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
@@ -68,7 +78,40 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 		ACapCharacter* ClientCharacter = Cast<ACapCharacter>(PlayerController->GetCharacter());
 		ClientCharacter->SetVisibleWigetWithBool(false);
 	}
-
 	
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		TArray<UUserWidget*> FoundWidgets;
+		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets, UPlayerListWidget::StaticClass(), false);
+
+		TArray<UUserWidget*> FoundWidgets2;
+		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets2, ULobbyWidget::StaticClass(), false);
+		
+		TArray<UUserWidget*> FoundWidgets3;
+		UWidgetBlueprintLibrary::GetAllWidgetsOfClass(World, FoundWidgets3, UReadyCharacterWidget::StaticClass(), false);
+		
+		TArray<AActor*> FoundCharacter;
+		UGameplayStatics::GetAllActorsOfClass(World, ACapCharacter::StaticClass(), FoundCharacter);
+
+		for (UUserWidget* Widget : FoundWidgets)
+		{
+			Widget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		for (UUserWidget* Widget : FoundWidgets2)
+		{
+			Widget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		for (UUserWidget* Widget : FoundWidgets3)
+		{
+			Widget->SetVisibility(ESlateVisibility::Hidden);
+		}
+
+		// for (AActor* CharacterActor : FoundCharacter)
+		// {
+		// 	Cast<ACapCharacter>(CharacterActor)->WidgetComponent->SetVisibilityFromBool(false);
+		// }
+	}
 	LevelSequencePlayer->Play();
 }
