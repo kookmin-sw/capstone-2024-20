@@ -139,12 +139,18 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 			GetWorld(), RoundProgressControllerWidgetClass);
 		RoundProgressControllerWidget->AddToViewport();
 
+		RoundProgressControllerWidget->SetPercent(0.0f);
 		if (PlayerController)
 		{
 			PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Pressed,
 			                                          this, &ThisClass::SkipPressed);
 			PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Released,
 			                                          this, &ThisClass::SkipRealesed);
+
+			PlayerController->InputComponent->BindKey(EKeys::R, IE_Pressed,
+													  this, &ThisClass::SkipPressed);
+			PlayerController->InputComponent->BindKey(EKeys::R, IE_Released,
+													  this, &ThisClass::SkipRealesed);
 		}
 	}
 
