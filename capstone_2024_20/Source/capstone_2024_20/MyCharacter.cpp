@@ -20,8 +20,7 @@ AMyCharacter::AMyCharacter()
 	bReplicates = true;
 	
 	TextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBARWIDGET"));
-	TextWidget->SetupAttachment(GetMesh());
-	TextWidget->SetRelativeLocation(FVector(-60.0f,0.0f,180.0f));
+	TextWidget->SetupAttachment(RootComponent);
 	TextWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
 	NamePlateWidget = CreateDefaultSubobject<UNamePlateWidgetComponent>(TEXT("NICKNAMEWIDGET"));
@@ -81,6 +80,9 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// ! 캐릭터에 Attach한 UI가 Movement에 따라 움직이는 문제가 있어, Tick에서 위치를 업데이트
+	TextWidget->SetWorldLocation(GetActorLocation() + FVector(0.0f, 0.0f, -200.0f));
 }
 
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
