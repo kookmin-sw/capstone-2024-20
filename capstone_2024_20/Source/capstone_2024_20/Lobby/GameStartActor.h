@@ -29,7 +29,11 @@ public:
 	virtual void InteractionEnter() override;
 	virtual void InteractionLongEnter() override;
 	virtual void InteractionExit() override;
-
+	
+	UFUNCTION(BlueprintCallable)
+	void SetVisibleWidget(UUserWidget* NewUserWidget);
+	UPROPERTY()
+	UUserWidget* VisibleWidget;
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlaySequence();
