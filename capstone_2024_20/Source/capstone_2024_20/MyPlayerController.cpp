@@ -407,16 +407,6 @@ void AMyPlayerController::Attack(const FInputActionInstance& Instance)
 	ServerRPC_Attack();
 }
 
-void AMyPlayerController::InteractOnClient(AMyObject* OBJ)
-{
-	OBJ->Interact();
-}
-
-void AMyPlayerController::InteractOnServer(AMyObject* OBJ)
-{
-	ServerRPC_InteractOnServer(OBJ);
-}
-
 void AMyPlayerController::UpgradeMyShipMoveSpeed()
 {
 	ServerRPC_UpgradeMyShipMoveSpeed();
@@ -430,6 +420,16 @@ void AMyPlayerController::UpgradeMyShipHandling()
 void AMyPlayerController::UpgradeMyShipCannonAttack()
 {
 	ServerRPC_UpgradeMyShipCannonAttack();
+}
+
+void AMyPlayerController::InteractOnClient(AMyObject* OBJ)
+{
+	OBJ->Interact();
+}
+
+void AMyPlayerController::InteractOnServer(AMyObject* OBJ)
+{
+	ServerRPC_InteractOnServer(OBJ);
 }
 
 void AMyPlayerController::ServerRPC_Attack_Implementation()
