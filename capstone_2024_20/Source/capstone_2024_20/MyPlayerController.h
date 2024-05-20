@@ -12,6 +12,10 @@
 #include "MyBed.h"
 #include "MyPlayerController.generated.h"
 
+class ASailingSystem;
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
+
 UCLASS()
 class CAPSTONE_2024_20_API AMyPlayerController : public APlayerController
 {
@@ -48,6 +52,12 @@ private:
 
 	UPROPERTY(Category=Input, VisibleAnywhere)
 	UInputAction* AttackAction;
+
+	UPROPERTY()
+	ASailingSystem* SailingSystem;
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD;
 	
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
@@ -87,6 +97,10 @@ public:
 	void Move(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
+
+	void UpgradeMyShipMoveSpeed();
+	void UpgradeMyShipHandling();
+	void UpgradeMyShipCannonAttack();
 	
 	static void InteractOnClient(AMyObject* OBJ);
 	void InteractOnServer(AMyObject* OBJ);
@@ -141,6 +155,15 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_PlayerAwake(AMyCharacter* user, bool b, AMyBed* bed);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UpgradeMyShipMoveSpeed();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UpgradeMyShipHandling();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UpgradeMyShipCannonAttack();
 
 protected:
 	enum class ControlMode

@@ -4,6 +4,9 @@
 #include "ShipControlStrategy.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
+#include "MyIngameHUD.h"
+#include "Sailing/SailingSystem.h"
+#include "Upgrade/UpgradeWidgetElement.h"
 
 class AStaticMeshActor;
 
@@ -80,6 +83,19 @@ void AMyPlayerController::BeginPlay()
 	if(Ship)
 	{
 		SetViewTarget(Ship->Camera_Character);
+	}
+
+	if (IsLocalController())
+	{
+		SailingSystem = Cast<ASailingSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), ASailingSystem::StaticClass()));
+		
+		MyInGameHUD = Cast<AMyIngameHUD>(GetHUD());
+		MyInGameHUD->BeginPlay();
+	
+		const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
+		PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipMoveSpeed);
+		PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipHandling);
+		PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipCannonAttack);
 	}
 	
 	EnableCheats();
@@ -401,6 +417,21 @@ void AMyPlayerController::InteractOnServer(AMyObject* OBJ)
 	ServerRPC_InteractOnServer(OBJ);
 }
 
+void AMyPlayerController::UpgradeMyShipMoveSpeed()
+{
+	ServerRPC_UpgradeMyShipMoveSpeed();
+}
+
+void AMyPlayerController::UpgradeMyShipHandling()
+{
+	ServerRPC_UpgradeMyShipHandling();
+}
+
+void AMyPlayerController::UpgradeMyShipCannonAttack()
+{
+	ServerRPC_UpgradeMyShipCannonAttack();
+}
+
 void AMyPlayerController::ServerRPC_Attack_Implementation()
 {
 	if (HasAuthority())
@@ -543,6 +574,21 @@ void AMyPlayerController::PlayerAwake()
 	Bed->AwakeSound();
 	
 	GetWorld()->GetTimerManager().ClearTimer(HealthTimerHandle);
+}
+
+void AMyPlayerController::ServerRPC_UpgradeMyShipMoveSpeed_Implementation()
+{
+	SailingSystem->UpgradeMyShipMoveSpeed();
+}
+
+void AMyPlayerController::ServerRPC_UpgradeMyShipHandling_Implementation()
+{
+	SailingSystem->UpgradeMyShipHandling();
+}
+
+void AMyPlayerController::ServerRPC_UpgradeMyShipCannonAttack_Implementation()
+{
+	SailingSystem->UpgradeMyShipCannonAttack();
 }
 
 void AMyPlayerController::ServerRPC_PlayerAwake_Implementation(AMyCharacter* user, bool b, AMyBed* bed)
