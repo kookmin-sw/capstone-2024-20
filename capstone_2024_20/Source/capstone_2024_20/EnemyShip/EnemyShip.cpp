@@ -142,15 +142,18 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 	const FVector NextPoint = PathToMyShip->PathPoints[1];
 	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
 	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * DeltaTime;
+	const auto NewRotation = FRotationMatrix::MakeFromX(DirectionToNextPoint).Rotator();
 	
 	SetActorLocation(NewLocation);
-	SetActorRotation(DirectionToNextPoint.Rotation());
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, DeltaTime, 0.1f));
 }
 
 bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 {
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	const auto Direction = MyShipLocation - GetActorLocation();
+	const auto EnemyShipHeadLocation = FindComponentByClass<UEnemyShipHead>()->GetComponentLocation();
+	const auto NearestMovePointLocation = MyShip->GetNearestEnemyShipMovePointLocationFrom(EnemyShipHeadLocation);
+	const auto Direction = NearestMovePointLocation - GetActorLocation();
+	
 	return Direction.Size() > DistanceToMyShip && Direction.Size() < DistanceToObserveMyShip;
 }
 
@@ -161,8 +164,9 @@ bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
 
 bool AEnemyShip::CanFireCannon(const AMyShip* MyShip) const
 {
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	const auto Direction = MyShipLocation - GetActorLocation();
+	const auto EnemyShipHeadLocation = FindComponentByClass<UEnemyShipHead>()->GetComponentLocation();
+	const auto NearestMovePointLocation = MyShip->GetNearestEnemyShipMovePointLocationFrom(EnemyShipHeadLocation);
+	const auto Direction = NearestMovePointLocation - GetActorLocation();
 	
 	return bCanFireCannon && Direction.Size() < DistanceToMyShip;
 }

@@ -63,9 +63,9 @@ public:
 	bool bCanFireCannon = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float DistanceToMyShip = 7000.0f;
+	float DistanceToMyShip = 5000.0f;
 
-	const float DistanceToObserveMyShip = 22000.0f;
+	const float DistanceToObserveMyShip = 25000.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	USphereComponent* SphereComponent;
