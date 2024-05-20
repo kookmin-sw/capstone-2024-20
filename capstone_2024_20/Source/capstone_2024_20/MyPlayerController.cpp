@@ -217,7 +217,6 @@ void AMyPlayerController::Interaction_Released()
 		{
 			Player->SetPlayerState(Player->GetUserStateNone());
 			ServerRPC_DropObject(CurrentHitObject, Ship);
-			
 		}
 		
 		CurrentHitObject = nullptr;
