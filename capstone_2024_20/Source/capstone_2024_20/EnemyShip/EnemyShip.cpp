@@ -183,22 +183,24 @@ TArray<UEnemySpawnPoint*> AEnemyShip::GetEnemySpawnPointsToSpawn(const AMyShip* 
 		Distances.Add(Distance);
 	}
 
-	int FirstNearestIndex = 0;
-	int SecondNearestIndex = 0;
-	int ThirdNearestIndex = 0;
+	int FirstNearestIndex = -1;
+	int SecondNearestIndex = -1;
+	int ThirdNearestIndex = -1;
 
 	for (int i = 0; i < Distances.Num(); i++)
 	{
-		if (Distances[i] < Distances[FirstNearestIndex])
+		if ( FirstNearestIndex == -1 || Distances[i] < Distances[FirstNearestIndex])
 		{
+			ThirdNearestIndex = SecondNearestIndex;
 			SecondNearestIndex = FirstNearestIndex;
 			FirstNearestIndex = i;
 		}
-		else if (Distances[i] < Distances[SecondNearestIndex])
+		else if (SecondNearestIndex == -1 || Distances[i] < Distances[SecondNearestIndex])
 		{
+			ThirdNearestIndex = SecondNearestIndex;
 			SecondNearestIndex = i;
 		}
-		else if (Distances[i] < Distances[ThirdNearestIndex])
+		else if (ThirdNearestIndex == -1 || Distances[i] < Distances[ThirdNearestIndex])
 		{
 			ThirdNearestIndex = i;
 		}
