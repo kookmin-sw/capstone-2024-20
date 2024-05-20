@@ -44,7 +44,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
 
-	void AddDelegateToPopupUpgrade();
 	void AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event);
 
 	void UpgradeMyShipMoveSpeed();
@@ -106,7 +105,4 @@ private:
 	FVector InitLocation;
 	UPROPERTY(Replicated)
 	float Progress = 0.0f;
-	
-	UPROPERTY()
-	AMyIngameHUD* MyInGameHUD = nullptr;
 };
