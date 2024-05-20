@@ -142,9 +142,10 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 	const FVector NextPoint = PathToMyShip->PathPoints[1];
 	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
 	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * DeltaTime;
+	const auto NewRotation = FRotationMatrix::MakeFromX(DirectionToNextPoint).Rotator();
 	
 	SetActorLocation(NewLocation);
-	SetActorRotation(DirectionToNextPoint.Rotation());
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, DeltaTime, 0.1f));
 }
 
 bool AEnemyShip::CanMove(const AMyShip* MyShip) const
