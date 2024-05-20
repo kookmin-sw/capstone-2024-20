@@ -6,6 +6,7 @@
 #include "../Common/HP.h"
 #include "Enemy.generated.h"
 
+class UEnemyAnimInstance;
 class UPopupEnemy;
 class UWidgetComponent;
 class AMyCharacter;
@@ -39,13 +40,15 @@ public:
 	void MulticastRPC_Damage();
 	
 	void MoveToMyCharacter(const AMyCharacter* MyCharacter);
-	void Attack(AMyCharacter* MyCharacter);
+	void Attack();
 
 	UFUNCTION(Server, Reliable)
-	void ServerRPC_Attack(AMyCharacter* MyCharacter);
+	void ServerRPC_Attack();
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiCastRPC_Attack(AMyCharacter* MyCharacter);
+	void MultiCastRPC_Attack();
+
+	void GiveDamage();
 
 	void ReduceCurrentAttackCooldown(float DeltaTime);
 
@@ -75,6 +78,9 @@ private:
 
 	UPROPERTY()
 	UPopupEnemy* PopupEnemyWidget = nullptr;
+
+	UPROPERTY()
+	UEnemyAnimInstance* AnimInstance = nullptr;
 	
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;
