@@ -45,41 +45,18 @@ AMyPlayerController::AMyPlayerController()
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	TArray<AActor*> FoundShips;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyShip::StaticClass(), FoundShips);
-	if (FoundShips.Num() > 0)
-	{
-		Ship = Cast<AMyShip>(FoundShips[0]);
-	}
-
-	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if (Subsystem != nullptr)
-	{
-		Subsystem->AddMappingContext(DefaultMappingContext, 0);
-	}
 
 	if (HasAuthority() && IsLocalController())
 	{
-		Player = Cast<AMyCharacter>(GetPawn());
-		if (Player)
-		{
-			ControlledActor = Player;
-			if (Player->InputComponent)
-			{
-				SetupPlayerInputComponent(Player->InputComponent);
-			}
-		}
+		SetServerCharacter();
 	}
 
 	CurrentControlMode = ControlMode::CHARACTER;
 
-	if(Ship)
-	{
-		SetViewTarget(Ship->Camera_Character);
-	}
-
+	Ship = Cast<AMyShip>(UGameplayStatics::GetActorOfClass(GetWorld(), AMyShip::StaticClass()));
 	SailingSystem = Cast<ASailingSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), ASailingSystem::StaticClass()));
+
+	SetViewTarget(Ship->Camera_Character);
 	
 	if (IsLocalController())
 	{
@@ -90,6 +67,9 @@ void AMyPlayerController::BeginPlay()
 		PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipMoveSpeed);
 		PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipHandling);
 		PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipCannonAttack);
+
+		Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 	
 	EnableCheats();
@@ -110,25 +90,10 @@ void AMyPlayerController::BeginPlay()
 void AMyPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (!HasAuthority())
-	{
-		if (!Player || flag)
-		{
-			Player = Cast<AMyCharacter>(GetPawn());
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
 	
-			if (Player)
-			{
-				ControlledActor = Player;
-				if (Player->InputComponent)
-				{
-					SetupPlayerInputComponent(Player->InputComponent);
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Component NOT NULL"));
-					flag = false;
-					SetViewTarget(Ship->Camera_Character);
-				}
-			}
-		}
+	if (!HasAuthority() && bIsNeedToSetClientCharacter)
+	{
+		SetClientCharacter();
 	}
 
 	// 키를 누르고 있으면 시간을 측정
@@ -178,6 +143,39 @@ void AMyPlayerController::Move(const FInputActionInstance& Instance)
 	if (CurrentStrategy != nullptr && CurrentControlMode != ControlMode::TELESCOPE && CurrentControlMode != ControlMode::BED)
 	{
 		CurrentStrategy->Move(Instance, ControlledActor,this, GetWorld()->GetDeltaSeconds());
+	}
+}
+
+void AMyPlayerController::SetServerCharacter()
+{
+	Player = Cast<AMyCharacter>(GetPawn());
+	if (Player)
+	{
+		ControlledActor = Player;
+		if (Player->InputComponent)
+		{
+			SetupPlayerInputComponent(Player->InputComponent);
+		}
+	}
+}
+
+void AMyPlayerController::SetClientCharacter()
+{
+	if (!Player)
+	{
+		if (AMyCharacter* CastedMyCharacter = Cast<AMyCharacter>(GetPawn()))
+		{
+			Player = CastedMyCharacter;
+			ControlledActor = Player;
+		}
+	}
+	else
+	{
+		if (Player->InputComponent)
+		{
+			SetupPlayerInputComponent(Player->InputComponent);
+			bIsNeedToSetClientCharacter = false;
+		}
 	}
 }
 
