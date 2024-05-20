@@ -59,4 +59,8 @@ private:
 
 	UPROPERTY()
 	UProgressBar* EnemyShipProgressBar;
+
+	// ! 일부 클래스에서, HUD의 BeginPlay가 늦게 호출되는 경우가 있어 해당 클래스에서는 BeginPlay를 직접 호출.
+	// ! 이때, BeginPlay가 이미 호출된 경우에는 다시 호출하지 않도록 예외 처리하기 위한 변수
+	bool bIsCalledBeginPlay = false;
 };

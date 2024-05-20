@@ -10,8 +10,6 @@
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
 #include "../Object/Destination.h"
-#include "../MyIngameHUD.h"
-#include "../Upgrade/UpgradeWidgetElement.h"
 #include "Net/UnrealNetwork.h"
 #include "../Event/Event.h"
 
@@ -33,14 +31,11 @@ void ASailingSystem::BeginPlay()
 	
 	CreateMap();
 
-	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
-	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -253,14 +248,6 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 int ASailingSystem::GetCurrency() const
 {
 	return Currency;
-}
-
-void ASailingSystem::AddDelegateToPopupUpgrade()
-{
-	const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
-	PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipMoveSpeed);
-	PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipHandling);
-	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
 }
 
 void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)

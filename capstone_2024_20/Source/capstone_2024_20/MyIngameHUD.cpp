@@ -5,6 +5,11 @@
 
 void AMyIngameHUD::BeginPlay()
 {
+	if (bIsCalledBeginPlay)
+	{
+		return;
+	}
+	
 	Super::BeginPlay();
 
 	InGameWidget = CreateWidget<UUserWidget>(GetWorld(), IngameWidgetClass);
@@ -18,6 +23,8 @@ void AMyIngameHUD::BeginPlay()
 
 	EnemyShipProgressBar = Cast<UProgressBar>(InGameWidget->GetWidgetFromName(TEXT("EnemyShipHPProgressBar")));
 	EnemyShipProgressBar->SetVisibility(ESlateVisibility::Hidden);
+	
+	bIsCalledBeginPlay = true;
 }
 
 void AMyIngameHUD::SetPopupDeadVisibility(const bool bIsVisible) const
