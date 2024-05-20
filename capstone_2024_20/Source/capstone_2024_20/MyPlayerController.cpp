@@ -45,18 +45,22 @@ AMyPlayerController::AMyPlayerController()
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (HasAuthority() && IsLocalController())
+	{
+		SetServerCharacter();
+	}
+
 	CurrentControlMode = ControlMode::CHARACTER;
 
 	Ship = Cast<AMyShip>(UGameplayStatics::GetActorOfClass(GetWorld(), AMyShip::StaticClass()));
 	SailingSystem = Cast<ASailingSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), ASailingSystem::StaticClass()));
-	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	MyInGameHUD = Cast<AMyIngameHUD>(GetHUD());
-	
+
 	SetViewTarget(Ship->Camera_Character);
 	
 	if (IsLocalController())
 	{
+		MyInGameHUD = Cast<AMyIngameHUD>(GetHUD());
 		MyInGameHUD->BeginPlay();
 	
 		const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
@@ -64,16 +68,23 @@ void AMyPlayerController::BeginPlay()
 		PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipHandling);
 		PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &AMyPlayerController::UpgradeMyShipCannonAttack);
 
+		Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
-
-		if (HasAuthority())
-		{
-			SetServerCharacter();
-		}
 	}
 	
 	EnableCheats();
-	ShowAuthorityDebugMessage();
+
+	if (IsLocalController())
+	{
+		if (HasAuthority())
+        {
+        	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("Server"));
+        }
+        else
+        {
+        	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("Client"));
+        }
+	}
 }
 
 void AMyPlayerController::Tick(float DeltaSeconds)
@@ -164,21 +175,6 @@ void AMyPlayerController::SetClientCharacter()
 		{
 			SetupPlayerInputComponent(Player->InputComponent);
 			bIsNeedToSetClientCharacter = false;
-		}
-	}
-}
-
-void AMyPlayerController::ShowAuthorityDebugMessage() const
-{
-	if (IsLocalController())
-	{
-		if (HasAuthority())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("Server"));
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("Client"));
 		}
 	}
 }

@@ -87,8 +87,6 @@ private:
 
 	void SetServerCharacter();
 	void SetClientCharacter();
-
-	void ShowAuthorityDebugMessage() const;
 	
 	void Interaction_Pressed();
 	void Interaction_Trigger();
