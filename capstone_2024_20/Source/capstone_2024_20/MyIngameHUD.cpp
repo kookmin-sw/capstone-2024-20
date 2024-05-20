@@ -3,6 +3,7 @@
 #include "Upgrade/UpgradeWidgetElement.h"
 #include "WidgetBlueprint/PopupDead.h"
 #include "WidgetBlueprint/PopupCaution.h"
+#include "WidgetBlueprint/PopupEnemyShip.h"
 
 void AMyIngameHUD::BeginPlay()
 {
@@ -22,8 +23,10 @@ void AMyIngameHUD::BeginPlay()
 	PopupUpgrade->AddToViewport();
 	SetPopupUpgradeVisibility(false);
 
-	EnemyShipProgressBar = Cast<UProgressBar>(InGameWidget->GetWidgetFromName(TEXT("EnemyShipHPProgressBar")));
-	EnemyShipProgressBar->SetVisibility(ESlateVisibility::Hidden);
+	PopupEnemyShipClass = LoadClass<UPopupEnemyShip>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/EnemyShip/BP_PopupEnemyShip.BP_PopupEnemyShip_C'"));
+	PopupEnemyShip = CreateWidget<UPopupEnemyShip>(GetWorld(), PopupEnemyShipClass);
+	PopupEnemyShip->AddToViewport();
+	PopupEnemyShip->SetVisibility(ESlateVisibility::Hidden);
 	
 	PopupCautionClass = LoadClass<UPopupCaution>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Sailing/BP_PopupCaution.BP_PopupCaution_C'"));
 	PopupCaution = CreateWidget<UPopupCaution>(GetWorld(), PopupCautionClass);
@@ -60,19 +63,19 @@ void AMyIngameHUD::SetPopupUpgradeVisibility(const bool bIsVisible) const
 	PopupUpgrade->SetVisibilityWithBool(bIsVisible);
 }
 
-bool AMyIngameHUD::GetEnemyShipHPProgressBarVisibility() const
+bool AMyIngameHUD::GetPopupEnemyShipVisibility() const
 {
-	return EnemyShipProgressBar->IsVisible();
+	return PopupEnemyShip->GetVisibility() == ESlateVisibility::Visible;
 }
 
-void AMyIngameHUD::SetEnemyShipHPProgressBarVisibility(const bool bIsVisible) const
+void AMyIngameHUD::SetPopupEnemyShipVisibility(const bool bIsVisible) const
 {
-	EnemyShipProgressBar->SetVisibility(bIsVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	PopupEnemyShip->SetVisibility(bIsVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void AMyIngameHUD::SetEnemyShipHPProgressBarPercent(const float Percent) const
 {
-	EnemyShipProgressBar->SetPercent(Percent);
+	PopupEnemyShip->SetEnemyShipHPProgressBarPercent(Percent);
 }
 
 void AMyIngameHUD::ShowPopupCaution(const FText& Text) const

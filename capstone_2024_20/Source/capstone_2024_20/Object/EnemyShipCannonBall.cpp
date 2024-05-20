@@ -72,9 +72,9 @@ void AEnemyShipCannonBall::MulticastRPC_OnHit_Implementation(const FHitResult& H
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), WaterSplashEffect, Hit.ImpactPoint, FRotator::ZeroRotator, WaterSplashEffectScale);
 
-	if (bIsShowEnemyShipHPProgressBar && MyInGameHUD->GetEnemyShipHPProgressBarVisibility() == false)
+	if (bIsShowEnemyShipHPProgressBar && MyInGameHUD->GetPopupEnemyShipVisibility() == false)
 	{
-		MyInGameHUD->SetEnemyShipHPProgressBarVisibility(true);
+		MyInGameHUD->SetPopupEnemyShipVisibility(true);
 	}
 }
 

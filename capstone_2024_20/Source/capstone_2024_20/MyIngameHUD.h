@@ -6,6 +6,7 @@
 #include "Upgrade/UpgradeWidget.h"
 #include "MyIngameHUD.generated.h"
 
+class UPopupEnemyShip;
 class UPopupCaution;
 class UProgressBar;
 class UPopupDead;
@@ -29,8 +30,8 @@ public:
 	// [end] PopupUpgrade
 
 	// [begin] EnemyShipUI
-	bool GetEnemyShipHPProgressBarVisibility() const;
-	void SetEnemyShipHPProgressBarVisibility(bool bIsVisible) const;
+	bool GetPopupEnemyShipVisibility() const;
+	void SetPopupEnemyShipVisibility(bool bIsVisible) const;
 	void SetEnemyShipHPProgressBarPercent(float Percent) const;
 	// [end] EnemyShipUI
 
@@ -53,6 +54,7 @@ protected:
 	TSubclassOf<UUpgradeWidget> PopupUpgradeClass;
 
 	TSubclassOf<UPopupCaution> PopupCautionClass;
+	TSubclassOf<UPopupEnemyShip> PopupEnemyShipClass;
 
 private:
 	UPROPERTY()
@@ -65,7 +67,7 @@ private:
 	UUpgradeWidget* PopupUpgrade;
 
 	UPROPERTY()
-	UProgressBar* EnemyShipProgressBar;
+	UPopupEnemyShip* PopupEnemyShip;
 
 	UPROPERTY()
 	UPopupCaution* PopupCaution;
