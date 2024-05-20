@@ -159,9 +159,12 @@ bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
 	return bCanSpawnEnemy;
 }
 
-bool AEnemyShip::CanFireCannon() const
+bool AEnemyShip::CanFireCannon(const AMyShip* MyShip) const
 {
-	return bCanFireCannon;
+	const auto MyShipLocation = MyShip->GetActorLocation();
+	const auto Direction = MyShipLocation - GetActorLocation();
+	
+	return bCanFireCannon && Direction.Size() < DistanceToMyShip;
 }
 
 TArray<UEnemySpawnPoint*> AEnemyShip::GetEnemySpawnPointsToSpawn(const AMyShip* MyShip) const

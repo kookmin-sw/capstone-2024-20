@@ -54,7 +54,7 @@ public:
 
 	bool CanMove(const AMyShip* MyShip) const;
 	bool CanSpawnEnemy(const AMyShip* MyShip) const;
-	bool CanFireCannon() const;
+	bool CanFireCannon(const AMyShip* MyShip) const;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanSpawnEnemy = false;
