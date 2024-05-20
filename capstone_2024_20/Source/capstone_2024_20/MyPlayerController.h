@@ -85,15 +85,12 @@ private:
 	// 키를 누른 시점부터의 시간을 측정하기 위한 변수
 	float PressDuration = 0.0f;
 
-	void SetServerCharacter();
-	void SetClientCharacter();
-	
 	void Interaction_Pressed();
 	void Interaction_Trigger();
 	void Interaction_Released();
 	
 	void DraggingRotate(const FInputActionInstance& Instance);
-	
+
 	FTimerHandle HealthTimerHandle;
 	
 public:
@@ -186,5 +183,5 @@ protected:
 	FRotator TargetRotation;
 	float ChangeSpeed = 5.0f;
 
-	bool bIsNeedToSetClientCharacter = true;
+	bool flag = true;
 };
