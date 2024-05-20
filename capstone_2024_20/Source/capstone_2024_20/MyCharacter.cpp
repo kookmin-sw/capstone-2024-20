@@ -61,8 +61,8 @@ void AMyCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
 
-	FTimerHandle timer;
-	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
 	
 	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
 
@@ -399,7 +399,7 @@ void AMyCharacter::DestroyCannonBall()
 void AMyCharacter::DragObject()
 {
 	CurrentHitObject->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-	FRotator RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // -90도 회전 (캐릭터 메시도 -90도 회전시켜서 사용중)
+	const FRotator RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // -90도 회전 (캐릭터 메시도 -90도 회전시켜서 사용중)
 	CurrentHitObject->SetActorRelativeRotation(RelativeRotation);
 
 	if (CurrentHitObject)
