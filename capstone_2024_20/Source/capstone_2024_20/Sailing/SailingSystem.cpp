@@ -133,7 +133,7 @@ void ASailingSystem::Tick(float DeltaTime)
 
 	for (const auto Enemy : Enemies)
 	{
-		if (AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy); NearestMyCharacter != nullptr)
+		if (const AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy); NearestMyCharacter != nullptr)
 		{
 			if (Enemy->CanMove())
 			{
@@ -144,7 +144,7 @@ void ASailingSystem::Tick(float DeltaTime)
 			{
 				if (const float Distance = FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()); Distance <= Enemy->GetDistanceToMyCharacter())
 				{
-					Enemy->Attack(NearestMyCharacter);
+					Enemy->Attack();
 				}	
 			}	
 		}
