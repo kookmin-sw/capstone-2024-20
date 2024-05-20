@@ -29,7 +29,8 @@ AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
     PopupEventWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
     PopupEventWidgetComponent->SetupAttachment(RootComponent);
 	
-	CanBeOperated = true;
+	CanBeOperated = false;
+	CanBeOperatedOnServer = true;
 }
 
 void AEvent::BeginPlay()
@@ -38,7 +39,7 @@ void AEvent::BeginPlay()
 	PopupEvent = Cast<UPopupEvent>(PopupEventWidgetComponent->GetUserWidgetObject());
 }
 
-void AEvent::Operate()
+void AEvent::OperateOnServer()
 {
 	EventOperateDelegate.ExecuteIfBound(this);
 	Destroy();
