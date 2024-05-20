@@ -125,7 +125,7 @@ void AEnemyShip::MulticastRPC_Damage_Implementation()
 
 void AEnemyShip::MulticastRPC_Die_Implementation()
 {
-	MyInGameHUD->SetEnemyShipHPProgressBarVisibility(false);
+	MyInGameHUD->SetPopupEnemyShipVisibility(false);
 }
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
