@@ -85,10 +85,10 @@ void AMyPlayerController::BeginPlay()
 		SetViewTarget(Ship->Camera_Character);
 	}
 
+	SailingSystem = Cast<ASailingSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), ASailingSystem::StaticClass()));
+	
 	if (IsLocalController())
 	{
-		SailingSystem = Cast<ASailingSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), ASailingSystem::StaticClass()));
-		
 		MyInGameHUD = Cast<AMyIngameHUD>(GetHUD());
 		MyInGameHUD->BeginPlay();
 	
