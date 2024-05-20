@@ -56,7 +56,7 @@ void AGameStartActor::SetVisibleWidget(UUserWidget* NewUserWidget)
 
 void AGameStartActor::SkipPressed()
 {
-	GetWorld()->GetTimerManager().SetTimer(SkipTimerHandle, this, &ThisClass::Skip, 2.2f);
+	GetWorld()->GetTimerManager().SetTimer(SkipTimerHandle, this, &ThisClass::Skip, 2.1f);
 	RoundProgressControllerWidget->StartProgressBar(2.0f);
 }
 
@@ -68,7 +68,16 @@ void AGameStartActor::SkipRealesed()
 
 void AGameStartActor::Skip()
 {
-	GameStart();
+	if(HasAuthority() == true)
+	{
+		GameStart();
+		MultiRPC_Skip();
+	}
+}
+
+void AGameStartActor::MultiRPC_Skip_Implementation()
+{
+	LevelSequencePlayer->Pause();
 }
 
 void AGameStartActor::GameStart()
