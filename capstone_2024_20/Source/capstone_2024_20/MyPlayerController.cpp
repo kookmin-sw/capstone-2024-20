@@ -210,7 +210,8 @@ void AMyPlayerController::Interaction_Released()
 		{
 			Player->SetTextWidgetVisible(!Player->GetTextWidgetVisible());
 			ViewChange();
-			CurrentHitObject->Interact();
+			InteractOnClient(CurrentHitObject);
+			InteractOnServer(CurrentHitObject);
 		}
 		else if(PressDuration >= 3.0f)
 		{
@@ -391,6 +392,16 @@ void AMyPlayerController::Attack(const FInputActionInstance& Instance)
 	ServerRPC_Attack();
 }
 
+void AMyPlayerController::InteractOnClient(AMyObject* OBJ)
+{
+	OBJ->Interact();
+}
+
+void AMyPlayerController::InteractOnServer(AMyObject* OBJ)
+{
+	ServerRPC_InteractOnServer(OBJ);
+}
+
 void AMyPlayerController::ServerRPC_Attack_Implementation()
 {
 	if (HasAuthority())
@@ -506,6 +517,11 @@ void AMyPlayerController::ServerRPC_PlayerSleep_Implementation(AMyCharacter* use
 		user->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
 		user->bUseControllerRotationYaw = true;
 	}	
+}
+
+void AMyPlayerController::ServerRPC_InteractOnServer_Implementation(AMyObject* OBJ)
+{
+	OBJ->InteractOnServer();
 }
 
 void AMyPlayerController::PlayerSleep()

@@ -88,6 +88,9 @@ public:
 	void Shoot(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
 	
+	static void InteractOnClient(AMyObject* OBJ);
+	void InteractOnServer(AMyObject* OBJ);
+	
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Shoot(AMyCannon* CannonActor);
 
@@ -126,6 +129,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_PlayerSleep(AMyCharacter* user, bool b, AMyBed* bed);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_InteractOnServer(AMyObject* OBJ);
 
 	UFUNCTION()
 	void PlayerSleep();

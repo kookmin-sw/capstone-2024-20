@@ -30,6 +30,8 @@ private:
 protected:
 	UPROPERTY(Replicated)
 	bool CanBeOperated;
+
+	bool CanBeOperatedOnServer = false;
 	
 public:
 	bool GetIsDragging();
@@ -47,5 +49,8 @@ public:
 	void MulticastRPC_TurnOnCollision();
 
 	void Interact();
+	void InteractOnServer();
+	
 	virtual void Operate();
+	virtual void OperateOnServer();
 };

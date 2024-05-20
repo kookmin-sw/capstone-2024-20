@@ -53,7 +53,20 @@ void AMyObject::Interact()
 	}
 }
 
+void AMyObject::InteractOnServer()
+{
+	if (CanBeOperatedOnServer)
+	{
+		OperateOnServer();
+	}	
+}
+
 void AMyObject::Operate()
+{
+	// do nothing, override if needed
+}
+
+void AMyObject::OperateOnServer()
 {
 	// do nothing, override if needed
 }
