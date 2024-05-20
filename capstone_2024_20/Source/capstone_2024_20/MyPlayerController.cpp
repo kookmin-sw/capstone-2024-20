@@ -45,12 +45,7 @@ AMyPlayerController::AMyPlayerController()
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("HasAutority"));
-	}
-
+	
 	TArray<AActor*> FoundShips;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyShip::StaticClass(), FoundShips);
 	if (FoundShips.Num() > 0)
@@ -64,18 +59,17 @@ void AMyPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
-	Player = Cast<AMyCharacter>(GetPawn());
-	if (Player)
+	if (HasAuthority() && IsLocalController())
 	{
-		ControlledActor = Player;
-		if (Player->InputComponent)
+		Player = Cast<AMyCharacter>(GetPawn());
+		if (Player)
 		{
-			SetupPlayerInputComponent(Player->InputComponent);
+			ControlledActor = Player;
+			if (Player->InputComponent)
+			{
+				SetupPlayerInputComponent(Player->InputComponent);
+			}
 		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
 	}
 
 	CurrentControlMode = ControlMode::CHARACTER;
@@ -99,6 +93,18 @@ void AMyPlayerController::BeginPlay()
 	}
 	
 	EnableCheats();
+
+	if (IsLocalController())
+	{
+		if (HasAuthority())
+        {
+        	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("Server"));
+        }
+        else
+        {
+        	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("Client"));
+        }
+	}
 }
 
 void AMyPlayerController::Tick(float DeltaSeconds)
@@ -160,7 +166,6 @@ void AMyPlayerController::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	Player = Cast<AMyCharacter>(InPawn);
 }
 
 void AMyPlayerController::Move(const FInputActionInstance& Instance)
