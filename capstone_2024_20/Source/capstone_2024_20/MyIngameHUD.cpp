@@ -2,6 +2,7 @@
 #include "Components/ProgressBar.h"
 #include "Upgrade/UpgradeWidgetElement.h"
 #include "WidgetBlueprint/PopupDead.h"
+#include "WidgetBlueprint/PopupCaution.h"
 
 void AMyIngameHUD::BeginPlay()
 {
@@ -23,6 +24,11 @@ void AMyIngameHUD::BeginPlay()
 
 	EnemyShipProgressBar = Cast<UProgressBar>(InGameWidget->GetWidgetFromName(TEXT("EnemyShipHPProgressBar")));
 	EnemyShipProgressBar->SetVisibility(ESlateVisibility::Hidden);
+	
+	PopupCautionClass = LoadClass<UPopupCaution>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Sailing/BP_PopupCaution.BP_PopupCaution_C'"));
+	PopupCaution = CreateWidget<UPopupCaution>(GetWorld(), PopupCautionClass);
+	PopupCaution->AddToViewport();
+	PopupCaution->SetVisibility(ESlateVisibility::Hidden);
 	
 	bIsCalledBeginPlay = true;
 }
@@ -67,4 +73,15 @@ void AMyIngameHUD::SetEnemyShipHPProgressBarVisibility(const bool bIsVisible) co
 void AMyIngameHUD::SetEnemyShipHPProgressBarPercent(const float Percent) const
 {
 	EnemyShipProgressBar->SetPercent(Percent);
+}
+
+void AMyIngameHUD::ShowPopupCaution(const FText& Text) const
+{
+	PopupCaution->SetCautionText(Text);
+	PopupCaution->SetVisibility(ESlateVisibility::Visible);
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		PopupCaution->SetVisibility(ESlateVisibility::Hidden);
+	}, 3.0f, false);
 }

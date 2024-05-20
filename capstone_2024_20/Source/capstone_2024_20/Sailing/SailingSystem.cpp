@@ -1,4 +1,4 @@
-﻿#include "SailingSystem.h"
+#include "SailingSystem.h"
 #include "../EnemyShip/EnemyShip.h"
 #include "../Enemy/Enemy.h"
 #include "../MyShip.h"
@@ -12,6 +12,7 @@
 #include "../Object/Destination.h"
 #include "Net/UnrealNetwork.h"
 #include "../Event/Event.h"
+#include "capstone_2024_20/MyIngameHUD.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
                                   Destination(nullptr)
@@ -110,11 +111,23 @@ void ASailingSystem::Tick(float DeltaTime)
 		if (EnemyShip->CanMove(MyShip))
 		{
 			EnemyShip->MoveToMyShip(MyShip, DeltaTime);
+
+			if (bIsEnemyShipFirstMove)
+			{
+				MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적에게 발각됐습니다!"))));
+				bIsEnemyShipFirstMove = false;
+			}
 		}
 
 		if (EnemyShip->CanFireCannon(MyShip))
 		{
 			EnemyShip->FireCannon(DeltaTime);
+
+			if (bIsEnemyShipFirstFire)
+			{
+				MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적 함선이 포탄을 발사합니다!"))));
+				bIsEnemyShipFirstFire = false;
+			}
 		}
 	}
 
@@ -173,10 +186,21 @@ void ASailingSystem::OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies)
 		SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
 		Enemies.Add(SpawnedEnemy);
 	}
+
+	if (bIsEnemyShipFirstMove)
+	{
+		MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적이 침입했습니다!"))));
+		bIsEnemyShipFirstMove = false;
+	}
 }
 
 void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 {
+	if (EnemyShip->bCanFireCannon)
+	{
+		MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적 함선을 격침했습니다!"))));
+	}
+	
 	EnemyShips.Remove(EnemyShip);
 	EnemyShip->Destroy();
 	EarnCurrency(100);
@@ -254,6 +278,7 @@ void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)
 {
 	Event->EventOperateDelegate.BindUObject(this, &ASailingSystem::OnEventOperate);
 	Events.Add(Event);
+	MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("화재가 발생했습니다!"))));
 }
 
 void ASailingSystem::UpgradeMyShipMoveSpeed()
@@ -387,6 +412,13 @@ float ASailingSystem::DestinationProgress()
 	}
 	
 	return Progress;
+}
+
+void ASailingSystem::MulticastRPC_Caution_Implementation(const FText& Text) const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
+	InGameHUD->ShowPopupCaution(Text);
 }
 
 // nullable
