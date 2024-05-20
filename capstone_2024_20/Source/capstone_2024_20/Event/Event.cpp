@@ -16,7 +16,7 @@ AEvent::AEvent(): Particle(nullptr), BoxComponent(nullptr)
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComponent->SetupAttachment(RootComponent);
 	BoxComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-	BoxComponent->SetBoxExtent(FVector(150.0f, 150.0f, 100.0f));
+	BoxComponent->SetBoxExtent(FVector(500.0f, 500.0f, 300.0f));
 	BoxComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	BoxComponent->SetGenerateOverlapEvents(true);
 
