@@ -64,18 +64,21 @@ void AMyPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
-	Player = Cast<AMyCharacter>(GetPawn());
-	if (Player)
+	if (HasAuthority())
 	{
-		ControlledActor = Player;
-		if (Player->InputComponent)
+		Player = Cast<AMyCharacter>(GetPawn());
+		if (Player)
 		{
-			SetupPlayerInputComponent(Player->InputComponent);
+			ControlledActor = Player;
+			if (Player->InputComponent)
+			{
+				SetupPlayerInputComponent(Player->InputComponent);
+			}
 		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player NULL"));
+		}
 	}
 
 	CurrentControlMode = ControlMode::CHARACTER;
