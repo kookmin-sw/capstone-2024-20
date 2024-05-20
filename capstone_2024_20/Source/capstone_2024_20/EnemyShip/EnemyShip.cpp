@@ -151,7 +151,7 @@ bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 {
 	const auto MyShipLocation = MyShip->GetActorLocation();
 	const auto Direction = MyShipLocation - GetActorLocation();
-	return Direction.Size() > DistanceToMyShip;
+	return Direction.Size() > DistanceToMyShip && Direction.Size() < DistanceToObserveMyShip;
 }
 
 bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const

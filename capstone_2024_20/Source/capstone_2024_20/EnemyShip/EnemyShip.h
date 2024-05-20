@@ -65,6 +65,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float DistanceToMyShip = 7000.0f;
 
+	const float DistanceToObserveMyShip = 22000.0f;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	USphereComponent* SphereComponent;
 
