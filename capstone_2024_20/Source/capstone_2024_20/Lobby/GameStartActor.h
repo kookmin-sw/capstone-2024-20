@@ -50,6 +50,9 @@ public:
 
 	void Skip();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_Skip();
+
 	FTimerHandle SkipTimerHandle;
 public:
 	UFUNCTION(NetMulticast, Reliable)
