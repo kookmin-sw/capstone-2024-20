@@ -122,7 +122,13 @@ void AMyPlayerController::Tick(float DeltaSeconds)
 					SetupPlayerInputComponent(Player->InputComponent);
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player Component NOT NULL"));
 					flag = false;
-					SetViewTarget(Ship->Camera_Character);
+					if(Ship)
+					{
+						if(Ship->Camera_Character)
+						{
+							SetViewTarget(Ship->Camera_Character);
+						}
+					}
 				}
 			}
 		}
