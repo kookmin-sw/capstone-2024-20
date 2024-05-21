@@ -68,7 +68,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
 	{
 		SpawnPlayer(NewPlayer);
-	}, 3.0f, false);
+	}, 6.0f, false);
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -90,8 +90,8 @@ void ALobbyGameMode::GameStart()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
-		                                 TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
+		// GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
+		//                                  TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
 	}
 }
 
