@@ -49,6 +49,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	ULobbyInteractionWidgetComponent* InteractionWidgetComponent;
 
+	UFUNCTION(Client, Reliable)
+	void RefreshNamePlate();
+	
 	ACapCharacter();
 	FORCEINLINE virtual UInputMappingContext* GetMappingContext() override
 	{
