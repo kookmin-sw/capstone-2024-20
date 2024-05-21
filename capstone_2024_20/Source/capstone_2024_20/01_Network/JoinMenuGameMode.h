@@ -31,4 +31,7 @@ private:
 	void OnClickRefreshButton();
 	
 	void RefreshRoomListUI(bool bWasSuccessful) const;
+
+public:
+	virtual bool AllowCheats(APlayerController* P) override;
 };
