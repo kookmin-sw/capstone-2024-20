@@ -36,8 +36,6 @@ public:
 	void CreateMap();
 	void CreateObstacles() const;
 	
-	void CalculateEnemyInAttackRange();
-	
 	void EarnCurrency(int32 Amount);
 	void UseCurrency(int32 Amount);
 

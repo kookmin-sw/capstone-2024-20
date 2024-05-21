@@ -7,6 +7,7 @@
 #include "Common/HP.h"
 #include "MyCharacter.generated.h"
 
+class UPirateAnimInstance;
 class UPopupInteraction;
 // ReSharper disable once IdentifierTypo
 class AMyIngameHUD;
@@ -93,6 +94,8 @@ private:
 	int32 CurrentHP = 0;
 	// [end] IHP interface
 
+	void GiveDamage();
+
 	UPROPERTY()
 	AMyIngameHUD* MyInGameHUD;
 	
@@ -106,8 +109,10 @@ private:
 	UPROPERTY(Replicated)
 	float CurrentAttackCooldown = 0.0f;
 
+	float AttackRange = 200.f;
+
 	UPROPERTY()
-	AEnemy* EnemyInAttackRange = nullptr;
+	UPirateAnimInstance* PirateAnimInstance = nullptr;
 
 public:
 	// [begin] IHP interface
@@ -208,11 +213,6 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_Attack() const;
 	
-	void SetEnemyInAttackRange(AEnemy* Enemy);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPC_SetEnemyInAttackRange(AEnemy* Enemy);
-
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent() const;
 	

@@ -161,8 +161,6 @@ void ASailingSystem::Tick(float DeltaTime)
 		
 		Event->ReduceCurrentDamageCooldown(DeltaTime);
 	}
-
-	CalculateEnemyInAttackRange();
 }
 
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -227,30 +225,6 @@ void ASailingSystem::CreateObstacles() const
 	{
 		const auto SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(AObstacle::StaticClass(), ObstacleGrid->GetTransform());
 		SpawnedObstacle->SetActorRotation(ObstacleGrid->GetRotator());
-	}
-}
-
-void ASailingSystem::CalculateEnemyInAttackRange()
-{
-	for (const auto Character : MyCharacters)
-	{
-		FTransform CharacterTransform = Character->GetActorTransform();
-
-		double MinDistance = TNumericLimits<double>::Max();
-		AEnemy* EnemyInAttackRange = nullptr;
-		
-		for (const auto Enemy : Enemies)
-		{
-			// Todo@autumn - This is a temporary solution, replace it with data.
-			if (const auto Distance = FVector::Dist(CharacterTransform.GetLocation(), Enemy->GetActorLocation()); Distance < 200.0f && Distance < MinDistance)
-			{
-				MinDistance = Distance;
-				EnemyInAttackRange = Enemy;
-			}
-		}
-
-		// ! nullable
-		Character->SetEnemyInAttackRange(EnemyInAttackRange);
 	}
 }
 
