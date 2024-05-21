@@ -18,7 +18,7 @@ void AJoinMenuGameMode::BeginPlay()
 	Super::BeginPlay();
 	
 	UWorld* World = GetWorld();
-	
+	World->GetFirstPlayerController()->SetShowMouseCursor(true);
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(World, ANetworkService::StaticClass(), FoundActors);
 	ANetworkService* NetworkService = nullptr;

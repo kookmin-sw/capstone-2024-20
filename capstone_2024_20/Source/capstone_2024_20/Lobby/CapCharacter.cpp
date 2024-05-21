@@ -39,18 +39,21 @@ void ACapCharacter::Init()
 
 	if (IsLocallyControlled())
 	{
-		const FString PlayerName = LobbyPlayerState->GetPlayerName();
-		WidgetComponent->SetName(PlayerName);
-	}
-
-	if (IsLocallyControlled())
-	{
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
 			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
 			                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
 		}
+	}
+}
+
+void ACapCharacter::RefreshNamePlate_Implementation()
+{
+	if (IsLocallyControlled())
+	{
+		const FString PlayerName = LobbyPlayerState->GetPlayerName();
+		WidgetComponent->SetName(PlayerName);
 	}
 }
 
@@ -86,7 +89,7 @@ void ACapCharacter::BeginPlay()
 	}
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 1.0f, false);
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)

@@ -3,6 +3,8 @@
 
 #include "LobbyGameMode.h"
 
+#include "CapCharacter.h"
+#include "EngineUtils.h"
 #include "LobbyCharacter.h"
 #include "LobbyGameState.h"
 #include "LobbyPlayerListController.h"
@@ -13,29 +15,30 @@
 
 ALobbyGameMode::ALobbyGameMode()
 {
+	bUseSeamlessTravel = true;
 }
 
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerListController = APlayerListController::Find(GetWorld());
-	
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		PlayerController->InputComponent->BindKey(EKeys::T, IE_Pressed,
 		                                          this, &ThisClass::GameStart);
 	}
-	
+
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANetworkService::StaticClass(), FoundActors);
-	
+
 	if (FoundActors.Num() > 0)
 	{
 		ALobbyGameState* LobbyGameState = GetGameState<ALobbyGameState>();
 		LobbyGameState->NetworkService = Cast<ANetworkService>(FoundActors[0]);
 	}
-	
+
 	RoomInfoWidget = CreateWidget<UInGameRoomInfoWidget>(GetWorld(), RoomInfoWidgetFactory);
 	RoomInfoWidget->AddToViewport();
 
@@ -53,17 +56,19 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	
-	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
 
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
 
 	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 	ALobbyPlayerListController::RegisterReadyEventTimer(GetWorld(),
-		&PlayerListController, LobbyPlayerState);
-	
-	SpawnPlayer(NewPlayer);
+	                                                    &PlayerListController, LobbyPlayerState);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
+	{
+		SpawnPlayer(NewPlayer);
+	}, 3.0f, false);
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -116,8 +121,36 @@ bool ALobbyGameMode::IsReadyAllPlayer() const
 	return true;
 }
 
+void ALobbyGameMode::RestartPlayer(AController* NewPlayer)
+{
+	if (NewPlayer == nullptr || NewPlayer->IsPendingKillPending())
+	{
+		return;
+	}
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),TEXT("InitStartPosition"), FoundActors);
+
+	for(AActor* FoundActor: FoundActors)
+	{
+		RestartPlayerAtPlayerStart(NewPlayer, FoundActor);
+		break;
+	}
+}
+
 void ALobbyGameMode::SpawnPlayer(AController* NewPlayer)
 {
+	if (GetWorld())
+	{
+		for (TActorIterator<ACapCharacter> It(GetWorld()); It; ++It)
+		{
+			ACapCharacter* CapCharacter = *It;
+			if (CapCharacter)
+			{
+				CapCharacter->RefreshNamePlate();
+			}
+		}
+	}
+
 	AActor* PlayerStart = FindPlayerStart(NewPlayer, FString::FromInt(GetNumPlayers()));
 
 	NewPlayer->StartSpot = PlayerStart;
