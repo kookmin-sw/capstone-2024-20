@@ -29,6 +29,7 @@ public:
 	void GameStart();
 	bool IsReadyAllPlayer() const;
 
+	UFUNCTION()
 	void SpawnPlayer(AController* NewPlayer);
 
 	

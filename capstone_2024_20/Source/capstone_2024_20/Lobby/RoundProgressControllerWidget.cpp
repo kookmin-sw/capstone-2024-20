@@ -16,7 +16,7 @@ void URoundProgressControllerWidget::StartProgressBar(float Time)
 		const double ElapsedTime = GetWorld()->GetTimeSeconds();
 		const float CurrentValue = FMath::Clamp(GetPercent() + ((ElapsedTime-PrevTimeSeconds)/Time), 0.0f, 1.0f);
 		PrevTimeSeconds = ElapsedTime;
-		if (CurrentValue >= Time)
+		if (CurrentValue >= 1.0f)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 		}
