@@ -50,11 +50,11 @@ void ANetworkService::CreateGameSession()
 	if (ExistingSession != nullptr)
 	{
 		OnlineSessionInterface->DestroySession(NAME_GameSession);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black,
-			                                 FString::Printf(TEXT("삭제 session : %s"), NAME_GameSession));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black,
+		// 	                                 FString::Printf(TEXT("삭제 session : %s"), NAME_GameSession));
+		// }
 	}
 
 	TSharedPtr<FOnlineSessionSettings> SessionSettings = GetSessionSettings();
@@ -71,7 +71,7 @@ void ANetworkService::FindGameSession()
 	}
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
-	SessionSearch->MaxSearchResults = 5;
+	SessionSearch->MaxSearchResults = 5000;
 	SessionSearch->bIsLanQuery = bIsLan;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
@@ -89,8 +89,8 @@ void ANetworkService::JoinRoomGameSession(FOnlineSessionSearchResult& Result) co
 {
 	FString ResultRoomCode;
 	Result.Session.SessionSettings.Get(RoomTEXT::NAME, ResultRoomCode);
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red,
-	                                 FString::Printf(TEXT("룸 입장 버튼 클릭 클릭 클릭! %s"), *ResultRoomCode));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red,
+	//                                  FString::Printf(TEXT("룸 입장 버튼 클릭 클릭 클릭! %s"), *ResultRoomCode));
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	OnlineSessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, Result);
@@ -114,18 +114,18 @@ void ANetworkService::OnCreateSessionComplete(FName SessionName, bool bWasSucces
 {
 	if (bWasSuccessful == false)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("세션 생성 실패!")));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("세션 생성 실패!")));
+		// }
 		return;
 	}
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
-		                                 FString::Printf(TEXT("세션 생성완료 : %s"), *SessionName.ToString()));
-	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
+	// 	                                 FString::Printf(TEXT("세션 생성완료 : %s"), *SessionName.ToString()));
+	// }
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -141,8 +141,8 @@ void ANetworkService::OnFindSessionComplete(bool bWasSuccessful) const
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
-	                                 FString::Printf(TEXT("검색 준비")));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
+	//                                  FString::Printf(TEXT("검색 준비")));
 
 	const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>();
 	for (auto Result : SessionSearch->SearchResults)
@@ -161,11 +161,11 @@ void ANetworkService::OnFindSessionComplete(bool bWasSuccessful) const
 			JoinRoomGameSession(Result);
 		}
 		
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan,
-			                                 FString::Printf(TEXT("Session ID : %s / Owner : %s"), *Id, *User));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan,
+		// 	                                 FString::Printf(TEXT("Session ID : %s / Owner : %s"), *Id, *User));
+		// }
 	}
 }
 
@@ -179,11 +179,11 @@ void ANetworkService::OnJoinSessionComplate(FName SessionName, EOnJoinSessionCom
 	FString Address;
 	if (OnlineSessionInterface->GetResolvedConnectString(NAME_GameSession, Address))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
-			                                 FString::Printf(TEXT("Connect String : %s"), *Address));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
+		// 	                                 FString::Printf(TEXT("Connect String : %s"), *Address));
+		// }
 
 		APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
 		if (PlayerController)
@@ -236,8 +236,8 @@ TSharedPtr<FOnlineSessionSettings> ANetworkService::GetSessionSettings()
 			SessionSettings->Set(RoomTEXT::ISPRIVATE, false, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 		}
 		
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
-		                                 FString::Printf(TEXT("RoomCode : %s"), *RoomData.Code));
+		// GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
+		//                                  FString::Printf(TEXT("RoomCode : %s"), *RoomData.Code));
 	}
 
 
