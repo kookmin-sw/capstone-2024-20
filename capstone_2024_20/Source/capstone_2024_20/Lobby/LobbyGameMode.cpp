@@ -22,23 +22,23 @@ void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerListController = APlayerListController::Find(GetWorld());
-	
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		PlayerController->InputComponent->BindKey(EKeys::T, IE_Pressed,
 		                                          this, &ThisClass::GameStart);
 	}
-	
+
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANetworkService::StaticClass(), FoundActors);
-	
+
 	if (FoundActors.Num() > 0)
 	{
 		ALobbyGameState* LobbyGameState = GetGameState<ALobbyGameState>();
 		LobbyGameState->NetworkService = Cast<ANetworkService>(FoundActors[0]);
 	}
-	
+
 	RoomInfoWidget = CreateWidget<UInGameRoomInfoWidget>(GetWorld(), RoomInfoWidgetFactory);
 	RoomInfoWidget->AddToViewport();
 
@@ -56,20 +56,19 @@ void ALobbyGameMode::BeginPlay()
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	
+
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
 
 	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 	ALobbyPlayerListController::RegisterReadyEventTimer(GetWorld(),
-		&PlayerListController, LobbyPlayerState);
-	
+	                                                    &PlayerListController, LobbyPlayerState);
+
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
 	{
 		SpawnPlayer(NewPlayer);
 	}, 3.0f, false);
-
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -122,6 +121,22 @@ bool ALobbyGameMode::IsReadyAllPlayer() const
 	return true;
 }
 
+void ALobbyGameMode::RestartPlayer(AController* NewPlayer)
+{
+	if (NewPlayer == nullptr || NewPlayer->IsPendingKillPending())
+	{
+		return;
+	}
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),TEXT("InitStartPosition"), FoundActors);
+
+	for(AActor* FoundActor: FoundActors)
+	{
+		RestartPlayerAtPlayerStart(NewPlayer, FoundActor);
+		break;
+	}
+}
+
 void ALobbyGameMode::SpawnPlayer(AController* NewPlayer)
 {
 	if (GetWorld())
@@ -135,7 +150,7 @@ void ALobbyGameMode::SpawnPlayer(AController* NewPlayer)
 			}
 		}
 	}
-	
+
 	AActor* PlayerStart = FindPlayerStart(NewPlayer, FString::FromInt(GetNumPlayers()));
 
 	NewPlayer->StartSpot = PlayerStart;

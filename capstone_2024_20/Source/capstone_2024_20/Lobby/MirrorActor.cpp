@@ -123,6 +123,9 @@ void AMirrorActor::SetCharacterType(int32 CharacterType)
 
 void AMirrorActor::Next()
 {
+	if (IsValid(CapCharacter) == false)
+		return;
+	
 	if (CapCharacter->GetIsMovement() == true)
 		return;
 
@@ -134,6 +137,9 @@ void AMirrorActor::Next()
 
 void AMirrorActor::Prev()
 {
+	if (IsValid(CapCharacter) == false)
+		return;
+	
 	if (CapCharacter->GetIsMovement() == true)
 		return;
 
@@ -145,6 +151,9 @@ void AMirrorActor::Prev()
 
 void AMirrorActor::Exit()
 {
+	if (IsValid(CapCharacter) == false)
+		return;
+	
 	if (CapCharacter->GetIsMovement() == true)
 		return;
 	

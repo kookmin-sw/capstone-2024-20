@@ -89,7 +89,7 @@ void ACapCharacter::BeginPlay()
 	}
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 2.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 1.0f, false);
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)

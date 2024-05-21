@@ -29,6 +29,8 @@ public:
 	void GameStart();
 	bool IsReadyAllPlayer() const;
 
+	virtual void RestartPlayer(AController* NewPlayer) override;
+	
 	UFUNCTION()
 	void SpawnPlayer(AController* NewPlayer);
 
