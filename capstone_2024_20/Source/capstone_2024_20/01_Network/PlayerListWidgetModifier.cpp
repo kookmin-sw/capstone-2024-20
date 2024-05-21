@@ -12,6 +12,9 @@ UPlayerListWidgetModifier::UPlayerListWidgetModifier(UPlayerListWidget* NewPlaye
 
 void UPlayerListWidgetModifier::RefreshItem(TArray<APlayerState*> PlayerStates, APlayerState* LogoutPlayerState)
 {
+	if(IsValid(PlayerListWidget) == false)
+		return;
+	
 	PlayerListWidget->Clear();
 
 	for (int i = 0; i < PlayerStates.Num(); i++)
