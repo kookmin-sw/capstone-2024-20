@@ -45,7 +45,11 @@ AMyPlayerController::AMyPlayerController()
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if(GEngine)
+	{
+		GEngine->bSmoothFrameRate = true;
+	}
+	
 	if (HasAuthority())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Emerald, TEXT("HasAutority"));
