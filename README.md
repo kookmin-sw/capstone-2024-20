@@ -10,7 +10,7 @@
 
 # 프로젝트 소개
 
-<img width=600 src="https://github.com/kookmin-sw/capstone-2024-05/assets/81635179/0485f1d8-86d7-4538-8e2a-8439adcbe3e8">
+<img width=600 src="https://github.com/kookmin-sw/capstone-2024-20/Artworks/3D/FBXs/image.png">
 
 
 <br>
