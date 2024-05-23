@@ -84,6 +84,14 @@ E-mail: sotetero11@gmail.com
 
 <br>
 
+# 최종발표 관련 자료 다운로드
+[최종발표 프레젠테이션](https://drive.google.com/file/d/1rRtya80SZuzJDb9gb48VrIGc1ilAUDj2/view?usp=sharing)
+
+[(별첨) 최종보고서](https://drive.google.com/file/d/1UQ98HsjDjUy3ccjrAhI1NjxiGGjzCyrT/view?usp=sharing)
+
+[(별첨) 시연 동영상](https://youtu.be/SULgr9ooJ6w)
+
+
 # 🎮 사용법
 
 ## 릴리즈 다운로드 (권장)
