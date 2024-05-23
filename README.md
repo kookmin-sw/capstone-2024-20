@@ -24,8 +24,8 @@
 
 <br>
 
-# [🔗 소개 영상 🔗](https://youtu.be/nFXJS2uptlU)
-[![Video Label](http://img.youtube.com/vi/nFXJS2uptlU/0.jpg)](https://youtu.be/nFXJS2uptlU)
+# [🔗 소개 영상 🔗](https://youtu.be/SULgr9ooJ6w)
+[![Video Label](http://img.youtube.com/vi/SULgr9ooJ6w/0.jpg)](https://youtu.be/SULgr9ooJ6w)
 
 <br>
 
