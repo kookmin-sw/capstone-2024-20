@@ -6,16 +6,6 @@
 
 **Unreal Engine 5를 활용한 멀티플레이어 협동 게임 제작**
 
-<div style="display: flex; justify-content: space-between; margin-bottom: 1%;">
-  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/2ad05aa9-2fa1-4955-b1ac-98cae43b8a55" style="width: 49.5%;">
-  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/765ada4e-f878-4c56-987c-7fe27d774752" style="width: 49.5%;">
-</div>
-<div style="display: flex; justify-content: space-between;">
-  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/7725959b-6ca7-4e74-8fb0-7bc351b42d2e" style="width: 49.5%;">
-  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/b12704fc-e3fa-4a97-a48a-48af0f76c6e4" style="width: 49.5%;">
-</div>
-
-
 
 # 프로젝트 소개
 **[Unreal Engine 5를 활용한 멀티플레이어 게임 제작]**
