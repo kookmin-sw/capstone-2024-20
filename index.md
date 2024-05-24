@@ -4,9 +4,18 @@
 
 # 2024 캡스톤 20조
 
-**Unreal Engine 5를 활용한 멀티플레이 게임 제작**
+**Unreal Engine 5를 활용한 멀티플레이어 협동 게임 제작**
 
-<br>
+<div style="display: flex; justify-content: space-between; margin-bottom: 1%;">
+  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/2ad05aa9-2fa1-4955-b1ac-98cae43b8a55" style="width: 49.5%;">
+  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/765ada4e-f878-4c56-987c-7fe27d774752" style="width: 49.5%;">
+</div>
+<div style="display: flex; justify-content: space-between;">
+  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/7725959b-6ca7-4e74-8fb0-7bc351b42d2e" style="width: 49.5%;">
+  <img src="https://github.com/kookmin-sw/capstone-2024-20/assets/26127395/b12704fc-e3fa-4a97-a48a-48af0f76c6e4" style="width: 49.5%;">
+</div>
+
+
 
 # 프로젝트 소개
 **[Unreal Engine 5를 활용한 멀티플레이어 게임 제작]**
@@ -19,8 +28,9 @@
 1. 차세대 물리 엔진 '카오스'를 활용하여 바람에 따라 흔들리는 돛과 오브젝트 파괴 시뮬레이션 구현
 2. '캐스케이드 파티클 시스템'을 이용한 생동감 있는 이펙트 구현
 3. 'Navigation Mesh'을 적용하여 동적으로 변화하는 지형에 따른 길 찾기 구현
-4. P2P 방식에 비해 더 적은 Connection을 사용하는 'Listen Server' 방식 채택
-5. '애니메이션 블렌딩'을 통해 부드러운 애니메이션 전환 구현
+4. 별도의 서버를 구축할 필요 없이 특정 Client가 서버 역할을하는 'Listen Server' 방식 채택
+5. 클라이언트에서 직접 이동 계산, 서버는 패킷 검증만 하여 최적화 및 치트 방지
+6. '애니메이션 블렌딩'을 통해 부드러운 애니메이션 전환 구현
 
 <br>
 
@@ -29,7 +39,7 @@
 
 <br>
 
-# 😄 팀 소개
+# 😄  팀 소개
 
 
 #### 강현서
@@ -64,8 +74,13 @@ E-mail: sotetero11@gmail.com
 
 #  기술 스택
 
-###  Unreal Engine 5
-![Unreal Engine](https://img.shields.io/badge/unrealengine-%23313131.svg?style=for-the-badge&logo=unrealengine&logoColor=white)
+#### Game Development
+
+<img src="https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/unrealengine-%23313131.svg?style=for-the-badge&logo=unrealengine&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/blender-E87D0D?style=for-the-badge&logo=blender&logoColor=white">
 
 <br>
 
