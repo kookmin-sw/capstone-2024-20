@@ -3,6 +3,8 @@
 
 #include "ChatWidget.h"
 
+#include "Components/EditableText.h"
+
 void UChatWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
@@ -23,6 +25,12 @@ FReply UChatWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
 
 void UChatWidget::EnableChat()
 {
+	FString EditTableText = EditableText->GetText().ToString();;
+	if(EditTableText.IsEmpty() == false)
+	{
+		
+	}
+	
 	FInputModeUIOnly InputModeUIOnly;
 	InputModeUIOnly.SetWidgetToFocus(TakeWidget());
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputModeUIOnly);
