@@ -5,10 +5,12 @@
 #include "ChatWidget.generated.h"
 
 
+class UButton;
 class UChatLogBox;
 class UScrollBox;
 class UEditableText;
 
+UENUM()
 enum EChatType
 {
 	Normal,
@@ -27,6 +29,9 @@ class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 	UScrollBox* ScrollBox;
 
 	UPROPERTY(meta=(BindWidget))
+	UButton* SendButton;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UChatLogBox> NormalChatLogBoxClass;
 	
 	UPROPERTY()
@@ -44,5 +49,9 @@ public:
 	void AddChatLog(EChatType ChatType, FString& NewDetail);
 
 private:
+	UFUNCTION()
 	void OnKeyEnter();
+	
+	UFUNCTION()
+	void OnClickSendButton();
 };

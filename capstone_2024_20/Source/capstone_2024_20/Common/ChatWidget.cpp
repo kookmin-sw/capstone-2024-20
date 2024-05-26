@@ -4,6 +4,7 @@
 #include "ChatWidget.h"
 
 #include "ChatLogBox.h"
+#include "Components/Button.h"
 #include "Components/EditableText.h"
 #include "Components/ScrollBox.h"
 #include "GameFramework/PlayerState.h"
@@ -11,6 +12,7 @@
 void UChatWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
+	SendButton->OnClicked.AddDynamic(this, &ThisClass::OnClickSendButton);
 }
 
 FReply UChatWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -28,12 +30,6 @@ FReply UChatWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
 
 void UChatWidget::EnableChat()
 {
-	FString EditTableText = EditableText->GetText().ToString();;
-	if(EditTableText.IsEmpty() == false)
-	{
-		AddChatLog(EChatType::Normal, EditTableText);
-	}
-	
 	FInputModeUIOnly InputModeUIOnly;
 	InputModeUIOnly.SetWidgetToFocus(TakeWidget());
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputModeUIOnly);
@@ -65,7 +61,18 @@ void UChatWidget::AddChatLog(EChatType ChatType, FString& NewDetail)
 
 void UChatWidget::OnKeyEnter()
 {
+	FString EditTableText = EditableText->GetText().ToString();;
+	if(EditTableText.IsEmpty() == false)
+	{
+		AddChatLog(EChatType::Normal, EditTableText);
+	}
+	
 	const FInputModeGameOnly InputMode;
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+}
+
+void UChatWidget::OnClickSendButton()
+{
+	OnKeyEnter();
 }
