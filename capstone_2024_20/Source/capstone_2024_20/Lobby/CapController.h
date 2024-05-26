@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "CapController.generated.h"
 
+class UInputAction;
+class UChatWidget;
 class UMappingContextSwitcher;
 /**
  * 
@@ -18,9 +20,21 @@ class CAPSTONE_2024_20_API ACapController : public APlayerController
 	ACapController();
 
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere)
+	UInputAction* EnterAction;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UChatWidget> ChatWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	UChatWidget* ChatWidget;
 private:
 	UMappingContextSwitcher* MappingContextSwitcher;
+
+	virtual void SetupInputComponent() override;
+	UFUNCTION()
+	void OnEnter();
 	
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;

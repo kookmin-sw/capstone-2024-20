@@ -4,7 +4,11 @@
 #include "CapController.h"
 
 #include "CapCharacter.h"
+#include "EngineUtils.h"
+#include "EnhancedInputComponent.h"
 #include "MappingContextSwitcher.h"
+#include "capstone_2024_20/Common/ChatWidget.h"
+#include "GameFramework/HUD.h"
 
 ACapController::ACapController()
 {
@@ -14,6 +18,29 @@ ACapController::ACapController()
 void ACapController::BeginPlay()
 {
 	Super::BeginPlay();
+	ChatWidget = CreateWidget<UChatWidget>(GetWorld(), ChatWidgetClass);
+	if(ChatWidget)
+	{
+		ChatWidget->AddToViewport();
+	}
+}
+
+void ACapController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(EnterAction, ETriggerEvent::Started, this, &ThisClass::OnEnter);
+	}
+}
+
+void ACapController::OnEnter()
+{
+	if(ChatWidget)
+	{
+		ChatWidget->EnableChat();
+	}
 }
 
 void ACapController::OnPossess(APawn* InPawn)
