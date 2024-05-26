@@ -3,7 +3,10 @@
 
 #include "ChatWidget.h"
 
+#include "ChatLogBox.h"
 #include "Components/EditableText.h"
+#include "Components/ScrollBox.h"
+#include "GameFramework/PlayerState.h"
 
 void UChatWidget::NativePreConstruct()
 {
@@ -28,13 +31,36 @@ void UChatWidget::EnableChat()
 	FString EditTableText = EditableText->GetText().ToString();;
 	if(EditTableText.IsEmpty() == false)
 	{
-		
+		AddChatLog(EChatType::Normal, EditTableText);
 	}
 	
 	FInputModeUIOnly InputModeUIOnly;
 	InputModeUIOnly.SetWidgetToFocus(TakeWidget());
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputModeUIOnly);
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+}
+
+void UChatWidget::AddChatLog(EChatType ChatType, FString& NewDetail)
+{
+	UChatLogBox* ChatLogBox = nullptr;
+	if(ChatType == EChatType::Normal)
+	{
+		ChatLogBox = CreateWidget<UChatLogBox>(GetWorld(), NormalChatLogBoxClass);
+		FString Title = GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>()->GetPlayerName();
+		ChatLogBox->SetTitleAndDetail(Title, NewDetail);
+	}
+
+	if(ChatLogBox)
+	{
+		ScrollBox->AddChild(ChatLogBox);
+		ChatLogs.Add(ChatLogBox);
+	}
+
+	if(ChatLogs.Num() >= 10)
+	{
+		ScrollBox->RemoveChild(ChatLogs[0]);
+		ChatLogs.RemoveAt(0);
+	}
 }
 
 void UChatWidget::OnKeyEnter()

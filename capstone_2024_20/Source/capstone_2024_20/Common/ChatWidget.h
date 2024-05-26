@@ -19,7 +19,7 @@ UCLASS()
 class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(meta=(BindWidget))
 	UEditableText* EditableText;
 
@@ -27,8 +27,11 @@ class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 	UScrollBox* ScrollBox;
 
 	UPROPERTY(meta=(BindWidget))
-	UChatLogBox* NormalChatLogBoxClass;
+	TSubclassOf<UChatLogBox> NormalChatLogBoxClass;
 	
+	UPROPERTY()
+	TArray<UChatLogBox*> ChatLogs;
+
 	virtual void NativePreConstruct() override;
 
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
@@ -36,6 +39,9 @@ class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 public:
 	UFUNCTION()
 	void EnableChat();
+
+	UFUNCTION()
+	void AddChatLog(EChatType ChatType, FString& NewDetail);
 
 private:
 	void OnKeyEnter();
