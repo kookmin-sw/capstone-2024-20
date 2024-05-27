@@ -77,6 +77,9 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
 	{
 		SpawnPlayer(NewPlayer);
+		FString Message = FString::Printf(TEXT("%s 님이 접속 하였습니다."), *NewPlayer->PlayerState->GetPlayerName());
+        ChatService->SendNotifyMessage(Message);
+
 	}, 6.0f, false);
 }
 
