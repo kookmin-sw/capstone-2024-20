@@ -1,6 +1,7 @@
 #include "ChatService.h"
 #include "./ChatWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerState.h"
 
 
 AChatService::AChatService()
@@ -38,5 +39,18 @@ void AChatService::AddChatLog(EChatType ChatType, const FString& Title, const FS
 void AChatService::MulticastRPC_ReceiveMessage_Implementation(EChatType ChatType, const FString& Title,
 	const FString& Text)
 {
+	if(ChatType == EChatType::Normal)
+	{
+		FString NormalTitle = *Title;
+		FString PlayerName = GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>()->GetPlayerName();
+		if(NormalTitle.Equals(PlayerName) == true)
+		{
+			NormalTitle.Append(TEXT("(나)"));
+		}
+
+		AddChatLog(ChatType, NormalTitle, Text);
+		return;
+	}
+	
 	AddChatLog(ChatType, Title, Text);
 }
