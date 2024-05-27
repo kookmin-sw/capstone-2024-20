@@ -22,20 +22,6 @@ void UChatWidget::NativeConstruct()
 	EditableText->OnTextCommitted.AddDynamic(this, &ThisClass::OnCommittedEditable);
 }
 
-FReply UChatWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-{
-	const FKey Key = InKeyEvent.GetKey();
-
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("NatvieOnKeyDown"));
-	if (Key == EKeys::Enter)
-	{
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UChatWidget::OnKeyEnter, 0.1f, false);
-	}
-	
-	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-}
-
 void UChatWidget::OnCommittedEditable(const FText& Text, ETextCommit::Type CommitMethod)
 {
 	if(CommitMethod == ETextCommit::OnEnter)

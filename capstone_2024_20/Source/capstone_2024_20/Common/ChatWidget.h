@@ -39,7 +39,6 @@ class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 public:
 	UFUNCTION()
