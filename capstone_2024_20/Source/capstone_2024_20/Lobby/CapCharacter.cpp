@@ -49,11 +49,14 @@ void ACapCharacter::Init()
 }
 void ACapCharacter::RefreshNamePlate_Implementation()
 {
-	// if (IsLocallyControlled())
-	// {
-	// 	const FString PlayerName = LobbyPlayerState->GetPlayerName();
-	// 	WidgetComponent->SetName(PlayerName);
-	// }
+	if (IsLocallyControlled())
+	{
+		if(LobbyPlayerState)
+		{
+			const FString PlayerName = LobbyPlayerState->GetPlayerName();
+			WidgetComponent->SetName(PlayerName);
+		}
+	}
 }
 
 ACapCharacter::ACapCharacter()
@@ -88,7 +91,7 @@ void ACapCharacter::BeginPlay()
 	}
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 1.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 4.0f, false);
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)

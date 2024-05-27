@@ -16,8 +16,11 @@
 void AJoinMenuGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
 	UWorld* World = GetWorld();
+	World->GetFirstPlayerController()->EnableCheats();
+	World->Exec(World, TEXT("DisableAllScreenMessages"));
 	World->GetFirstPlayerController()->SetShowMouseCursor(true);
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(World, ANetworkService::StaticClass(), FoundActors);
@@ -80,4 +83,9 @@ void AJoinMenuGameMode::RefreshRoomListUI(bool bWasSuccessful) const
 
 	MainUI->RoomListView->ClearListItems();
 	MainUI->RefreshRoomList(NetworkService->GetSessionSearch()->SearchResults, RoomPasswordInputPopupWidget);
+}
+
+bool AJoinMenuGameMode::AllowCheats(APlayerController* P)
+{
+	return true;
 }

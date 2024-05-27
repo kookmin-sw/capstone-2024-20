@@ -111,13 +111,13 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Attack();
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerRPC_RotateCannon(AMyCannon* CannonActor, FRotator newRot);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerRPC_MoveShip_Loc(FVector newLoc);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerRPC_MoveShip_Rot(float newYaw, float speed);
 
 	UFUNCTION(Server, Reliable)

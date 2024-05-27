@@ -167,7 +167,7 @@ void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASailingSystem, Currency);
-	DOREPLIFETIME(ASailingSystem, Progress);
+	//DOREPLIFETIME(ASailingSystem, Progress);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -373,7 +373,7 @@ void ASailingSystem::SetDestination()
 
 float ASailingSystem::DestinationProgress()
 {
-	if(Destination)
+	if(Destination && MyShip)
 	{
 		const FVector DestinationLocation = Destination->GetActorLocation();
 		const FVector MyShipLocation = MyShip->GetActorLocation();
@@ -383,6 +383,11 @@ float ASailingSystem::DestinationProgress()
 		// 진행도 계산
 		Progress = 1.0f - (CurrentDistance / TotalDistance);
 		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+	}
+	else
+	{
+		SetMyShip();
+		SetDestination();
 	}
 	
 	return Progress;

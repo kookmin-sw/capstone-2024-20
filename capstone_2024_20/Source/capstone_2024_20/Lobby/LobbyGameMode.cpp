@@ -77,9 +77,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
 	{
 		SpawnPlayer(NewPlayer);
-		FString Message = FString::Printf(TEXT("%s 님이 접속 하였습니다."), *NewPlayer->PlayerState->GetPlayerName());
-		ChatService->SendNotifyMessage(Message);
-	}, 3.0f, false);
+	}, 6.0f, false);
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -101,8 +99,8 @@ void ALobbyGameMode::GameStart()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
-		                                 TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
+		// GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
+		//                                  TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
 	}
 }
 

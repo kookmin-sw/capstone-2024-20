@@ -30,6 +30,9 @@ class AEnemyShip : public AReplicatedActor, public IHP
 public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void Init();
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

@@ -7,5 +7,8 @@
 
 void UNamePlateWidget::SetName(FString Name)
 {
-	NameText->SetText(FText::FromString(Name));
+	if(NameText)
+	{
+		NameText->SetText(FText::FromString(Name));
+	}
 }
