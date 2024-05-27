@@ -48,7 +48,7 @@ public:
 	void EnableChat();
 
 	UFUNCTION()
-	void AddChatLog(EChatType ChatType, FString& NewDetail);
+	void AddChatLog(EChatType ChatType, const FString& Title,  const FString& NewDetail);
 
 private:
 	UFUNCTION()

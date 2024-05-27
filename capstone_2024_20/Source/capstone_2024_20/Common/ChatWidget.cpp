@@ -4,6 +4,7 @@
 #include "ChatWidget.h"
 
 #include "ChatLogBox.h"
+#include "capstone_2024_20/Lobby/CapController.h"
 #include "Components/Button.h"
 #include "Components/EditableText.h"
 #include "Components/ScrollBox.h"
@@ -27,6 +28,7 @@ void UChatWidget::OnCommittedEditable(const FText& Text, ETextCommit::Type Commi
 	if(CommitMethod == ETextCommit::OnEnter)
 	{
 		OnKeyEnter();
+		GetWorld()->GetFirstPlayerController<ACapController>()->ServerRPC_SendMessage(Text.ToString());
 	}
 }
 
@@ -42,13 +44,17 @@ void UChatWidget::EnableChat()
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 }
 
-void UChatWidget::AddChatLog(EChatType ChatType, FString& NewDetail)
+void UChatWidget::AddChatLog(const EChatType ChatType, const FString& Title,  const FString& NewDetail)
 {
+	if(NewDetail.IsEmpty() == true)
+		return;
+
+	
+	EditableText->SetText(FText::GetEmpty());
 	UChatLogBox* ChatLogBox = nullptr;
 	if(ChatType == EChatType::Normal)
 	{
 		ChatLogBox = CreateWidget<UChatLogBox>(GetWorld(), NormalChatLogBoxClass);
-		FString Title = GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>()->GetPlayerName();
 		ChatLogBox->SetTitleAndDetail(Title, NewDetail);
 	}
 
@@ -67,13 +73,6 @@ void UChatWidget::AddChatLog(EChatType ChatType, FString& NewDetail)
 
 void UChatWidget::OnKeyEnter()
 {
-	FString EditTableText = EditableText->GetText().ToString();;
-	if(EditTableText.IsEmpty() == false)
-	{
-		AddChatLog(EChatType::Normal, EditTableText);
-		EditableText->SetText(FText::GetEmpty());
-	}
-	
 	const FInputModeGameOnly InputMode;
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
@@ -81,5 +80,5 @@ void UChatWidget::OnKeyEnter()
 
 void UChatWidget::OnClickSendButton()
 {
-	OnKeyEnter();
+	OnCommittedEditable(EditableText->GetText(), ETextCommit::Type::OnEnter);
 }
