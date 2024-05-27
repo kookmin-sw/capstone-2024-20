@@ -12,13 +12,21 @@
 void UChatWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
+}
+
+void UChatWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
 	SendButton->OnClicked.AddDynamic(this, &ThisClass::OnClickSendButton);
+	EditableText->OnTextCommitted.AddDynamic(this, &ThisClass::OnCommittedEditable);
 }
 
 FReply UChatWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	const FKey Key = InKeyEvent.GetKey();
 
+	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("NatvieOnKeyDown"));
 	if (Key == EKeys::Enter)
 	{
 		FTimerHandle TimerHandle;
@@ -28,10 +36,22 @@ FReply UChatWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
+void UChatWidget::OnCommittedEditable(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	if(CommitMethod == ETextCommit::OnEnter)
+	{
+		OnKeyEnter();
+	}
+}
+
 void UChatWidget::EnableChat()
 {
+	EditableText->SetKeyboardFocus();
+	
 	FInputModeUIOnly InputModeUIOnly;
-	InputModeUIOnly.SetWidgetToFocus(TakeWidget());
+	InputModeUIOnly.SetWidgetToFocus(EditableText->TakeWidget());
+	InputModeUIOnly.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputModeUIOnly);
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 }
@@ -65,6 +85,7 @@ void UChatWidget::OnKeyEnter()
 	if(EditTableText.IsEmpty() == false)
 	{
 		AddChatLog(EChatType::Normal, EditTableText);
+		EditableText->SetText(FText::GetEmpty());
 	}
 	
 	const FInputModeGameOnly InputMode;
