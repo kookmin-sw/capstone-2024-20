@@ -8,6 +8,7 @@
 #include "capstone_2024_20/01_Network/PlayerListController.h"
 #include "LobbyGameMode.generated.h"
 
+class AChatService;
 /**
  * 
  */
@@ -25,6 +26,9 @@ class CAPSTONE_2024_20_API ALobbyGameMode : public AGameModeBase
 public:
 	UPROPERTY(EditAnywhere)
 	APlayerListController* PlayerListController;
+
+	UPROPERTY(EditAnywhere)
+	AChatService* ChatService;
 	
 	void GameStart();
 	bool IsReadyAllPlayer() const;

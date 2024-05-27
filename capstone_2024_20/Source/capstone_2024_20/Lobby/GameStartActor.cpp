@@ -4,6 +4,7 @@
 #include "GameStartActor.h"
 
 #include "CapCharacter.h"
+#include "EngineUtils.h"
 #include "LevelSequencePlayer.h"
 #include "LobbyGameMode.h"
 #include "LobbyPlateWidgetComponent.h"
@@ -11,6 +12,7 @@
 #include "RoundProgressControllerWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "capstone_2024_20/01_Network/PlayerListWidget.h"
+#include "capstone_2024_20/Common/ChatService.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -42,6 +44,19 @@ void AGameStartActor::InteractionLongEnter()
 		GetWorld()->GetTimerManager().SetTimer(TImerHandle, this, &ThisClass::GameStart, 22.0f);
 		Multicast_PlaySequence();
 	}
+	else
+	{
+		if (HasAuthority() == false)
+			return;
+
+		for (TActorIterator<AChatService> It(GetWorld()); It; ++It)
+		{
+			if (*It)
+			{
+				(*It)->SendNotifyMessage(TEXT("모든 사람이 레디를 해야지 시작 할 수 있습니다."));
+			}
+		}
+	}
 }
 
 void AGameStartActor::InteractionExit()
@@ -68,7 +83,7 @@ void AGameStartActor::SkipRealesed()
 
 void AGameStartActor::Skip()
 {
-	if(HasAuthority() == true)
+	if (HasAuthority() == true)
 	{
 		GameStart();
 		MultiRPC_Skip();
@@ -157,9 +172,9 @@ void AGameStartActor::Multicast_PlaySequence_Implementation()
 			                                          this, &ThisClass::SkipRealesed);
 
 			PlayerController->InputComponent->BindKey(EKeys::R, IE_Pressed,
-													  this, &ThisClass::SkipPressed);
+			                                          this, &ThisClass::SkipPressed);
 			PlayerController->InputComponent->BindKey(EKeys::R, IE_Released,
-													  this, &ThisClass::SkipRealesed);
+			                                          this, &ThisClass::SkipRealesed);
 		}
 	}
 

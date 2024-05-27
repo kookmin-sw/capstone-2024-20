@@ -45,7 +45,7 @@ class CAPSTONE_2024_20_API ACapCharacter : public ACharacter, public IMappingCon
 public:
 	UPROPERTY(EditAnywhere)
 	class ULobbyPlateWidgetComponent* WidgetComponent;
-
+	
 	UPROPERTY(EditAnywhere)
 	ULobbyInteractionWidgetComponent* InteractionWidgetComponent;
 
