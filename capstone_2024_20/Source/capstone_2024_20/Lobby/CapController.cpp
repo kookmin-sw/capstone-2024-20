@@ -7,8 +7,9 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "MappingContextSwitcher.h"
+#include "capstone_2024_20/Common/ChatService.h"
 #include "capstone_2024_20/Common/ChatWidget.h"
-#include "GameFramework/HUD.h"
+#include "GameFramework/PlayerState.h"
 
 ACapController::ACapController()
 {
@@ -18,10 +19,13 @@ ACapController::ACapController()
 void ACapController::BeginPlay()
 {
 	Super::BeginPlay();
-	ChatWidget = CreateWidget<UChatWidget>(GetWorld(), ChatWidgetClass);
-	if(ChatWidget)
+
+	for (TActorIterator<AChatService> It(GetWorld()); It; ++It)
 	{
-		ChatWidget->AddToViewport();
+		if (*It)
+		{
+			ChatService = *It;
+		}
 	}
 }
 
@@ -37,9 +41,9 @@ void ACapController::SetupInputComponent()
 
 void ACapController::OnEnter()
 {
-	if(ChatWidget)
+	if(ChatService)
 	{
-		ChatWidget->EnableChat();
+		ChatService->EnableChat();
 	}
 }
 
@@ -66,4 +70,11 @@ void ACapController::RefreshMappingContext(APawn* InPawn) const
 		return;
 
 	MappingContextSwitcher->ReplaceMappingContext(CapPawn->GetMappingContext());
+}
+void ACapController::ServerRPC_SendMessage_Implementation(const FString& Text)
+{
+	if(HasAuthority() == false)
+		return;
+
+	ChatService->MulticastRPC_ReceiveMessage(EChatType::Normal, PlayerState->GetPlayerName(), Text);
 }
