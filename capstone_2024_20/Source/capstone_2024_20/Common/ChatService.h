@@ -39,4 +39,5 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_ReceiveMessage(EChatType ChatType, const FString& Title, const FString& Text);
 
+	void SendNotifyMessage(const FString& Text);
 };

@@ -34,6 +34,9 @@ class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UChatLogBox> NormalChatLogBoxClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UChatLogBox> NotifyChatLogBoxClass;
+
 	UPROPERTY()
 	TArray<UChatLogBox*> ChatLogs;
 
@@ -59,4 +62,7 @@ private:
 
 	UFUNCTION()
 	void OnClickSendButton();
+
+	UFUNCTION()
+	UChatLogBox* CreateChatLogBox(EChatType ChatType, const FString& Title, const FString& Detail);
 };

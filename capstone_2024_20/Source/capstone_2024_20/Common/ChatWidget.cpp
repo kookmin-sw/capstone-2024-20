@@ -53,12 +53,7 @@ void UChatWidget::AddChatLog(const EChatType ChatType, const FString& Title, con
 
 
 	EditableText->SetText(FText::GetEmpty());
-	UChatLogBox* ChatLogBox = nullptr;
-	if (ChatType == EChatType::Normal)
-	{
-		ChatLogBox = CreateWidget<UChatLogBox>(GetWorld(), NormalChatLogBoxClass);
-		ChatLogBox->SetTitleAndDetail(Title, NewDetail);
-	}
+	UChatLogBox* ChatLogBox = CreateChatLogBox(ChatType, Title, NewDetail);
 
 	if (ChatLogBox)
 	{
@@ -91,4 +86,24 @@ void UChatWidget::OnKeyEnter()
 void UChatWidget::OnClickSendButton()
 {
 	OnCommittedEditable(EditableText->GetText(), ETextCommit::Type::OnEnter);
+}
+
+UChatLogBox* UChatWidget::CreateChatLogBox(EChatType ChatType, const FString& Title, const FString& Detail)
+{
+	UChatLogBox* ChatLogBox = nullptr;
+
+	if (ChatType == EChatType::Normal)
+	{
+		ChatLogBox = CreateWidget<UChatLogBox>(GetWorld(), NormalChatLogBoxClass);
+		ChatLogBox->SetTitleAndDetail(Title, Detail);
+	}
+	else if(ChatType == EChatType::Notify)
+	{
+		ChatLogBox = CreateWidget<UChatLogBox>(GetWorld(), NotifyChatLogBoxClass);
+		ChatLogBox->SetTitleAndDetail(Title, Detail);
+	}
+
+	
+		
+	return ChatLogBox;
 }

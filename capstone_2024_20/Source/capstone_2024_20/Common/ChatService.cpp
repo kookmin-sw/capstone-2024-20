@@ -36,8 +36,17 @@ void AChatService::AddChatLog(EChatType ChatType, const FString& Title, const FS
 	ChatWidget->AddChatLog(ChatType, Title, NewDetail);
 }
 
+void AChatService::SendNotifyMessage(const FString& Text)
+{
+	if(HasAuthority() == false)
+		return;
+	
+	MulticastRPC_ReceiveMessage(EChatType::Notify,
+		TEXT("공지"), Text);
+}
+
 void AChatService::MulticastRPC_ReceiveMessage_Implementation(EChatType ChatType, const FString& Title,
-	const FString& Text)
+                                                              const FString& Text)
 {
 	if(ChatType == EChatType::Normal)
 	{

@@ -11,6 +11,7 @@
 #include "LobbyPlayerState.h"
 #include "capstone_2024_20/01_Network/InGameRoomInfoWidget.h"
 #include "capstone_2024_20/01_Network/NetworkService.h"
+#include "capstone_2024_20/Common/ChatService.h"
 #include "Kismet/GameplayStatics.h"
 
 ALobbyGameMode::ALobbyGameMode()
@@ -51,6 +52,14 @@ void ALobbyGameMode::BeginPlay()
 		PlayerController->InputComponent->BindKey(EKeys::F1, IE_Pressed, RoomInfoWidget, &UInGameRoomInfoWidget::Show);
 		PlayerController->InputComponent->BindKey(EKeys::F1, IE_Released, RoomInfoWidget, &UInGameRoomInfoWidget::Hide);
 	}
+
+	for (TActorIterator<AChatService> It(GetWorld()); It; ++It)
+	{
+		if (*It)
+		{
+			ChatService = *It;
+		}
+	}
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
@@ -68,6 +77,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
 	{
 		SpawnPlayer(NewPlayer);
+		FString Message = FString::Printf(TEXT("%s 님이 접속 하였습니다."), *NewPlayer->PlayerState->GetPlayerName());
+		ChatService->SendNotifyMessage(Message);
 	}, 3.0f, false);
 }
 
