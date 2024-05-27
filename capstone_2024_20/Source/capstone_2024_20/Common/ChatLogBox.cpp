@@ -5,8 +5,8 @@
 
 #include "Components/TextBlock.h"
 
-void UChatLogBox::SetTitleAndDetail(FString& NewTitle, FString& NewDetail)
+void UChatLogBox::SetTitleAndDetail(const FString& NewTitle, const FString& NewDetail)
 {
-	Title->SetText(FText::FromString(NewTitle));
+	Title->SetText(FText::FromString(NewTitle + TEXT(":")));
 	Detail->SetText(FText::FromString(NewDetail));
 }

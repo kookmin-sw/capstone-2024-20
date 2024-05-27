@@ -23,5 +23,5 @@ class CAPSTONE_2024_20_API UChatLogBox : public UUserWidget
 
 public:
 	UFUNCTION()
-	void SetTitleAndDetail(FString& NewTitle, FString& NewDetail);
+	void SetTitleAndDetail(const FString& NewTitle, const FString& NewDetail);
 };

@@ -37,6 +37,9 @@ class CAPSTONE_2024_20_API UChatWidget : public UUserWidget
 	UPROPERTY()
 	TArray<UChatLogBox*> ChatLogs;
 
+	UPROPERTY()
+	FTimerHandle ChatTimerHandle;
+	
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 

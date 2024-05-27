@@ -18,14 +18,14 @@ void UChatWidget::NativePreConstruct()
 void UChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
 	SendButton->OnClicked.AddDynamic(this, &ThisClass::OnClickSendButton);
 	EditableText->OnTextCommitted.AddDynamic(this, &ThisClass::OnCommittedEditable);
 }
 
 void UChatWidget::OnCommittedEditable(const FText& Text, ETextCommit::Type CommitMethod)
 {
-	if(CommitMethod == ETextCommit::OnEnter)
+	if (CommitMethod == ETextCommit::OnEnter)
 	{
 		OnKeyEnter();
 		GetWorld()->GetFirstPlayerController<ACapController>()->ServerRPC_SendMessage(Text.ToString());
@@ -34,41 +34,51 @@ void UChatWidget::OnCommittedEditable(const FText& Text, ETextCommit::Type Commi
 
 void UChatWidget::EnableChat()
 {
+	GetWorld()->GetTimerManager().ClearTimer(ChatTimerHandle);
+	SetVisibility(ESlateVisibility::Visible);
 	EditableText->SetKeyboardFocus();
-	
+
 	FInputModeUIOnly InputModeUIOnly;
 	InputModeUIOnly.SetWidgetToFocus(EditableText->TakeWidget());
 	InputModeUIOnly.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	
+
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputModeUIOnly);
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 }
 
-void UChatWidget::AddChatLog(const EChatType ChatType, const FString& Title,  const FString& NewDetail)
+void UChatWidget::AddChatLog(const EChatType ChatType, const FString& Title, const FString& NewDetail)
 {
-	if(NewDetail.IsEmpty() == true)
+	if (NewDetail.IsEmpty() == true)
 		return;
 
-	
+
 	EditableText->SetText(FText::GetEmpty());
 	UChatLogBox* ChatLogBox = nullptr;
-	if(ChatType == EChatType::Normal)
+	if (ChatType == EChatType::Normal)
 	{
 		ChatLogBox = CreateWidget<UChatLogBox>(GetWorld(), NormalChatLogBoxClass);
 		ChatLogBox->SetTitleAndDetail(Title, NewDetail);
 	}
 
-	if(ChatLogBox)
+	if (ChatLogBox)
 	{
 		ScrollBox->AddChild(ChatLogBox);
 		ChatLogs.Add(ChatLogBox);
 	}
 
-	if(ChatLogs.Num() >= 10)
+	if (ChatLogs.Num() >= 25)
 	{
 		ScrollBox->RemoveChild(ChatLogs[0]);
 		ChatLogs.RemoveAt(0);
 	}
+
+	ScrollBox->ScrollToEnd();
+
+	SetVisibility(ESlateVisibility::Visible);
+	GetWorld()->GetTimerManager().SetTimer(ChatTimerHandle, [this]()
+	{
+		this->SetVisibility(ESlateVisibility::Hidden);
+	}, 10.0f, false);
 }
 
 void UChatWidget::OnKeyEnter()
