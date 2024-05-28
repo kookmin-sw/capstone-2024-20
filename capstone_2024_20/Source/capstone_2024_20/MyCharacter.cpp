@@ -309,7 +309,27 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMyCharacter::SetNamePlate() const
 {
-	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
+	ServerRPC_SetNamePlate();
+}
+
+void AMyCharacter::ServerRPC_SetNamePlate_Implementation() const
+{
+	for(auto It = GetWorld()->GetPlayerControllerIterator();It;++It)
+	{
+		if((*It)->GetCharacter() == nullptr)
+			return;
+		
+		AMyCharacter* MyCharacter = Cast<AMyCharacter>((*It)->GetCharacter());
+		if(MyCharacter)
+		{
+			MyCharacter->ClientRPC_SetNamePlate();
+		}
+	}
+}
+
+void AMyCharacter::ClientRPC_SetNamePlate_Implementation()
+{
+	NamePlateWidget->SetName(GetGameInstance<UMyAudioInstance>()->PlayerName);
 }
 
 bool AMyCharacter::GetIsOverLap() const

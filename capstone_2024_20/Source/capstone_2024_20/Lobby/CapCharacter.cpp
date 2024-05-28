@@ -23,29 +23,29 @@ void ACapCharacter::Init()
 		this->SetReady();
 	});
 
-	// const int PlayerNumber = LobbyPlayerState->PlayerNumber;
-	// if (PlayerNumber != 1)
-	// {
-	// 	const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
-	//
-	// 	WidgetComponent->ChangeColor(PlayerColor);
-	// 	WidgetComponent->SetVisibilityFromBool(false);
-	// }
-	// else
-	// {
-	// 	FString Path = TEXT("/Game/WidgetBlueprints/Lobby/BP_RoomManagerWidget.BP_RoomManagerWidget_C");
-	// 	WidgetComponent->ChangeWidget(Path);
-	// }
-	//
-	// if (IsLocallyControlled())
-	// {
-	// 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	// 	if (PlayerController)
-	// 	{
-	// 		PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
-	// 		                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
-	// 	}
-	// }
+	const int PlayerNumber = LobbyPlayerState->PlayerNumber;
+	if (PlayerNumber != 1)
+	{
+		const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
+	
+		WidgetComponent->ChangeColor(PlayerColor);
+		WidgetComponent->SetVisibilityFromBool(false);
+	}
+	else
+	{
+		FString Path = TEXT("/Game/WidgetBlueprints/Lobby/BP_RoomManagerWidget.BP_RoomManagerWidget_C");
+		WidgetComponent->ChangeWidget(Path);
+	}
+	
+	if (IsLocallyControlled())
+	{
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
+			                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
+		}
+	}
 }
 void ACapCharacter::RefreshNamePlate_Implementation()
 {

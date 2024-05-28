@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "MappingContextSwitcher.h"
+#include "capstone_2024_20/MyAudioInstance.h"
 #include "capstone_2024_20/Common/ChatService.h"
 #include "capstone_2024_20/Common/ChatWidget.h"
 #include "GameFramework/PlayerState.h"
@@ -27,6 +28,15 @@ void ACapController::BeginPlay()
 			ChatService = *It;
 		}
 	}
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		if(IsLocalPlayerController() == true)
+		{
+			ServerRPC_ChangeName(GetGameInstance<UMyAudioInstance>()->PlayerName);
+		}
+	}, 1.0f, false);
 }
 
 void ACapController::SetupInputComponent()
@@ -71,6 +81,15 @@ void ACapController::RefreshMappingContext(APawn* InPawn) const
 
 	MappingContextSwitcher->ReplaceMappingContext(CapPawn->GetMappingContext());
 }
+
+void ACapController::ServerRPC_ChangeName_Implementation(const FString& Text)
+{
+	if(HasAuthority() == false)
+		return;
+
+	GetPlayerState<APlayerState>()->SetPlayerName(Text);
+}
+
 void ACapController::ServerRPC_SendMessage_Implementation(const FString& Text)
 {
 	if(HasAuthority() == false)

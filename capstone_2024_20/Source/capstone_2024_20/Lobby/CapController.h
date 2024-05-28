@@ -42,5 +42,8 @@ private:
 
 public:
 	UFUNCTION(Server, Reliable)
-	void ServerRPC_SendMessage(const FString& Text); 
+	void ServerRPC_SendMessage(const FString& Text);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ChangeName(const FString& Text);
 };

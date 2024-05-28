@@ -168,7 +168,12 @@ public:
 
 	UFUNCTION()
 	void SetNamePlate() const;
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetNamePlate() const;
 	
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_SetNamePlate();
 	UFUNCTION()
 	bool GetIsOverLap() const;
 

@@ -12,6 +12,8 @@ UMyAudioInstance::UMyAudioInstance()
 		MusicTracks.Add(SoundCueAsset2.Object);
 		MusicTracks.Add(SoundCueAsset3.Object);
 	}
+
+	PlayerName = TEXT("DESKTOP-AEF32");
 }
 
 

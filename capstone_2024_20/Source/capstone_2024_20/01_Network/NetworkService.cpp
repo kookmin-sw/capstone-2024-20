@@ -8,6 +8,7 @@
 #include "OnlineSessionSettings.h"
 
 #include "TimerManager.h"
+#include "capstone_2024_20/MyAudioInstance.h"
 #include "Online/OnlineSessionNames.h"
 
 ANetworkService::ANetworkService()
@@ -222,6 +223,10 @@ TSharedPtr<FOnlineSessionSettings> ANetworkService::GetSessionSettings()
 	if (const AJoinMenuGameState* LobbyGameState = GetWorld()->GetGameState<AJoinMenuGameState>())
 	{
 		FRoomData RoomData = LobbyGameState->RoomData;
+		if(RoomData.Name.IsEmpty())
+		{
+			RoomData.Name = GetGameInstance<UMyAudioInstance>()->PlayerName + TEXT(" 님의 방");;
+		}
 		SessionSettings->Set(RoomTEXT::NAME, RoomData.Name, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 		RoomData.Code = ANetworkService::CreateRoomCode();
 		SessionSettings->Set(RoomTEXT::CODE, RoomData.Code, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);

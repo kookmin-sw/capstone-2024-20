@@ -84,7 +84,7 @@ void APlayerListController::PostLoginTimer(UWorld* World, APlayerListController*
 	World->GetTimerManager().SetTimer(
 		TimerHandle,
 		MyTimerDelegate,
-		4.0f,
+		6.0f,
 		false);
 }
 

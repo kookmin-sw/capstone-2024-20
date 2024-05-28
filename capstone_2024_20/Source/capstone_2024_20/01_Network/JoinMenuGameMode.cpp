@@ -8,9 +8,11 @@
 #include "NetworkService.h"
 #include "OnlineSessionSettings.h"
 #include "RoomPasswordInputPopupWidget.h"
+#include "capstone_2024_20/MyAudioInstance.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ListView.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 void AJoinMenuGameMode::BeginPlay()
@@ -88,4 +90,11 @@ void AJoinMenuGameMode::RefreshRoomListUI(bool bWasSuccessful) const
 bool AJoinMenuGameMode::AllowCheats(APlayerController* P)
 {
 	return true;
+}
+
+void AJoinMenuGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	GetGameInstance<UMyAudioInstance>()->PlayerName = NewPlayer->GetPlayerState<APlayerState>()->GetPlayerName();
 }
