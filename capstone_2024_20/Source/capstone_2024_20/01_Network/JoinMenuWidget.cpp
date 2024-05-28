@@ -8,14 +8,20 @@
 #include "OnlineSessionSettings.h"
 #include "RoomListElementData.h"
 #include "RoomPasswordInputPopupWidget.h"
+#include "capstone_2024_20/MyAudioInstance.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ListView.h"
+#include "GameFramework/PlayerState.h"
 
 void UJoinMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
 	RoomCodeTextBox->OnTextChanged.AddDynamic(this, &ThisClass::ChangeRoomCodeTextBoxUpper);
+	NickNameEditTable->OnTextChanged.AddDynamic(this, &ThisClass::OnChangeNickName);
+
+	FString Name = GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>()->GetPlayerName();
+	NickNameEditTable->SetHintText(FText::FromString(Name));
 }
 
 void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomResults,
@@ -59,4 +65,9 @@ void UJoinMenuWidget::RefreshRoomList(TArray<FOnlineSessionSearchResult>& RoomRe
 void UJoinMenuWidget::ChangeRoomCodeTextBoxUpper(const FText& InText)
 {
 	RoomCodeTextBox->SetText(InText.ToUpper());
+}
+
+void UJoinMenuWidget::OnChangeNickName(const FText& Text)
+{
+	GetGameInstance<UMyAudioInstance>()->PlayerName = Text.ToString();
 }

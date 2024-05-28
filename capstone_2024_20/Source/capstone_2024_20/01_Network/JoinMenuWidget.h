@@ -29,6 +29,9 @@ public:
 	class UEditableTextBox* RoomPasswordTextBox;
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	class UEditableTextBox* NickNameEditTable;
+
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UButton* CreateButton;
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
@@ -46,4 +49,7 @@ public:
 private:
 	UFUNCTION()
 	void ChangeRoomCodeTextBoxUpper(const FText& InText);
+
+	UFUNCTION()
+	void OnChangeNickName(const FText& Text);
 };
