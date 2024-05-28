@@ -19,7 +19,7 @@ class CAPSTONE_2024_20_API UJoinMenuWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
-	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UEditableTextBox* RoomNameTextBox;
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
