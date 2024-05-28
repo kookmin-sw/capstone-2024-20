@@ -16,7 +16,7 @@
 
 AMirrorActor::AMirrorActor()
 {
-	LongInteractionThreshold = 2.0f;
+	LongInteractionThreshold = 1.0f;
 	PrimaryActorTick.bCanEverTick = true;
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;

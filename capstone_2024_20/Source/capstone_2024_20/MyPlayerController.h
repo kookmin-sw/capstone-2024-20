@@ -58,7 +58,10 @@ private:
 
 	UPROPERTY()
 	AMyIngameHUD* MyInGameHUD;
+
 	
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ChangeName(const FString& Text);
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	UWidgetComponent* TextWidget;

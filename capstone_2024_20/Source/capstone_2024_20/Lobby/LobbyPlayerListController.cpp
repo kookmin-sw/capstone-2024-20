@@ -51,7 +51,7 @@ void ALobbyPlayerListController::RegisterReadyEventTimer(UWorld* World,
 	World->GetTimerManager().SetTimer(
 		TimerHandle,
 		TimerDelegate,
-		2.0f,
+		3.0f,
 		false);
 }
 
