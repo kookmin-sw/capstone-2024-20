@@ -24,7 +24,6 @@ public:
 
 	virtual void OnStart() override;
 
-	
 	virtual void Init() override;
 	
 	UFUNCTION(BlueprintCallable)
@@ -45,4 +44,7 @@ public:
 	void SetCharacterType(ECharacterType Type);
 
 	FCharacterTypeDelegate OnChangeCharacterTypeDelegate;
+
+	UPROPERTY()
+	FString PlayerName;
 };
