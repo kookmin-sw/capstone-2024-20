@@ -34,4 +34,6 @@ private:
 
 public:
 	virtual bool AllowCheats(APlayerController* P) override;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };

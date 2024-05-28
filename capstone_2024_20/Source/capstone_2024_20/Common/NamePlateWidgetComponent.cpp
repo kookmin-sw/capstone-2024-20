@@ -4,6 +4,7 @@
 #include "NamePlateWidgetComponent.h"
 
 #include "NamePlateWidget.h"
+#include "capstone_2024_20/MyCharacter.h"
 
 
 UNamePlateWidgetComponent::UNamePlateWidgetComponent()
