@@ -59,7 +59,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UCharacterChangerComponent* CharacterChangerComponent;
-	
+
 protected:
 	bool bIsOverlap = false;
 
@@ -113,6 +113,9 @@ private:
 
 	UPROPERTY()
 	UPirateAnimInstance* PirateAnimInstance = nullptr;
+
+	UPROPERTY(Replicated)
+	bool bIsAttacking = false;
 
 public:
 	// [begin] IHP interface
@@ -211,6 +214,7 @@ public:
 	void DropObject(AActor* Ship) const;
 
 	void Attack();
+	void AttackEnd();
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Attack();
@@ -228,7 +232,9 @@ public:
 	
 	bool CanRevive() const;
 
-	bool IsAttacking() const;
+	UFUNCTION(BlueprintCallable)
+	bool IsAttacking();
+	
 	void ReduceAttackCooldown(float DeltaTime);
 	bool CanAttack() const;
 };
