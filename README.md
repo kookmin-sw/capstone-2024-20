@@ -76,7 +76,7 @@ E-mail: sotetero11@gmail.com
 
 # 포스터
 
-<img width=600 src="https://github.com/kookmin-sw/capstone-2024-20/assets/54923850/02cdb97f-7734-40eb-b351-7c2d44d1324c">
+<img width=100% src="https://github.com/kookmin-sw/capstone-2024-20/assets/54923850/02cdb97f-7734-40eb-b351-7c2d44d1324c">
 
 
 # 중간발표 관련 자료 다운로드
