@@ -22,6 +22,7 @@ class CAPSTONE_2024_20_API AEnemy : public AReplicatedCharacter, public IHP
 public:
 	AEnemy();
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -79,9 +80,6 @@ private:
 	UPROPERTY()
 	UPopupEnemy* PopupEnemyWidget = nullptr;
 
-	UPROPERTY()
-	UEnemyAnimInstance* AnimInstance = nullptr;
-	
 	const float MoveSpeed = 100.0f;
 	const float DistanceToMyCharacter = 200.0f;
 	const float AttackCooldown = 5.0f;
