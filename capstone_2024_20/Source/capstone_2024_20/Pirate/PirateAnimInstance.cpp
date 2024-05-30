@@ -1,9 +1,8 @@
 ﻿#include "PirateAnimInstance.h"
-#include "Net/UnrealNetwork.h"
 
-void UPirateAnimInstance::OnAttackEnd()
+void UPirateAnimInstance::OnAttackEnd() const
 {
-	bIsAttacking = false;
+	OnPirateAttackEndDelegate.Execute();
 }
 
 // ! 사이드 이펙트를 막기 위함
@@ -11,10 +10,4 @@ void UPirateAnimInstance::OnAttackEnd()
 void UPirateAnimInstance::OnGiveDamage()
 {
 	OnPirateGiveDamageDelegate.Execute();
-}
-
-void UPirateAnimInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UPirateAnimInstance, bIsAttacking);
 }
