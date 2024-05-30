@@ -439,7 +439,6 @@ void ASailingSystem::MulticastRPC_SetCurrency_Implementation() const
 	}
 	
 	MyInGameHUD->SetCurrency(Currency);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Currency: %d"), Currency));
 }
 
 // nullable
