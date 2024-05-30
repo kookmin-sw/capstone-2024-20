@@ -65,10 +65,6 @@ void AMyCharacter::BeginPlay()
 	
 	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
 
-	PirateAnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
-	PirateAnimInstance->OnPirateGiveDamageDelegate.BindUObject(this, &AMyCharacter::GiveDamage);
-	PirateAnimInstance->OnPirateAttackEndDelegate.BindUObject(this, &AMyCharacter::AttackEnd);
-
 	SetMaxHP(10);
 	SetCurrentHP(10);
 }
@@ -80,6 +76,16 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	// ! 캐릭터에 Attach한 UI가 Movement에 따라 움직이는 문제가 있어, Tick에서 위치를 업데이트
 	TextWidget->SetWorldLocation(GetActorLocation() + FVector(0.0f, 0.0f, -200.0f));
+
+	if (PirateAnimInstance == nullptr)
+	{
+		PirateAnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+		if (PirateAnimInstance)
+		{
+			PirateAnimInstance->OnPirateGiveDamageDelegate.BindUObject(this, &AMyCharacter::GiveDamage);
+			PirateAnimInstance->OnPirateAttackEndDelegate.BindUObject(this, &AMyCharacter::AttackEnd);
+		}
+	}
 }
 
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
