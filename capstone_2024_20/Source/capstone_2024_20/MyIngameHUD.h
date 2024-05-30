@@ -49,6 +49,8 @@ public:
 	void ShowPopupClear(const bool bHasAuthority) const;
 	// [end] PopupClear
 
+	void SetCurrency(int32 Amount) const;
+
 protected:
 	// ! Set on blueprint
 	UPROPERTY(BlueprintReadWrite, Category = "UI")
