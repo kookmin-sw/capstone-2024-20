@@ -4,28 +4,32 @@
 
 # 2024 캡스톤 20조
 
-**Unreal Engine 5를 활용한 멀티플레이 게임 제작**
+**Unreal Engine 5를 활용한 멀티플레이어 협동 게임 제작**
 
-<br>
 
 # 프로젝트 소개
+**[Unreal Engine 5를 활용한 멀티플레이어 게임 제작]**
+<br>
+'Sails Together'는 협동 어드벤처 게임으로, 플레이어들은 최대 4인까지 팀을 구성하여 모험을 떠난다. <br> 배를 업그레이드 시키며 보물을 찾아내는 것이 목적이다. <br> 플레이어들은 이 과정에서 협동하여 장애물을 파괴하고, 적들을 물리치며 스테이지를 진행해나간다.
+<br>
+프로젝트는 Unreal을 기반으로 제작되었으며, 멀티플레이어 플랫폼인 Steam 아이디만 있다면 먼거리에서도 자유로운 멀티플레이가 가능하며 로컬에서도 멀티플레이가 가능하다.
 
-**SAILS TOGEHTER**
-
-SAILS TOGETHER는 3D 협동 게임으로 여러 사용자가 하나의 배를 움직여 역할을 분담하며 적을 물리치고 모험을 떠나는 게임 입니다.
-
-정신없는 상황속에서 관찰, 조종, 수리, 대포, 음식 조리 등 여러 역할을 서로 분담하고
-
-**같은 한 배를 움직인다는 협동의 재미를 주고 싶습니다.**
+**적용 기능**
+1. 차세대 물리 엔진 '카오스'를 활용하여 바람에 따라 흔들리는 돛과 오브젝트 파괴 시뮬레이션 구현
+2. '캐스케이드 파티클 시스템'을 이용한 생동감 있는 이펙트 구현
+3. 'Navigation Mesh'을 적용하여 동적으로 변화하는 지형에 따른 길 찾기 구현
+4. 별도의 서버를 구축할 필요 없이 특정 Client가 서버 역할을하는 'Listen Server' 방식 채택
+5. 클라이언트에서 직접 이동 계산, 서버는 패킷 검증만 하여 최적화 및 치트 방지
+6. '애니메이션 블렌딩'을 통해 부드러운 애니메이션 전환 구현
 
 <br>
 
-# [🔗 소개 영상 🔗](https://youtu.be/nFXJS2uptlU)
-[![Video Label](http://img.youtube.com/vi/nFXJS2uptlU/0.jpg)](https://youtu.be/nFXJS2uptlU)
+# [🔗 소개 영상 🔗](https://youtu.be/SULgr9ooJ6w)
+[![Video Label](http://img.youtube.com/vi/SULgr9ooJ6w/0.jpg)](https://youtu.be/SULgr9ooJ6w)
 
 <br>
 
-# 😄 팀 소개
+# 😄  팀 소개
 
 
 #### 강현서
@@ -60,10 +64,20 @@ E-mail: sotetero11@gmail.com
 
 #  기술 스택
 
-###  Unreal Engine 5
-![Unreal Engine](https://img.shields.io/badge/unrealengine-%23313131.svg?style=for-the-badge&logo=unrealengine&logoColor=white)
+#### Game Development
+
+<img src="https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/unrealengine-%23313131.svg?style=for-the-badge&logo=unrealengine&logoColor=white">
+<br>
+<img src="https://img.shields.io/badge/blender-E87D0D?style=for-the-badge&logo=blender&logoColor=white">
 
 <br>
+
+# 포스터
+
+<img width=100% src="https://github.com/kookmin-sw/capstone-2024-20/assets/54923850/02cdb97f-7734-40eb-b351-7c2d44d1324c">
+
 
 # 중간발표 관련 자료 다운로드
 
@@ -75,11 +89,19 @@ E-mail: sotetero11@gmail.com
 
 <br>
 
+# 최종발표 관련 자료 다운로드
+[최종발표 프레젠테이션](https://drive.google.com/file/d/1rRtya80SZuzJDb9gb48VrIGc1ilAUDj2/view?usp=sharing)
+
+[(별첨) 최종보고서](https://drive.google.com/file/d/1UQ98HsjDjUy3ccjrAhI1NjxiGGjzCyrT/view?usp=sharing)
+
+[(별첨) 시연 동영상](https://youtu.be/SULgr9ooJ6w)
+
+
 # 🎮 사용법
 
 ## 릴리즈 다운로드 (권장)
 
-최신 릴리즈 버전 : 0.0.2
+최신 릴리즈 버전 : 0.2.2
 
 1. [Google Drive](https://drive.google.com/drive/folders/1x4PCA_ipOcgtplP-wAv5WBOhIzESkYWc?usp=sharing) 에서 원하는 버전의 릴리즈를 다운로드 합니다.
 
