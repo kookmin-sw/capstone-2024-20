@@ -4,6 +4,7 @@
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 #include "capstone_2024_20/WidgetBlueprint/PopupEnemy.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AEnemy::AEnemy(): SkeletalMesh(nullptr)
@@ -39,6 +40,9 @@ void AEnemy::BeginPlay()
 
 	PopupEnemyWidget = Cast<UPopupEnemy>(PopupEnemyWidgetComponent->GetUserWidgetObject());
 	PopupEnemyWidget->SetHPProgressBarPercent(1);
+	
+	AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
+	AnimInstance->OnGiveDamageDelegate.BindUObject(this, &AEnemy::GiveDamage);
 }
 
 void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -136,22 +140,61 @@ void AEnemy::MoveToMyCharacter(const AMyCharacter* MyCharacter)
 	SetActorRotation(DirectionToNextPoint.Rotation());
 }
 
-void AEnemy::Attack(AMyCharacter* MyCharacter)
+void AEnemy::Attack()
 {
-	ServerRPC_Attack(MyCharacter);
+	ServerRPC_Attack();
 }
 
-void AEnemy::ServerRPC_Attack_Implementation(AMyCharacter* MyCharacter)
+void AEnemy::ServerRPC_Attack_Implementation()
 {
-	MyCharacter->Damage(1);
 	CurrentAttackCooldown = AttackCooldown;
-	MultiCastRPC_Attack(MyCharacter);
+	MultiCastRPC_Attack();
 }
 
-void AEnemy::MultiCastRPC_Attack_Implementation(AMyCharacter* MyCharacter)
+void AEnemy::MultiCastRPC_Attack_Implementation()
 {
-	UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	AnimInstance->bIsAttacking = true;
+}
+
+// ! 바인딩하기 위함
+// ReSharper disable once CppMemberFunctionMayBeConst
+void AEnemy::GiveDamage()
+{
+	TArray<AActor*> MyCharacters;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyCharacter::StaticClass(), MyCharacters);
+	
+	AMyCharacter* ClosestMyCharacter = nullptr; // ! nullable
+	float ClosestDistance = TNumericLimits<float>::Max();
+	for (const auto MyCharacter : MyCharacters)
+	{
+		const auto CastedMyCharacter = Cast<AMyCharacter>(MyCharacter);
+		const float Distance = FVector::Dist(CastedMyCharacter->GetActorLocation(), GetActorLocation());
+		const FVector Direction = CastedMyCharacter->GetActorLocation() - GetActorLocation();
+		
+		if (Distance > ClosestDistance)
+		{
+			continue;
+		}
+		
+		if (Direction.Size() > DistanceToMyCharacter)
+		{
+			continue;
+		}
+
+		// check if the character is in front of the enemy
+		if (const float DotProduct = FVector::DotProduct(Direction.GetSafeNormal(), GetActorForwardVector()); DotProduct < 0.5f)
+		{
+			continue;
+		}
+
+		ClosestDistance = Distance;
+		ClosestMyCharacter = CastedMyCharacter;
+	}
+
+	if (ClosestMyCharacter != nullptr)
+	{
+		ClosestMyCharacter->Damage(1);
+	}
 }
 
 void AEnemy::ReduceCurrentAttackCooldown(float DeltaTime)
@@ -169,7 +212,6 @@ float AEnemy::GetDistanceToMyCharacter() const
 
 bool AEnemy::CanMove() const
 {
-	const UEnemyAnimInstance* AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	return !AnimInstance->bIsAttacking;
 }
 

@@ -27,6 +27,12 @@ void AEnemyShip::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 2.0f);
+}
+
+void AEnemyShip::Init()
+{
 	ProjectileSpawnPoint = FindComponentByClass<UArrowComponent>();
 	ProjectileClass = AEnemyShipCannonBall::StaticClass();
 	FireEffect = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Particles/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A'"));
@@ -125,7 +131,7 @@ void AEnemyShip::MulticastRPC_Damage_Implementation()
 
 void AEnemyShip::MulticastRPC_Die_Implementation()
 {
-	MyInGameHUD->SetEnemyShipHPProgressBarVisibility(false);
+	MyInGameHUD->SetPopupEnemyShipVisibility(false);
 }
 
 void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
@@ -142,16 +148,19 @@ void AEnemyShip::MoveToMyShip(const AMyShip* MyShip, const float DeltaTime)
 	const FVector NextPoint = PathToMyShip->PathPoints[1];
 	const FVector DirectionToNextPoint = NextPoint - GetActorLocation();
 	const FVector NewLocation = GetActorLocation() + DirectionToNextPoint.GetSafeNormal() * MoveSpeed * DeltaTime;
+	const auto NewRotation = FRotationMatrix::MakeFromX(DirectionToNextPoint).Rotator();
 	
 	SetActorLocation(NewLocation);
-	SetActorRotation(DirectionToNextPoint.Rotation());
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, DeltaTime, 0.1f));
 }
 
 bool AEnemyShip::CanMove(const AMyShip* MyShip) const
 {
-	const auto MyShipLocation = MyShip->GetActorLocation();
-	const auto Direction = MyShipLocation - GetActorLocation();
-	return Direction.Size() > DistanceToMyShip;
+	const auto EnemyShipHeadLocation = FindComponentByClass<UEnemyShipHead>()->GetComponentLocation();
+	const auto NearestMovePointLocation = MyShip->GetNearestEnemyShipMovePointLocationFrom(EnemyShipHeadLocation);
+	const auto Direction = NearestMovePointLocation - GetActorLocation();
+	
+	return Direction.Size() > DistanceToMyShip && Direction.Size() < DistanceToObserveMyShip;
 }
 
 bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
@@ -159,9 +168,13 @@ bool AEnemyShip::CanSpawnEnemy(const AMyShip* MyShip) const
 	return bCanSpawnEnemy;
 }
 
-bool AEnemyShip::CanFireCannon() const
+bool AEnemyShip::CanFireCannon(const AMyShip* MyShip) const
 {
-	return bCanFireCannon;
+	const auto EnemyShipHeadLocation = FindComponentByClass<UEnemyShipHead>()->GetComponentLocation();
+	const auto NearestMovePointLocation = MyShip->GetNearestEnemyShipMovePointLocationFrom(EnemyShipHeadLocation);
+	const auto Direction = NearestMovePointLocation - GetActorLocation();
+	
+	return bCanFireCannon && Direction.Size() < DistanceToMyShip;
 }
 
 TArray<UEnemySpawnPoint*> AEnemyShip::GetEnemySpawnPointsToSpawn(const AMyShip* MyShip) const
@@ -176,22 +189,24 @@ TArray<UEnemySpawnPoint*> AEnemyShip::GetEnemySpawnPointsToSpawn(const AMyShip* 
 		Distances.Add(Distance);
 	}
 
-	int FirstNearestIndex = 0;
-	int SecondNearestIndex = 0;
-	int ThirdNearestIndex = 0;
+	int FirstNearestIndex = -1;
+	int SecondNearestIndex = -1;
+	int ThirdNearestIndex = -1;
 
 	for (int i = 0; i < Distances.Num(); i++)
 	{
-		if (Distances[i] < Distances[FirstNearestIndex])
+		if ( FirstNearestIndex == -1 || Distances[i] < Distances[FirstNearestIndex])
 		{
+			ThirdNearestIndex = SecondNearestIndex;
 			SecondNearestIndex = FirstNearestIndex;
 			FirstNearestIndex = i;
 		}
-		else if (Distances[i] < Distances[SecondNearestIndex])
+		else if (SecondNearestIndex == -1 || Distances[i] < Distances[SecondNearestIndex])
 		{
+			ThirdNearestIndex = SecondNearestIndex;
 			SecondNearestIndex = i;
 		}
-		else if (Distances[i] < Distances[ThirdNearestIndex])
+		else if (ThirdNearestIndex == -1 || Distances[i] < Distances[ThirdNearestIndex])
 		{
 			ThirdNearestIndex = i;
 		}

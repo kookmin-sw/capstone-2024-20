@@ -27,7 +27,7 @@ void ACapCharacter::Init()
 	if (PlayerNumber != 1)
 	{
 		const FLinearColor PlayerColor = ULobbyPlayerLinearColorFactory::GetLinearColor(PlayerNumber);
-
+	
 		WidgetComponent->ChangeColor(PlayerColor);
 		WidgetComponent->SetVisibilityFromBool(false);
 	}
@@ -36,13 +36,7 @@ void ACapCharacter::Init()
 		FString Path = TEXT("/Game/WidgetBlueprints/Lobby/BP_RoomManagerWidget.BP_RoomManagerWidget_C");
 		WidgetComponent->ChangeWidget(Path);
 	}
-
-	if (IsLocallyControlled())
-	{
-		const FString PlayerName = LobbyPlayerState->GetPlayerName();
-		WidgetComponent->SetName(PlayerName);
-	}
-
+	
 	if (IsLocallyControlled())
 	{
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
@@ -50,6 +44,17 @@ void ACapCharacter::Init()
 		{
 			PlayerController->InputComponent->BindKey(EKeys::C, IE_Pressed,
 			                                          LobbyPlayerState, &ALobbyPlayerState::SetReady);
+		}
+	}
+}
+void ACapCharacter::RefreshNamePlate_Implementation()
+{
+	if (IsLocallyControlled())
+	{
+		if(LobbyPlayerState)
+		{
+			const FString PlayerName = LobbyPlayerState->GetPlayerName();
+			WidgetComponent->SetName(PlayerName);
 		}
 	}
 }
@@ -86,7 +91,7 @@ void ACapCharacter::BeginPlay()
 	}
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Init, 4.0f, false);
 }
 
 void ACapCharacter::Move(const FInputActionValue& Value)

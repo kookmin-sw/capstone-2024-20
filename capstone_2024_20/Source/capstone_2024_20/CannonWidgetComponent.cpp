@@ -9,13 +9,12 @@ UCannonWidgetComponent::UCannonWidgetComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	static ConstructorHelpers::FClassFinder<UUserWidget>
-		BP_WidgetFinder(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Cannon_Widget.Cannon_Widget'"));
+		BP_WidgetFinder(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/Cannon_Widget.Cannon_Widget_C'"));
 
 	if (BP_WidgetFinder.Succeeded())
 	{
 		SetWidgetClass(BP_WidgetFinder.Class);
 		SetWidgetSpace(EWidgetSpace::Screen);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("생성됨"));
 	}
 }
 

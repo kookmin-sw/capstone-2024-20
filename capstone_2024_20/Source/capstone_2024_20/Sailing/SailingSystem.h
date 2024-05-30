@@ -36,15 +36,12 @@ public:
 	void CreateMap();
 	void CreateObstacles() const;
 	
-	void CalculateEnemyInAttackRange();
-	
 	void EarnCurrency(int32 Amount);
 	void UseCurrency(int32 Amount);
 
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
 
-	void AddDelegateToPopupUpgrade();
 	void AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event);
 
 	void UpgradeMyShipMoveSpeed();
@@ -63,6 +60,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	float DestinationProgress();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Caution(const FText& Text) const;
 
 private:
 	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
@@ -106,7 +106,8 @@ private:
 	FVector InitLocation;
 	UPROPERTY(Replicated)
 	float Progress = 0.0f;
-	
-	UPROPERTY()
-	AMyIngameHUD* MyInGameHUD = nullptr;
+
+	bool bIsEnemyShipFirstMove = true;
+	bool bIsEnemyShipFirstFire = true;
+	bool bIsEnemyFirstSpawn = true;
 };

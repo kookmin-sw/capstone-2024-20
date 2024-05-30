@@ -6,6 +6,7 @@
 #include "CapInteractionActor.h"
 #include "GameStartActor.generated.h"
 
+class URoundProgressControllerWidget;
 class ULevelSequencePlayer;
 class ULevelSequence;
 
@@ -29,7 +30,30 @@ public:
 	virtual void InteractionEnter() override;
 	virtual void InteractionLongEnter() override;
 	virtual void InteractionExit() override;
+	
+	UFUNCTION(BlueprintCallable)
+	void SetVisibleWidget(UUserWidget* NewUserWidget);
+	UPROPERTY()
+	UUserWidget* VisibleWidget;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> RoundProgressControllerWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	URoundProgressControllerWidget* RoundProgressControllerWidget;
+
+	UFUNCTION()
+	void SkipPressed();
+
+	UFUNCTION()
+	void SkipRealesed();
+
+	void Skip();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_Skip();
+
+	FTimerHandle SkipTimerHandle;
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlaySequence();

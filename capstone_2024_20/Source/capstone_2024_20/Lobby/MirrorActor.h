@@ -33,11 +33,8 @@ class CAPSTONE_2024_20_API AMirrorActor : public ACapInteractionActor
 
 	UPROPERTY()
 	AActor* OriginalTarget;
-	
 public:
 	AMirrorActor();
-
-	
 
 protected:
 	virtual void BeginPlay() override;

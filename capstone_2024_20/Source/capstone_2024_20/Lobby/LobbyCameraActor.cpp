@@ -17,4 +17,3 @@ void ALobbyCameraActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-

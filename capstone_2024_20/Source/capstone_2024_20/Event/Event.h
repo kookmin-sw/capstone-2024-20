@@ -22,8 +22,7 @@ public:
 	AEvent();
 
 	virtual void BeginPlay() override;
-	virtual void Operate() override;
-	
+	virtual void OperateOnServer() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void DamageMyShip(AMyShip* MyShip);

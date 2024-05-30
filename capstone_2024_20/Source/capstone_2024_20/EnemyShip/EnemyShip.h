@@ -30,6 +30,9 @@ class AEnemyShip : public AReplicatedActor, public IHP
 public:
 	AEnemyShip();
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void Init();
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -54,7 +57,7 @@ public:
 
 	bool CanMove(const AMyShip* MyShip) const;
 	bool CanSpawnEnemy(const AMyShip* MyShip) const;
-	bool CanFireCannon() const;
+	bool CanFireCannon(const AMyShip* MyShip) const;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanSpawnEnemy = false;
@@ -63,7 +66,9 @@ public:
 	bool bCanFireCannon = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float DistanceToMyShip = 7000.0f;
+	float DistanceToMyShip = 5000.0f;
+
+	const float DistanceToObserveMyShip = 25000.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	USphereComponent* SphereComponent;

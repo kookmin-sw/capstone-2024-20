@@ -12,6 +12,10 @@
 #include "MyBed.h"
 #include "MyPlayerController.generated.h"
 
+class ASailingSystem;
+// ReSharper disable once IdentifierTypo
+class AMyIngameHUD;
+
 UCLASS()
 class CAPSTONE_2024_20_API AMyPlayerController : public APlayerController
 {
@@ -48,7 +52,16 @@ private:
 
 	UPROPERTY(Category=Input, VisibleAnywhere)
 	UInputAction* AttackAction;
+
+	UPROPERTY()
+	ASailingSystem* SailingSystem;
+
+	UPROPERTY()
+	AMyIngameHUD* MyInGameHUD;
+
 	
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ChangeName(const FString& Text);
 public:
 	UPROPERTY(Category=UI, VisibleAnywhere)
 	UWidgetComponent* TextWidget;
@@ -87,6 +100,13 @@ public:
 	void Move(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
+
+	void UpgradeMyShipMoveSpeed();
+	void UpgradeMyShipHandling();
+	void UpgradeMyShipCannonAttack();
+	
+	static void InteractOnClient(AMyObject* OBJ);
+	void InteractOnServer(AMyObject* OBJ);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Shoot(AMyCannon* CannonActor);
@@ -94,13 +114,13 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Attack();
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerRPC_RotateCannon(AMyCannon* CannonActor, FRotator newRot);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerRPC_MoveShip_Loc(FVector newLoc);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Unreliable)
 	void ServerRPC_MoveShip_Rot(float newYaw, float speed);
 
 	UFUNCTION(Server, Reliable)
@@ -127,6 +147,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_PlayerSleep(AMyCharacter* user, bool b, AMyBed* bed);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_InteractOnServer(AMyObject* OBJ);
+
 	UFUNCTION()
 	void PlayerSleep();
 
@@ -135,6 +158,15 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_PlayerAwake(AMyCharacter* user, bool b, AMyBed* bed);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UpgradeMyShipMoveSpeed();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UpgradeMyShipHandling();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UpgradeMyShipCannonAttack();
 
 protected:
 	enum class ControlMode

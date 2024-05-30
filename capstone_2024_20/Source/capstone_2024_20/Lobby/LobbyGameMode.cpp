@@ -3,39 +3,43 @@
 
 #include "LobbyGameMode.h"
 
+#include "CapCharacter.h"
+#include "EngineUtils.h"
 #include "LobbyCharacter.h"
 #include "LobbyGameState.h"
 #include "LobbyPlayerListController.h"
 #include "LobbyPlayerState.h"
 #include "capstone_2024_20/01_Network/InGameRoomInfoWidget.h"
 #include "capstone_2024_20/01_Network/NetworkService.h"
+#include "capstone_2024_20/Common/ChatService.h"
 #include "Kismet/GameplayStatics.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
+	bUseSeamlessTravel = true;
 }
 
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerListController = APlayerListController::Find(GetWorld());
-	
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		PlayerController->InputComponent->BindKey(EKeys::T, IE_Pressed,
 		                                          this, &ThisClass::GameStart);
 	}
-	
+
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANetworkService::StaticClass(), FoundActors);
-	
+
 	if (FoundActors.Num() > 0)
 	{
 		ALobbyGameState* LobbyGameState = GetGameState<ALobbyGameState>();
 		LobbyGameState->NetworkService = Cast<ANetworkService>(FoundActors[0]);
 	}
-	
+
 	RoomInfoWidget = CreateWidget<UInGameRoomInfoWidget>(GetWorld(), RoomInfoWidgetFactory);
 	RoomInfoWidget->AddToViewport();
 
@@ -48,22 +52,35 @@ void ALobbyGameMode::BeginPlay()
 		PlayerController->InputComponent->BindKey(EKeys::F1, IE_Pressed, RoomInfoWidget, &UInGameRoomInfoWidget::Show);
 		PlayerController->InputComponent->BindKey(EKeys::F1, IE_Released, RoomInfoWidget, &UInGameRoomInfoWidget::Hide);
 	}
+
+	for (TActorIterator<AChatService> It(GetWorld()); It; ++It)
+	{
+		if (*It)
+		{
+			ChatService = *It;
+		}
+	}
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	
-	ALobbyCharacter* LobbyCharacter = Cast<ALobbyCharacter>(NewPlayer->GetCharacter());
 
 	ALobbyPlayerState* LobbyPlayerState = NewPlayer->GetPlayerState<ALobbyPlayerState>();
 	LobbyPlayerState->SetInitPlayerNumber(GetNumPlayers());
 
 	APlayerListController::PostLoginTimer(GetWorld(), &PlayerListController);
 	ALobbyPlayerListController::RegisterReadyEventTimer(GetWorld(),
-		&PlayerListController, LobbyPlayerState);
-	
-	SpawnPlayer(NewPlayer);
+	                                                    &PlayerListController, LobbyPlayerState);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
+	{
+		SpawnPlayer(NewPlayer);
+		FString Message = FString::Printf(TEXT("%s 님이 접속 하였습니다."), *NewPlayer->PlayerState->GetPlayerName());
+        ChatService->SendNotifyMessage(Message);
+
+	}, 6.0f, false);
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -85,8 +102,8 @@ void ALobbyGameMode::GameStart()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
-		                                 TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
+		// GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Magenta,
+		//                                  TEXT("모든 플레이어가 준비해야지 시작 할 수 있습니다."));
 	}
 }
 
@@ -116,8 +133,36 @@ bool ALobbyGameMode::IsReadyAllPlayer() const
 	return true;
 }
 
+void ALobbyGameMode::RestartPlayer(AController* NewPlayer)
+{
+	if (NewPlayer == nullptr || NewPlayer->IsPendingKillPending())
+	{
+		return;
+	}
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),TEXT("InitStartPosition"), FoundActors);
+
+	for(AActor* FoundActor: FoundActors)
+	{
+		RestartPlayerAtPlayerStart(NewPlayer, FoundActor);
+		break;
+	}
+}
+
 void ALobbyGameMode::SpawnPlayer(AController* NewPlayer)
 {
+	if (GetWorld())
+	{
+		for (TActorIterator<ACapCharacter> It(GetWorld()); It; ++It)
+		{
+			ACapCharacter* CapCharacter = *It;
+			if (CapCharacter)
+			{
+				CapCharacter->RefreshNamePlate();
+			}
+		}
+	}
+
 	AActor* PlayerStart = FindPlayerStart(NewPlayer, FString::FromInt(GetNumPlayers()));
 
 	NewPlayer->StartSpot = PlayerStart;

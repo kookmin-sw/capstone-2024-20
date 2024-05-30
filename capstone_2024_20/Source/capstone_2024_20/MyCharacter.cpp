@@ -9,6 +9,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Pirate/PirateAnimInstance.h"
 #include "WidgetBlueprint/PopupInteraction.h"
 
@@ -60,10 +61,13 @@ void AMyCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&AMyCharacter::BeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::EndOverlap);
 
-	FTimerHandle timer;
-	GetWorld()->GetTimerManager().SetTimer(timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer,this,&AMyCharacter::SetNamePlate, 5.0f, false);
 	
 	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
+
+	PirateAnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+	PirateAnimInstance->OnPirateGiveDamageDelegate.BindUObject(this, &AMyCharacter::GiveDamage);
 
 	SetMaxHP(10);
 	SetCurrentHP(10);
@@ -114,6 +118,52 @@ void AMyCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 			bIsOverlap = false;
 		}
 		CurrentHitObject = Cast<AMyObject>(this);
+	}
+}
+
+// ! 사이트 이펙트를 막기 위함
+// ReSharper disable once CppMemberFunctionMayBeConst
+void AMyCharacter::GiveDamage()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	TArray<AActor*> FoundEnemies;
+	AEnemy* EnemyToGiveDamage = nullptr; // ! nullable
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), FoundEnemies);
+	float MinDistance = TNumericLimits<float>::Max();
+
+	for (AActor* Enemy : FoundEnemies)
+	{
+		AEnemy* CastedEnemy = Cast<AEnemy>(Enemy);
+		const auto Distance = FVector::Dist(GetActorLocation(), CastedEnemy->GetActorLocation());
+		const auto Direction = CastedEnemy->GetActorLocation() - GetActorLocation();
+
+		if (Distance > AttackRange)
+		{
+			continue;
+		}
+
+		if (Distance > MinDistance)
+		{
+			continue;
+		}
+
+		// check if the enemy is in front of the character
+		if (const float DotProduct = FVector::DotProduct(Direction.GetSafeNormal(), GetActorForwardVector()); DotProduct < 0.5f)
+		{
+			continue;
+		}
+
+		MinDistance = Distance;
+		EnemyToGiveDamage = CastedEnemy;
+	}
+	
+	if (EnemyToGiveDamage != nullptr)
+	{
+		EnemyToGiveDamage->Damage(1);
 	}
 }
 
@@ -228,8 +278,7 @@ bool AMyCharacter::CanRevive() const
 
 bool AMyCharacter::IsAttacking() const
 {
-	const UPirateAnimInstance* AnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
-	return AnimInstance->bIsAttacking;
+	return PirateAnimInstance->bIsAttacking;
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -260,7 +309,27 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMyCharacter::SetNamePlate() const
 {
-	NamePlateWidget->SetName(GetPlayerState()->GetPlayerName());
+	ServerRPC_SetNamePlate();
+}
+
+void AMyCharacter::ServerRPC_SetNamePlate_Implementation() const
+{
+	for(auto It = GetWorld()->GetPlayerControllerIterator();It;++It)
+	{
+		if((*It)->GetCharacter() == nullptr)
+			return;
+		
+		AMyCharacter* MyCharacter = Cast<AMyCharacter>((*It)->GetCharacter());
+		if(MyCharacter)
+		{
+			MyCharacter->ClientRPC_SetNamePlate();
+		}
+	}
+}
+
+void AMyCharacter::ClientRPC_SetNamePlate_Implementation()
+{
+	NamePlateWidget->SetName(GetGameInstance<UMyAudioInstance>()->PlayerName);
 }
 
 bool AMyCharacter::GetIsOverLap() const
@@ -350,7 +419,7 @@ void AMyCharacter::DestroyCannonBall()
 void AMyCharacter::DragObject()
 {
 	CurrentHitObject->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-	FRotator RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // -90도 회전 (캐릭터 메시도 -90도 회전시켜서 사용중)
+	const FRotator RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // -90도 회전 (캐릭터 메시도 -90도 회전시켜서 사용중)
 	CurrentHitObject->SetActorRelativeRotation(RelativeRotation);
 
 	if (CurrentHitObject)
@@ -394,30 +463,13 @@ void AMyCharacter::Attack()
 
 void AMyCharacter::ServerRPC_Attack_Implementation()
 {
-	if (EnemyInAttackRange != nullptr)
-	{
-		// Todo@autumn - Need to change the damage value
-		EnemyInAttackRange->Damage(1);
-	}
-
 	CurrentAttackCooldown = AttackCooldown;
 	MulticastRPC_Attack();
 }
 
 void AMyCharacter::MulticastRPC_Attack_Implementation() const
 {
-	UPirateAnimInstance* AnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
-	AnimInstance->bIsAttacking = true;
-}
-
-void AMyCharacter::SetEnemyInAttackRange(AEnemy* Enemy)
-{
-	MulticastRPC_SetEnemyInAttackRange(Enemy);
-}
-
-void AMyCharacter::MulticastRPC_SetEnemyInAttackRange_Implementation(AEnemy* Enemy)
-{
-	EnemyInAttackRange = Enemy;
+	PirateAnimInstance->bIsAttacking = true;
 }
 
 float AMyCharacter::GetHPPercent() const

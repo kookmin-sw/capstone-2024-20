@@ -4,6 +4,7 @@
 #include "NamePlateWidgetComponent.h"
 
 #include "NamePlateWidget.h"
+#include "capstone_2024_20/MyCharacter.h"
 
 
 UNamePlateWidgetComponent::UNamePlateWidgetComponent()
@@ -58,19 +59,25 @@ void UNamePlateWidgetComponent::SetName(const FString& Name)
 	}
 	else
 	{
-		ServerRPC_SetName(Name);
 		if (GetOwnerRole() == ROLE_SimulatedProxy)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
-			                                 TEXT("Actor NamePlate SetName 조작 불가 권한 확인 바람"));
-			GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
-			                                 TEXT("Actor NamePlate SetName 조작 불가 권한 확인 바람"));
+			// GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
+			//                                  TEXT("Actor NamePlate SetName 조작 불가 권한 확인 바람"));
+			// GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red,
+			//                                  TEXT("Actor NamePlate SetName 조작 불가 권한 확인 바람"));
+		}
+		else
+		{
+			ServerRPC_SetName(Name);
 		}
 	}
 }
 
 void UNamePlateWidgetComponent::MultiRPC_SetName_Implementation(const FString& Name)
 {
+	if(IsValid(GetWidget()) == false)
+			return;
+	
 	Cast<UNamePlateWidget>(GetWidget())->SetName(Name);
 }
 

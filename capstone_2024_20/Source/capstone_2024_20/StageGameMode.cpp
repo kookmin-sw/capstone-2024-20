@@ -20,12 +20,12 @@ AStageGameMode::AStageGameMode()
 void AStageGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
-	                                 FString(TEXT("Init진출")));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
+	//                                  FString(TEXT("Init진출")));
 
 	PlayerListController = APlayerListController::Find(GetWorld());
 	
-	InitRoomInfo();
+	//InitRoomInfo();
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStageSelectController::StaticClass(), FoundActors);
 	if (FoundActors.Num() > 0)
@@ -73,8 +73,8 @@ void AStageGameMode::Logout(AController* Exiting)
 void AStageGameMode::PrintRoomCode()
 {
 	const FName RoomCode = GetGameState<AInGameStateTest>()->GetRoomCode();
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
-	                                 FString::Printf(TEXT("룸 코드: %s"), *RoomCode.ToString()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
+	//                                  FString::Printf(TEXT("룸 코드: %s"), *RoomCode.ToString()));
 
 	UE_LOG(LogTemp, Warning, TEXT("Test"));
 }

@@ -1,4 +1,4 @@
-﻿#include "SailingSystem.h"
+#include "SailingSystem.h"
 #include "../EnemyShip/EnemyShip.h"
 #include "../Enemy/Enemy.h"
 #include "../MyShip.h"
@@ -10,10 +10,9 @@
 #include "../Map/Map.h"
 #include "../Map/Grid.h"
 #include "../Object/Destination.h"
-#include "../MyIngameHUD.h"
-#include "../Upgrade/UpgradeWidgetElement.h"
 #include "Net/UnrealNetwork.h"
 #include "../Event/Event.h"
+#include "capstone_2024_20/MyIngameHUD.h"
 
 ASailingSystem::ASailingSystem(): Map(nullptr), ClearTrigger(nullptr), GameOverTrigger(nullptr), MyShip(nullptr),
                                   Destination(nullptr)
@@ -33,14 +32,11 @@ void ASailingSystem::BeginPlay()
 	
 	CreateMap();
 
-	MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-
 	// To ensure that the ship is set before sailing system starts, run SetMyShip on world begin play
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyShip);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetMyCharacters);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetEnemyShips);
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::SetDestination);
-	GetWorld()->OnWorldBeginPlay.AddUObject(this, &ASailingSystem::AddDelegateToPopupUpgrade);
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -115,17 +111,29 @@ void ASailingSystem::Tick(float DeltaTime)
 		if (EnemyShip->CanMove(MyShip))
 		{
 			EnemyShip->MoveToMyShip(MyShip, DeltaTime);
+
+			if (bIsEnemyShipFirstMove)
+			{
+				MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적에게 발각됐습니다!"))));
+				bIsEnemyShipFirstMove = false;
+			}
 		}
 
-		if (EnemyShip->CanFireCannon())
+		if (EnemyShip->CanFireCannon(MyShip))
 		{
 			EnemyShip->FireCannon(DeltaTime);
+
+			if (bIsEnemyShipFirstFire)
+			{
+				MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적 함선이 포탄을 발사합니다!"))));
+				bIsEnemyShipFirstFire = false;
+			}
 		}
 	}
 
 	for (const auto Enemy : Enemies)
 	{
-		if (AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy); NearestMyCharacter != nullptr)
+		if (const AMyCharacter* NearestMyCharacter = FindNearestMyCharacter(Enemy); NearestMyCharacter != nullptr)
 		{
 			if (Enemy->CanMove())
 			{
@@ -136,7 +144,7 @@ void ASailingSystem::Tick(float DeltaTime)
 			{
 				if (const float Distance = FVector::Dist(Enemy->GetActorLocation(), NearestMyCharacter->GetActorLocation()); Distance <= Enemy->GetDistanceToMyCharacter())
 				{
-					Enemy->Attack(NearestMyCharacter);
+					Enemy->Attack();
 				}	
 			}	
 		}
@@ -153,15 +161,13 @@ void ASailingSystem::Tick(float DeltaTime)
 		
 		Event->ReduceCurrentDamageCooldown(DeltaTime);
 	}
-
-	CalculateEnemyInAttackRange();
 }
 
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASailingSystem, Currency);
-	DOREPLIFETIME(ASailingSystem, Progress);
+	//DOREPLIFETIME(ASailingSystem, Progress);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -178,10 +184,21 @@ void ASailingSystem::OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies)
 		SpawnedEnemy->EnemyDieDelegate.BindUObject(this, &ASailingSystem::OnEnemyDie);
 		Enemies.Add(SpawnedEnemy);
 	}
+
+	if (bIsEnemyShipFirstMove)
+	{
+		MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적이 침입했습니다!"))));
+		bIsEnemyShipFirstMove = false;
+	}
 }
 
 void ASailingSystem::OnEnemyShipDie(AEnemyShip* EnemyShip)
 {
+	if (EnemyShip->bCanFireCannon)
+	{
+		MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("적 함선을 격침했습니다!"))));
+	}
+	
 	EnemyShips.Remove(EnemyShip);
 	EnemyShip->Destroy();
 	EarnCurrency(100);
@@ -211,30 +228,6 @@ void ASailingSystem::CreateObstacles() const
 	}
 }
 
-void ASailingSystem::CalculateEnemyInAttackRange()
-{
-	for (const auto Character : MyCharacters)
-	{
-		FTransform CharacterTransform = Character->GetActorTransform();
-
-		double MinDistance = TNumericLimits<double>::Max();
-		AEnemy* EnemyInAttackRange = nullptr;
-		
-		for (const auto Enemy : Enemies)
-		{
-			// Todo@autumn - This is a temporary solution, replace it with data.
-			if (const auto Distance = FVector::Dist(CharacterTransform.GetLocation(), Enemy->GetActorLocation()); Distance < 200.0f && Distance < MinDistance)
-			{
-				MinDistance = Distance;
-				EnemyInAttackRange = Enemy;
-			}
-		}
-
-		// ! nullable
-		Character->SetEnemyInAttackRange(EnemyInAttackRange);
-	}
-}
-
 void ASailingSystem::EarnCurrency(const int32 Amount)
 {
 	Currency += Amount;
@@ -255,18 +248,11 @@ int ASailingSystem::GetCurrency() const
 	return Currency;
 }
 
-void ASailingSystem::AddDelegateToPopupUpgrade()
-{
-	const UUpgradeWidget* PopupUpgrade = MyInGameHUD->GetPopupUpgrade();
-	PopupUpgrade->SpeedUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipMoveSpeed);
-	PopupUpgrade->HandlingUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipHandling);
-	PopupUpgrade->CannonAttackUpgrade->OnClickUpgradeDelegate.AddUObject(this, &ASailingSystem::UpgradeMyShipCannonAttack);
-}
-
 void ASailingSystem::AddSpawnedEventFromEnemyShipCannonBall(AEvent* Event)
 {
 	Event->EventOperateDelegate.BindUObject(this, &ASailingSystem::OnEventOperate);
 	Events.Add(Event);
+	MulticastRPC_Caution(FText::FromString(FString::Printf(TEXT("화재가 발생했습니다!"))));
 }
 
 void ASailingSystem::UpgradeMyShipMoveSpeed()
@@ -387,7 +373,7 @@ void ASailingSystem::SetDestination()
 
 float ASailingSystem::DestinationProgress()
 {
-	if(Destination)
+	if(Destination && MyShip)
 	{
 		const FVector DestinationLocation = Destination->GetActorLocation();
 		const FVector MyShipLocation = MyShip->GetActorLocation();
@@ -398,8 +384,20 @@ float ASailingSystem::DestinationProgress()
 		Progress = 1.0f - (CurrentDistance / TotalDistance);
 		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
 	}
+	else
+	{
+		SetMyShip();
+		SetDestination();
+	}
 	
 	return Progress;
+}
+
+void ASailingSystem::MulticastRPC_Caution_Implementation(const FText& Text) const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
+	InGameHUD->ShowPopupCaution(Text);
 }
 
 // nullable
