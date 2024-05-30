@@ -4,7 +4,6 @@
 #include "../MyShip.h"
 #include "../Trigger/Trigger.h"
 #include "../Map/Obstacle.h"
-#include "Blueprint/UserWidget.h"
 #include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
@@ -65,29 +64,13 @@ void ASailingSystem::Tick(float DeltaTime)
 	
 	if (ClearTrigger->IsTriggered() && !bIsClear)
 	{
-		const auto ClearWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageClearPopUpWidget.StageClearPopUpWidget_C'");
-		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,ClearWidgetRef); StagePopUpWidgetClass != nullptr)
-		{
-			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
-			{
-				PopUpWidget->AddToViewport();
-			}
-		}
-		
+		MulticastRPC_ShowPopupClear();
 		bIsClear = true;
 	}
 
 	if (GameOverTrigger->IsTriggered())
 	{
-		const auto GameOverWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageFailPopUpWidget.StageFailPopUpWidget_C'");
-		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,GameOverWidgetRef); StagePopUpWidgetClass != nullptr)
-		{
-			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
-			{
-				PopUpWidget->AddToViewport();
-			}
-		}
-		
+		MulticastRPC_ShowPopupGameOver();
 		bIsGameOver = true;
 	}
 
@@ -167,7 +150,6 @@ void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASailingSystem, Currency);
-	//DOREPLIFETIME(ASailingSystem, Progress);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
@@ -286,6 +268,30 @@ void ASailingSystem::UpgradeMyShipCannonAttack()
 
 	UseCurrency(UpgradeCost);
 	MyShip->UpgradeCannonAttack();
+}
+
+void ASailingSystem::ShowPopupGameOver() const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
+	InGameHUD->ShowPopupGameOver(HasAuthority());
+}
+
+void ASailingSystem::MulticastRPC_ShowPopupGameOver_Implementation() const
+{
+	ShowPopupGameOver();
+}
+
+void ASailingSystem::ShowPopupClear() const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
+	InGameHUD->ShowPopupClear(HasAuthority());
+}
+
+void ASailingSystem::MulticastRPC_ShowPopupClear_Implementation() const
+{
+	ShowPopupClear();
 }
 
 float ASailingSystem::GetElapsedTime() const

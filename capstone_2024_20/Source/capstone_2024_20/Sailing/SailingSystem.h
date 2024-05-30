@@ -48,6 +48,16 @@ public:
 	void UpgradeMyShipHandling();
 	void UpgradeMyShipCannonAttack();
 
+	void ShowPopupGameOver() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_ShowPopupGameOver() const;
+	
+	void ShowPopupClear() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_ShowPopupClear() const;
+
 	float GetElapsedTime() const;
 	bool IsAllMyCharactersDead() const;
 	bool IsReachedDestination() const;
