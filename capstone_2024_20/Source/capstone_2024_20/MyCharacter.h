@@ -219,9 +219,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_Attack();
 	
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPC_Attack() const;
-	
 	UFUNCTION(BlueprintPure)
 	float GetHPPercent() const;
 	
