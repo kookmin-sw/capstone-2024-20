@@ -48,6 +48,8 @@ void AMyShip::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AMyShip, TargetRotation);
 	DOREPLIFETIME(AMyShip, MaxHP);
 	DOREPLIFETIME(AMyShip, CurrentHP);
+	DOREPLIFETIME(AMyShip, MoveSpeed);
+	DOREPLIFETIME(AMyShip, RotationAcceleration);
 }
 
 void AMyShip::UpgradeMoveSpeed()
