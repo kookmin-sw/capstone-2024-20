@@ -37,7 +37,14 @@ public:
 	void CreateObstacles() const;
 	
 	void EarnCurrency(int32 Amount);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_EarnCurrency(int32 Amount);
+	
 	void UseCurrency(int32 Amount);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_UseCurrency(int32 Amount);
 
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
@@ -108,7 +115,7 @@ private:
 	const float DistanceToDestination = 6000.0f;
 	
 	UPROPERTY(Replicated)
-	int32 Currency = 10000;
+	int32 Currency = 0;
 
 	const int32 UpgradeCost = 2000;
 

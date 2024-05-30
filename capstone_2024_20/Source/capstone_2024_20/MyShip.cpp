@@ -25,8 +25,8 @@ void AMyShip::BeginPlay()
 	Super::BeginPlay();
 
 	// Todo@autumn replace with data table
-	SetMaxHP(5);
-	SetCurrentHP(5);
+	SetMaxHP(20);
+	SetCurrentHP(20);
 	FindMyCannons();
 	FindEnemySpawnPoints();
 	FindEventSpawnPoints();

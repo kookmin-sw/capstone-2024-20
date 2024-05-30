@@ -158,7 +158,7 @@ void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
 {
 	Enemies.Remove(Enemy);
 	Enemy->Destroy();
-	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
+	EarnCurrency(3000); // Todo@autumn - This is a temporary solution, replace it with data.
 }
 
 void ASailingSystem::OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies)
@@ -214,10 +214,21 @@ void ASailingSystem::CreateObstacles() const
 
 void ASailingSystem::EarnCurrency(const int32 Amount)
 {
+	MulticastRPC_EarnCurrency(Amount);
+}
+
+void ASailingSystem::MulticastRPC_EarnCurrency_Implementation(const int32 Amount)
+{
 	Currency += Amount;
+	MulticastRPC_SetCurrency();
 }
 
 void ASailingSystem::UseCurrency(const int32 Amount)
+{
+	MulticastRPC_UseCurrency(Amount);
+}
+
+void ASailingSystem::MulticastRPC_UseCurrency_Implementation(const int32 Amount)
 {
 	if (Currency < Amount)
 	{
@@ -225,6 +236,7 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 	}
 	
 	Currency -= Amount;
+	MulticastRPC_SetCurrency();
 }
 
 int ASailingSystem::GetCurrency() const
@@ -427,6 +439,7 @@ void ASailingSystem::MulticastRPC_SetCurrency_Implementation() const
 	}
 	
 	MyInGameHUD->SetCurrency(Currency);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Currency: %d"), Currency));
 }
 
 // nullable
