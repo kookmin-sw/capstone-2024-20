@@ -5,7 +5,6 @@
 #include "MyPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "Enemy/Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -66,9 +65,6 @@ void AMyCharacter::BeginPlay()
 	
 	CharacterChangerComponent->Change(GetGameInstance<UMyAudioInstance>()->GetCharacterType());
 
-	PirateAnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
-	PirateAnimInstance->OnPirateGiveDamageDelegate.BindUObject(this, &AMyCharacter::GiveDamage);
-
 	SetMaxHP(10);
 	SetCurrentHP(10);
 }
@@ -80,6 +76,13 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	// ! 캐릭터에 Attach한 UI가 Movement에 따라 움직이는 문제가 있어, Tick에서 위치를 업데이트
 	TextWidget->SetWorldLocation(GetActorLocation() + FVector(0.0f, 0.0f, -200.0f));
+
+	PirateAnimInstance = Cast<UPirateAnimInstance>(GetMesh()->GetAnimInstance());
+	if (PirateAnimInstance)
+	{
+		PirateAnimInstance->OnPirateGiveDamageDelegate.BindUObject(this, &AMyCharacter::GiveDamage);
+		PirateAnimInstance->OnPirateAttackEndDelegate.BindUObject(this, &AMyCharacter::AttackEnd);
+	}
 }
 
 void AMyCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -276,9 +279,11 @@ bool AMyCharacter::CanRevive() const
 	return CurrentReviveCooldown <= 0.0f;
 }
 
-bool AMyCharacter::IsAttacking() const
+// Blueprint에서 실행 흐름을 제어하기 위함
+// ReSharper disable once CppUE4BlueprintCallableFunctionMayBeConst
+bool AMyCharacter::IsAttacking()
 {
-	return PirateAnimInstance->bIsAttacking;
+	return bIsAttacking;
 }
 
 // ReSharper disable once CppParameterMayBeConst
@@ -305,6 +310,7 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMyCharacter, CurrentHP);
 	DOREPLIFETIME(AMyCharacter, CurrentPlayerState);
 	DOREPLIFETIME(AMyCharacter, CurrentReviveCooldown);
+	DOREPLIFETIME(AMyCharacter, bIsAttacking);
 }
 
 void AMyCharacter::SetNamePlate() const
@@ -461,15 +467,20 @@ void AMyCharacter::Attack()
 	ServerRPC_Attack();
 }
 
+void AMyCharacter::AttackEnd()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	bIsAttacking = false;
+}
+
 void AMyCharacter::ServerRPC_Attack_Implementation()
 {
 	CurrentAttackCooldown = AttackCooldown;
-	MulticastRPC_Attack();
-}
-
-void AMyCharacter::MulticastRPC_Attack_Implementation() const
-{
-	PirateAnimInstance->bIsAttacking = true;
+	bIsAttacking = true;
 }
 
 float AMyCharacter::GetHPPercent() const

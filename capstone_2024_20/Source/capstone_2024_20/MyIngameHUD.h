@@ -6,6 +6,8 @@
 #include "Upgrade/UpgradeWidget.h"
 #include "MyIngameHUD.generated.h"
 
+class UPopupClear;
+class UPopupGameOver;
 class UPopupEnemyShip;
 class UPopupCaution;
 class UProgressBar;
@@ -39,6 +41,16 @@ public:
 	void ShowPopupCaution(const FText& Text) const;
 	// [end] PopupCaution
 
+	// [begin] PopupGameOver
+	void ShowPopupGameOver(bool bHasAuthority) const;
+	// [end] PopupGameOver
+
+	// [begin] PopupClear
+	void ShowPopupClear(const bool bHasAuthority) const;
+	// [end] PopupClear
+
+	void SetCurrency(int32 Amount) const;
+
 protected:
 	// ! Set on blueprint
 	UPROPERTY(BlueprintReadWrite, Category = "UI")
@@ -56,6 +68,9 @@ protected:
 	TSubclassOf<UPopupCaution> PopupCautionClass;
 	TSubclassOf<UPopupEnemyShip> PopupEnemyShipClass;
 
+	TSubclassOf<UPopupGameOver> PopupGameOverClass;
+	TSubclassOf<UPopupClear> PopupClearClass;
+
 private:
 	UPROPERTY()
 	UUserWidget* InGameWidget;
@@ -71,6 +86,12 @@ private:
 
 	UPROPERTY()
 	UPopupCaution* PopupCaution;
+
+	UPROPERTY()
+	UPopupGameOver* PopupGameOver;
+
+	UPROPERTY()
+	UPopupClear* PopupClear;
 
 	// ! 일부 클래스에서, HUD의 BeginPlay가 늦게 호출되는 경우가 있어 해당 클래스에서는 BeginPlay를 직접 호출.
 	// ! 이때, BeginPlay가 이미 호출된 경우에는 다시 호출하지 않도록 예외 처리하기 위한 변수

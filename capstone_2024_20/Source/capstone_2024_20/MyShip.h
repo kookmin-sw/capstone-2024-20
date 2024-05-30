@@ -59,6 +59,7 @@ public:
 	UPROPERTY(Replicated)
 	float MoveSpeed = 600.0f;
 
+	UPROPERTY(Replicated)
 	float RotationAcceleration = 1.0f;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)

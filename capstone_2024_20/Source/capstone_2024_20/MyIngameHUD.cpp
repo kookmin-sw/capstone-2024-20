@@ -1,9 +1,12 @@
 #include "MyIngameHUD.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "Upgrade/UpgradeWidgetElement.h"
 #include "WidgetBlueprint/PopupDead.h"
 #include "WidgetBlueprint/PopupCaution.h"
 #include "WidgetBlueprint/PopupEnemyShip.h"
+#include "WidgetBlueprint/PopupGameOver.h"
+#include "WidgetBlueprint/PopupClear.h"
 
 void AMyIngameHUD::BeginPlay()
 {
@@ -32,6 +35,16 @@ void AMyIngameHUD::BeginPlay()
 	PopupCaution = CreateWidget<UPopupCaution>(GetWorld(), PopupCautionClass);
 	PopupCaution->AddToViewport();
 	PopupCaution->SetVisibility(ESlateVisibility::Hidden);
+
+	PopupGameOverClass = LoadClass<UPopupGameOver>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageFailPopUpWidget.StageFailPopUpWidget_C'"));
+	PopupGameOver = CreateWidget<UPopupGameOver>(GetWorld(), PopupGameOverClass);
+	PopupGameOver->AddToViewport();
+	PopupGameOver->SetVisibility(ESlateVisibility::Hidden);
+
+	PopupClearClass = LoadClass<UPopupClear>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageClearPopUpWidget.StageClearPopUpWidget_C'"));
+	PopupClear = CreateWidget<UPopupClear>(GetWorld(), PopupClearClass);
+	PopupClear->AddToViewport();
+	PopupClear->SetVisibility(ESlateVisibility::Hidden);
 	
 	bIsCalledBeginPlay = true;
 }
@@ -87,4 +100,38 @@ void AMyIngameHUD::ShowPopupCaution(const FText& Text) const
 	{
 		PopupCaution->SetVisibility(ESlateVisibility::Hidden);
 	}, 3.0f, false);
+}
+
+void AMyIngameHUD::ShowPopupGameOver(const bool bHasAuthority) const
+{
+	PopupGameOver->SetVisibility(ESlateVisibility::Visible);
+	PopupGameOver->Initialize(bHasAuthority);
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->bShowMouseCursor = true;
+}
+
+void AMyIngameHUD::ShowPopupClear(const bool bHasAuthority) const
+{
+	PopupClear->SetVisibility(ESlateVisibility::Visible);
+	PopupClear->Initialize(bHasAuthority);
+	
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->bShowMouseCursor = true;
+}
+
+void AMyIngameHUD::SetCurrency(const int32 Amount) const
+{
+	if (!InGameWidget)
+	{
+		return;
+	}
+	
+	UTextBlock* TextBlock = Cast<UTextBlock>(InGameWidget->GetWidgetFromName(TEXT("TextBlock_205")));
+	if (!TextBlock)
+	{
+		return;
+	}
+	
+	TextBlock->SetText(FText::FromString(FString::FromInt(Amount)));
 }

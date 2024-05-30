@@ -37,7 +37,14 @@ public:
 	void CreateObstacles() const;
 	
 	void EarnCurrency(int32 Amount);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_EarnCurrency(int32 Amount);
+	
 	void UseCurrency(int32 Amount);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_UseCurrency(int32 Amount);
 
 	UFUNCTION(BlueprintPure)
 	int GetCurrency() const;
@@ -47,6 +54,16 @@ public:
 	void UpgradeMyShipMoveSpeed();
 	void UpgradeMyShipHandling();
 	void UpgradeMyShipCannonAttack();
+
+	void ShowPopupGameOver() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_ShowPopupGameOver() const;
+	
+	void ShowPopupClear() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_ShowPopupClear() const;
 
 	float GetElapsedTime() const;
 	bool IsAllMyCharactersDead() const;
@@ -63,6 +80,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_Caution(const FText& Text) const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_SetCurrency() const;
 
 private:
 	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
@@ -95,7 +115,7 @@ private:
 	const float DistanceToDestination = 6000.0f;
 	
 	UPROPERTY(Replicated)
-	int32 Currency = 10000;
+	int32 Currency = 0;
 
 	const int32 UpgradeCost = 2000;
 

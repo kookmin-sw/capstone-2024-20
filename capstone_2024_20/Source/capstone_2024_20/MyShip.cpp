@@ -25,8 +25,8 @@ void AMyShip::BeginPlay()
 	Super::BeginPlay();
 
 	// Todo@autumn replace with data table
-	SetMaxHP(5);
-	SetCurrentHP(5);
+	SetMaxHP(20);
+	SetCurrentHP(20);
 	FindMyCannons();
 	FindEnemySpawnPoints();
 	FindEventSpawnPoints();
@@ -48,6 +48,8 @@ void AMyShip::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AMyShip, TargetRotation);
 	DOREPLIFETIME(AMyShip, MaxHP);
 	DOREPLIFETIME(AMyShip, CurrentHP);
+	DOREPLIFETIME(AMyShip, MoveSpeed);
+	DOREPLIFETIME(AMyShip, RotationAcceleration);
 }
 
 void AMyShip::UpgradeMoveSpeed()

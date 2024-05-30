@@ -9,6 +9,8 @@
 
 AEnemy::AEnemy(): SkeletalMesh(nullptr)
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	// TODO@autumn - This is a temporary mesh, replace it with the actual mesh from data
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	SkeletalMesh->SetSkeletalMesh(LoadObject<USkeletalMesh>(nullptr, TEXT("/Script/Engine.SkeletalMesh'/Game/GameObjects/Enemy/Base.Base'")));
@@ -40,9 +42,17 @@ void AEnemy::BeginPlay()
 
 	PopupEnemyWidget = Cast<UPopupEnemy>(PopupEnemyWidgetComponent->GetUserWidgetObject());
 	PopupEnemyWidget->SetHPProgressBarPercent(1);
-	
-	AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
-	AnimInstance->OnGiveDamageDelegate.BindUObject(this, &AEnemy::GiveDamage);
+}
+
+// ReSharper disable once CppParameterMayBeConst
+void AEnemy::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (const auto AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance()))
+	{
+		AnimInstance->OnGiveDamageDelegate.BindUObject(this, &AEnemy::GiveDamage);
+	}
 }
 
 void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -153,6 +163,7 @@ void AEnemy::ServerRPC_Attack_Implementation()
 
 void AEnemy::MultiCastRPC_Attack_Implementation()
 {
+	const auto AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	AnimInstance->bIsAttacking = true;
 }
 
@@ -212,6 +223,7 @@ float AEnemy::GetDistanceToMyCharacter() const
 
 bool AEnemy::CanMove() const
 {
+	const auto AnimInstance = Cast<UEnemyAnimInstance>(SkeletalMesh->GetAnimInstance());
 	return !AnimInstance->bIsAttacking;
 }
 

@@ -4,7 +4,6 @@
 #include "../MyShip.h"
 #include "../Trigger/Trigger.h"
 #include "../Map/Obstacle.h"
-#include "Blueprint/UserWidget.h"
 #include "../MyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Map/Map.h"
@@ -65,29 +64,13 @@ void ASailingSystem::Tick(float DeltaTime)
 	
 	if (ClearTrigger->IsTriggered() && !bIsClear)
 	{
-		const auto ClearWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageClearPopUpWidget.StageClearPopUpWidget_C'");
-		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,ClearWidgetRef); StagePopUpWidgetClass != nullptr)
-		{
-			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
-			{
-				PopUpWidget->AddToViewport();
-			}
-		}
-		
+		MulticastRPC_ShowPopupClear();
 		bIsClear = true;
 	}
 
 	if (GameOverTrigger->IsTriggered())
 	{
-		const auto GameOverWidgetRef = TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/WidgetBlueprints/StageFailPopUpWidget.StageFailPopUpWidget_C'");
-		if (const auto StagePopUpWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr,GameOverWidgetRef); StagePopUpWidgetClass != nullptr)
-		{
-			if (UUserWidget* PopUpWidget = CreateWidget<UUserWidget>(GetWorld(), StagePopUpWidgetClass); PopUpWidget != nullptr)
-			{
-				PopUpWidget->AddToViewport();
-			}
-		}
-		
+		MulticastRPC_ShowPopupGameOver();
 		bIsGameOver = true;
 	}
 
@@ -161,20 +144,21 @@ void ASailingSystem::Tick(float DeltaTime)
 		
 		Event->ReduceCurrentDamageCooldown(DeltaTime);
 	}
+
+	MulticastRPC_SetCurrency();
 }
 
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASailingSystem, Currency);
-	//DOREPLIFETIME(ASailingSystem, Progress);
 }
 
 void ASailingSystem::OnEnemyDie(AEnemy* Enemy)
 {
 	Enemies.Remove(Enemy);
 	Enemy->Destroy();
-	EarnCurrency(100); // Todo@autumn - This is a temporary solution, replace it with data.
+	EarnCurrency(3000); // Todo@autumn - This is a temporary solution, replace it with data.
 }
 
 void ASailingSystem::OnEnemiesSpawned(TArray<AEnemy*> SpawnedEnemies)
@@ -230,10 +214,21 @@ void ASailingSystem::CreateObstacles() const
 
 void ASailingSystem::EarnCurrency(const int32 Amount)
 {
+	MulticastRPC_EarnCurrency(Amount);
+}
+
+void ASailingSystem::MulticastRPC_EarnCurrency_Implementation(const int32 Amount)
+{
 	Currency += Amount;
+	MulticastRPC_SetCurrency();
 }
 
 void ASailingSystem::UseCurrency(const int32 Amount)
+{
+	MulticastRPC_UseCurrency(Amount);
+}
+
+void ASailingSystem::MulticastRPC_UseCurrency_Implementation(const int32 Amount)
 {
 	if (Currency < Amount)
 	{
@@ -241,6 +236,7 @@ void ASailingSystem::UseCurrency(const int32 Amount)
 	}
 	
 	Currency -= Amount;
+	MulticastRPC_SetCurrency();
 }
 
 int ASailingSystem::GetCurrency() const
@@ -286,6 +282,30 @@ void ASailingSystem::UpgradeMyShipCannonAttack()
 
 	UseCurrency(UpgradeCost);
 	MyShip->UpgradeCannonAttack();
+}
+
+void ASailingSystem::ShowPopupGameOver() const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
+	InGameHUD->ShowPopupGameOver(HasAuthority());
+}
+
+void ASailingSystem::MulticastRPC_ShowPopupGameOver_Implementation() const
+{
+	ShowPopupGameOver();
+}
+
+void ASailingSystem::ShowPopupClear() const
+{
+	const auto PlayerController = GetWorld()->GetFirstPlayerController();
+	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
+	InGameHUD->ShowPopupClear(HasAuthority());
+}
+
+void ASailingSystem::MulticastRPC_ShowPopupClear_Implementation() const
+{
+	ShowPopupClear();
 }
 
 float ASailingSystem::GetElapsedTime() const
@@ -398,6 +418,27 @@ void ASailingSystem::MulticastRPC_Caution_Implementation(const FText& Text) cons
 	const auto PlayerController = GetWorld()->GetFirstPlayerController();
 	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
 	InGameHUD->ShowPopupCaution(Text);
+}
+
+void ASailingSystem::MulticastRPC_SetCurrency_Implementation() const
+{
+	if (GetWorld() == nullptr)
+	{
+		return;
+	}
+
+	if (GetWorld()->GetFirstPlayerController() == nullptr)
+	{
+		return;
+	}
+	
+	const auto MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (MyInGameHUD == nullptr)
+	{
+		return;
+	}
+	
+	MyInGameHUD->SetCurrency(Currency);
 }
 
 // nullable
