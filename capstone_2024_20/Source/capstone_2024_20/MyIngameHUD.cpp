@@ -1,5 +1,6 @@
 #include "MyIngameHUD.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "Upgrade/UpgradeWidgetElement.h"
 #include "WidgetBlueprint/PopupDead.h"
 #include "WidgetBlueprint/PopupCaution.h"
@@ -117,4 +118,20 @@ void AMyIngameHUD::ShowPopupClear(const bool bHasAuthority) const
 	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = true;
+}
+
+void AMyIngameHUD::SetCurrency(const int32 Amount) const
+{
+	if (!InGameWidget)
+	{
+		return;
+	}
+	
+	UTextBlock* TextBlock = Cast<UTextBlock>(InGameWidget->GetWidgetFromName(TEXT("TextBlock_205")));
+	if (!TextBlock)
+	{
+		return;
+	}
+	
+	TextBlock->SetText(FText::FromString(FString::FromInt(Amount)));
 }

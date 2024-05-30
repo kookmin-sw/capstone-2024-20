@@ -144,6 +144,8 @@ void ASailingSystem::Tick(float DeltaTime)
 		
 		Event->ReduceCurrentDamageCooldown(DeltaTime);
 	}
+
+	MulticastRPC_SetCurrency();
 }
 
 void ASailingSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -404,6 +406,27 @@ void ASailingSystem::MulticastRPC_Caution_Implementation(const FText& Text) cons
 	const auto PlayerController = GetWorld()->GetFirstPlayerController();
 	const auto InGameHUD = Cast<AMyIngameHUD>(PlayerController->GetHUD());
 	InGameHUD->ShowPopupCaution(Text);
+}
+
+void ASailingSystem::MulticastRPC_SetCurrency_Implementation() const
+{
+	if (GetWorld() == nullptr)
+	{
+		return;
+	}
+
+	if (GetWorld()->GetFirstPlayerController() == nullptr)
+	{
+		return;
+	}
+	
+	const auto MyInGameHUD = Cast<AMyIngameHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (MyInGameHUD == nullptr)
+	{
+		return;
+	}
+	
+	MyInGameHUD->SetCurrency(Currency);
 }
 
 // nullable

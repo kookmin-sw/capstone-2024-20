@@ -74,6 +74,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRPC_Caution(const FText& Text) const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_SetCurrency() const;
+
 private:
 	AMyCharacter* FindNearestMyCharacter(const AEnemy* Enemy) const;
 	
